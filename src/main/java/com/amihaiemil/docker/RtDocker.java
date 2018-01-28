@@ -38,10 +38,6 @@ public final class RtDocker implements Docker {
 
     /**
      * Default HTTP request.
-     * @todo #4:30min Implement a jcabi-http request which can work with
-     *  unix sockets; local daemon host works over a unix socker.
-     *  This library could be a good fit for unix sockets handling:
-     *  https://github.com/jnr/jnr-unixsocket
      */
     private static final Request DEFAULT = new FakeRequest();
 
