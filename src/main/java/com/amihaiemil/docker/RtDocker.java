@@ -25,44 +25,68 @@
  */
 package com.amihaiemil.docker;
 
+import com.jcabi.http.Request;
+import com.jcabi.http.request.FakeRequest;
+
 /**
- * Docker API entry point.
+ * Restful Docker.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #1:30min Start implementing the other parts of the API,
- *  such as Swarm, Nodes, Services etc.
  */
-public interface Docker {
+public final class RtDocker implements Docker {
 
     /**
-     * Entry point for the Containers API.
-     * @return Containers.
+     * Default HTTP request.
+     * @todo #4:30min Implement a jcabi-http request which can work with
+     *  unix sockets; local daemon host works over a unix socker.
+     *  This library could be a good fit for unix sockets handling:
+     *  https://github.com/jnr/jnr-unixsocket
      */
-    Containers containers();
+    private static final Request DEFAULT = new FakeRequest();
 
     /**
-     * Entry point for the Images API.
-     * @return Images.
+     * HTTP request.
      */
-    Images images();
+    private Request entry;
 
     /**
-     * Entry point for the Networks API.
-     * @return Networks.
+     * Ctor.
      */
-    Networks networs();
+    public RtDocker() {
+        this(RtDocker.DEFAULT);
+    }
 
     /**
-     * Entry point for the Volumes API.
-     * @return Volumes.
+     * Ctor.
+     * @param req HTTP Request. (see {@link Request})
      */
-    Volumes volumes();
+    public RtDocker(final Request req) {
+        this.entry = req;
+    }
 
-    /**
-     * Entry point for the Exec API.
-     * @return Exec.
-     */
-    Exec exec();
+    @Override
+    public Containers containers() {
+        return null;
+    }
 
+    @Override
+    public Images images() {
+        return null;
+    }
+
+    @Override
+    public Networks networs() {
+        return null;
+    }
+
+    @Override
+    public Volumes volumes() {
+        return null;
+    }
+
+    @Override
+    public Exec exec() {
+        return null;
+    }
 }
