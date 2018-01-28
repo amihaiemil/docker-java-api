@@ -1,7 +1,7 @@
 # docker-java-api
-Lightweight Docker client for Java
+Lightweight, object oriented, Docker client for Java
 
-A Java library for the Docker Engine API. It is the equivalent of the ``docker`` command-line client, for Java Applications.
+A Java library for the Docker Engine API. It is the equivalent of the ``docker`` command-line client, for Java applications.
 
 Unlike other docker clients for Java, this one aims to be as lightweight as possible, with as few transitive dependencies as possible and it should cause absolutely no runtime conflicts with other frameworks or platforms like Java EE. 
 
