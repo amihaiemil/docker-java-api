@@ -1,0 +1,21 @@
+docker:
+  image: yegor256/java8
+architect:
+  - amihaiemil
+env:
+  MAVEN_OPTS: "-XX:MaxPermSize=256m -Xmx1g"
+merge:
+  script: |-
+    mvn clean install -Pcheckstyle
+deploy:
+  script:
+   - echo "Some deployment script"
+# decrypt:
+#  settings.xml: "repo/rcfg/settings.xml.asc"
+#  pubring.gpg: "repo/rcfg/pubring.gpg.asc"
+#  secring.gpg: "repo/rcfg/secring.gpg.asc"
+# release:
+#  script: |-
+#    chmod +x ./rrv.sh
+#    ./rrv.sh
+
