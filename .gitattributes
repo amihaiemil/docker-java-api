@@ -1,0 +1,12 @@
+# Check out all text files in UNIX format, with LF as end of line
+
+*.java text=auto eol=lf
+*.xml text=auto eol=lf
+*.txt text=auto eol=lf
+*.json text=auto eol=lf
+
+*.java ident
+*.xml ident
+*.txt ident
+*.json ident
+
