@@ -26,16 +26,23 @@
 package com.amihaiemil.docker;
 
 import com.jcabi.http.*;
-import java.io.IOException;
-import java.io.InputStream;
+import jnr.unixsocket.UnixSocketAddress;
+import jnr.unixsocket.UnixSocketChannel;
+
+import java.io.*;
+import java.nio.CharBuffer;
+import java.nio.channels.Channels;
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A HTTP request performed over a unix socket.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @todo #9:30min Write a test that will open a socket
+ *  to which this request is sent.
  */
 final class UnixSocket implements Request {
 
@@ -47,9 +54,12 @@ final class UnixSocket implements Request {
     /**
      * Ctor.
      * @param path Path to the socket on disk.
+     * @param uri Request URI.
      */
-    UnixSocket(final String path) {
-        this.base = new BaseRequest(new SocketWire(), path);
+    UnixSocket(final String path, final String uri) {
+        this.base = new BaseRequest(
+            new SocketWire(path), "unix://localhost" + uri
+        );
     }
 
     @Override
@@ -106,23 +116,95 @@ final class UnixSocket implements Request {
 
     /**
      * Wire through which this request is sent.
-     * @checkstyle ParameterNumber (20 lines)
-     * @todo #7:30min Implement this method, use UnixSocketAddress to send the
-     *  request via the unix socket.
+     * @todo #9:30min We need an implementation of Response (to be returned
+     *  by method send(...)) which will animate the output received from the
+     *  server.
+     * @checkstyle ParameterNumber (20 lines).
      */
     private static final class SocketWire implements Wire {
 
+        /**
+         * Path to the socket.
+         */
+        private String path;
+
+        /**
+         * Ctor.
+         * @param path Path to the socket on disk.
+         */
+        SocketWire(final String path) {
+            this.path = path;
+        }
+
         @Override
         public Response send(
-            final Request req,
-            final String home,
-            final String method,
+            final Request req, final String home, final String method,
             final Collection<Map.Entry<String, String>> headers,
-            final InputStream content,
-            final int connect,
-            final int read
+            final InputStream content, final int connect, final int read
         ) throws IOException {
+
+            final StringBuilder hdrs = new StringBuilder();
+            for(final Map.Entry<String, String> header : headers) {
+                hdrs.append(header.getKey() + ": " + header.getValue())
+                    .append("\r\n");
+            }
+            final String request = String.format(
+                this.template(), method, home, hdrs, this.readContent(content)
+            );
+
+            final UnixSocketChannel channel = UnixSocketChannel.open(
+                new UnixSocketAddress(this.path)
+            );
+            final PrintWriter writer = new PrintWriter(
+                Channels.newOutputStream(channel)
+            );
+            writer.print(request);
+            writer.flush();
+
+            final InputStreamReader reader = new InputStreamReader(
+                Channels.newInputStream(channel)
+            );
+            CharBuffer result = CharBuffer.allocate(1024);
+            reader.read(result);
+            result.flip();
+            System.out.println("read from server: " + result.toString());
+
             return null;
         }
+
+        /**
+         * HTTP request template.
+         * @return String.
+         */
+        private String template() {
+            final StringBuilder message = new StringBuilder();
+            message
+                .append("%s %s HTTP/1.1\r\n")
+                .append("Host: localhost").append("\r\n")
+                .append("%s")
+                .append("\r\n").append("\r\n")
+                .append("%s");
+            return message.toString();
+        }
+
+
+        /**
+         * Read the content InputStream into a String.
+         * @param input Content stream.
+         * @return String.
+         * @throws IOException If something goes wrong.
+         */
+        public static String readContent(
+            final InputStream input
+        ) throws IOException {
+            try (
+                final BufferedReader buffer = new BufferedReader(
+                    new InputStreamReader(input)
+                )
+            ) {
+                return buffer.lines().collect(Collectors.joining("\r\n"));
+            }
+        }
+
     }
 }

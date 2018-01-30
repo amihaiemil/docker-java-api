@@ -348,16 +348,16 @@ final class BaseRequest implements Request {
         );
         final URI uri = URI.create(this.home);
         Logger.info(
-                this,
-                "#fetch(%s %s%s %s): [%d %s] in %[ms]s",
-                this.mtd,
-                uri.getHost(),
-                // @checkstyle AvoidInlineConditionalsCheck (1 line)
-                uri.getPort() > 0 ? String.format(":%d", uri.getPort()) : "",
-                uri.getPath(),
-                response.status(),
-                response.reason(),
-                System.currentTimeMillis() - start
+            this,
+            "#fetch(%s %s%s %s): [%d %s] in %[ms]s",
+            this.mtd,
+            uri.getHost(),
+            // @checkstyle AvoidInlineConditionalsCheck (1 line)
+            uri.getPort() > 0 ? String.format(":%d", uri.getPort()) : "",
+            uri.getPath(),
+            response.status(),
+            response.reason(),
+            System.currentTimeMillis() - start
         );
         return response;
     }
