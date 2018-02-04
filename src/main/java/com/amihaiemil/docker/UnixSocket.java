@@ -26,10 +26,12 @@
 package com.amihaiemil.docker;
 
 import com.jcabi.http.*;
+import com.jcabi.http.request.DefaultResponse;
 import jnr.unixsocket.UnixSocketAddress;
 import jnr.unixsocket.UnixSocketChannel;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.Channels;
 import java.util.Collection;
@@ -58,7 +60,7 @@ final class UnixSocket implements Request {
      */
     UnixSocket(final String path, final String uri) {
         this.base = new BaseRequest(
-            new SocketWire(path), "unix://localhost" + uri
+            new SocketWire(path), uri
         );
     }
 
@@ -142,33 +144,32 @@ final class UnixSocket implements Request {
             final Collection<Map.Entry<String, String>> headers,
             final InputStream content, final int connect, final int read
         ) throws IOException {
-
             final StringBuilder hdrs = new StringBuilder();
             for(final Map.Entry<String, String> header : headers) {
                 hdrs.append(header.getKey() + ": " + header.getValue())
-                    .append("\r\n");
+                    .append("\n");
             }
             final String request = String.format(
-                this.template(), method, home, hdrs, this.readContent(content)
+                this.template(), method, home,
+                hdrs.toString().trim(), this.readContent(content)
             );
 
-            final UnixSocketChannel channel = UnixSocketChannel.open(
-                new UnixSocketAddress(this.path)
-            );
-            final PrintWriter writer = new PrintWriter(
-                Channels.newOutputStream(channel)
-            );
-            writer.print(request);
-            writer.flush();
+            System.out.print(request.toString());
+            System.out.println("*******");
+            try (
+                final UnixSocketChannel channel = UnixSocketChannel.open(
+                    new UnixSocketAddress(this.path)
+                );
+                final OutputStream client = Channels.newOutputStream(channel);
+                final InputStream response = Channels.newInputStream(channel)
+            ) {
+                client.write(request.getBytes());
+                System.out.println("read from server: \n\n" +
+                    this.readContent(response)
+                );
 
-            final InputStreamReader reader = new InputStreamReader(
-                Channels.newInputStream(channel)
-            );
-            CharBuffer result = CharBuffer.allocate(1024);
-            reader.read(result);
-            result.flip();
-            System.out.println("read from server: " + result.toString());
-
+            }
+//            Response  = new DefaultResponse();
             return null;
         }
 
@@ -179,12 +180,12 @@ final class UnixSocket implements Request {
         private String template() {
             final StringBuilder message = new StringBuilder();
             message
-                .append("%s %s HTTP/1.1\r\n")
-                .append("Host: localhost").append("\r\n")
+                .append("%s %s HTTP/1.1\n")
                 .append("%s")
-                .append("\r\n").append("\r\n")
-                .append("%s");
-            return message.toString();
+                .append("\n").append("\n")
+                .append("%s")
+                .append("\n");
+            return message.toString().trim();
         }
 
 
@@ -202,7 +203,7 @@ final class UnixSocket implements Request {
                     new InputStreamReader(input)
                 )
             ) {
-                return buffer.lines().collect(Collectors.joining("\r\n"));
+                return buffer.lines().collect(Collectors.joining("\n"));
             }
         }
 
