@@ -28,15 +28,17 @@ package com.amihaiemil.docker;
 import com.jcabi.http.Request;
 import com.jcabi.http.Response;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * HTTP Response comming from the Unix Socket.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #14:30min Implement and test the headers() method.
  * @todo #14:30min Refine the body reading logic. Have to take into account
  *  the Transfer-Encoding header and cover the empty body case.
  */
@@ -85,7 +87,29 @@ final class SocketResponse implements Response {
 
     @Override
     public Map<String, List<String>> headers() {
-        return null;
+        final int endHeaders;
+        if(this.response.indexOf("\n\n") != -1) {
+            endHeaders = this.response.indexOf("\n\n");
+        } else {
+            endHeaders = this.response.length();
+        }
+        final String hdrs = this.response.substring(
+            this.response.indexOf("\n"), endHeaders
+        );
+        final Map<String, List<String>> headers;
+        if(hdrs.trim().isEmpty()) {
+            headers = new HashMap<>();
+        } else {
+            headers = Arrays.asList(
+                hdrs.trim().split("\n")
+            ).stream().collect(
+                Collectors.toMap(
+                    h -> h.split(":")[0],
+                    h -> Arrays.asList(h.split(":")[1].trim().split(", "))
+                )
+            );
+        }
+        return headers;
     }
 
     @Override

@@ -26,17 +26,19 @@
 package com.amihaiemil.docker;
 
 import com.jcabi.http.Response;
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Unit tests for SocketResponse.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @checkstyle RegexpSingleline (200 lines)
- * @checkstyle OperatorWrap (200 lines)
  */
 public final class SocketResponseTestCase {
 
@@ -45,15 +47,15 @@ public final class SocketResponseTestCase {
      */
     @Test
     public void hasStatus() {
-        final String responseString = "HTTP/1.1 200 OK\n" +
-                "Api-Version: 1.35\n" +
-                "Content-Type: application/json\n" +
-                "Docker-Experimental: false\n" +
-                "Ostype: linux\n" +
-                "Server: Docker/17.12.0-ce (linux)\n" +
-                "Date: Sun, 04 Feb 2018 09:07:13 GMT\n" +
-                "Connection: close\n" +
-                "Content-Length: 0";
+        final String responseString = "HTTP/1.1 200 OK\n"
+            + "Api-Version: 1.35\n"
+            + "Content-Type: application/json\n"
+            + "Docker-Experimental: false\n"
+            + "Ostype: linux\n"
+            + "Server: Docker/17.12.0-ce (linux)\n"
+            + "Date: Sun, 04 Feb 2018 09:07:13 GMT\n"
+            + "Connection: close\n"
+            + "Content-Length: 0";
         final Response resp = new SocketResponse(null, responseString);
         MatcherAssert.assertThat(resp.status(), Matchers.is(200));
     }
@@ -63,16 +65,94 @@ public final class SocketResponseTestCase {
      */
     @Test
     public void hasReason() {
-        final String responseString = "HTTP/1.1 200 OK\n" +
-                "Api-Version: 1.35\n" +
-                "Content-Type: application/json\n" +
-                "Docker-Experimental: false\n" +
-                "Ostype: linux\n" +
-                "Server: Docker/17.12.0-ce (linux)\n" +
-                "Date: Sun, 04 Feb 2018 09:07:13 GMT\n" +
-                "Connection: close\n" +
-                "Content-Length: 0";
+        final String responseString = "HTTP/1.1 200 OK\n"
+            + "Api-Version: 1.35\n"
+            + "Content-Type: application/json\n"
+            + "Docker-Experimental: false\n"
+            + "Ostype: linux\n"
+            + "Server: Docker/17.12.0-ce (linux)\n"
+            + "Date: Sun, 04 Feb 2018 09:07:13 GMT\n"
+            + "Connection: close\n"
+            + "Content-Length: 0";
         final Response resp = new SocketResponse(null, responseString);
         MatcherAssert.assertThat(resp.reason(), Matchers.equalTo("OK"));
+    }
+
+    /**
+     * A SocketResponse can return its headers if there is no body afterwards.
+     */
+    @Test
+    public void headersWithNoContent() {
+        final String responseString = "HTTP/1.1 200 OK\n"
+            + "Api-Version: 1.35\n"
+            + "Content-Type: application/json\n"
+            + "Docker-Experimental: false\n"
+            + "Ostype: linux\n"
+            + "Server: Docker/17.12.0-ce (linux)\n"
+            + "Date: Sun, 04 Feb 2018 09:07:13 GMT\n"
+            + "Connection: close\n"
+            + "Content-Length: 0";
+        final Response resp = new SocketResponse(null, responseString);
+        final Map<String, List<String>> headers = resp.headers();
+        MatcherAssert.assertThat(headers.size(), Matchers.is(8));
+        headers.forEach((key, value) -> {
+            MatcherAssert.assertThat(
+                key, Matchers.not(Matchers.isEmptyOrNullString())
+            );
+            MatcherAssert.assertThat(
+                value.size() > 0, Matchers.is(Boolean.TRUE)
+            );
+        });
+    }
+
+    /**
+     * A SocketResponse can return its headers if there is a body afterwards.
+     */
+    @Test
+    public void headersWithontent() {
+        final String responseString = "HTTP/1.1 200 OK\n"
+                + "Api-Version: 1.35\n"
+                + "Content-Type: application/json\n"
+                + "Docker-Experimental: false\n"
+                + "Connection: close\n"
+                + "Content-Length: 2\n\n"
+                + "OK";
+        final Response resp = new SocketResponse(null, responseString);
+        final Map<String, List<String>> headers = resp.headers();
+        MatcherAssert.assertThat(headers.size(), Matchers.is(5));
+        headers.forEach((key, value) -> {
+            MatcherAssert.assertThat(
+                key, Matchers.not(Matchers.isEmptyOrNullString())
+            );
+            MatcherAssert.assertThat(
+                value.size() == 1, Matchers.is(Boolean.TRUE)
+            );
+        });
+        MatcherAssert.assertThat(headers.get(
+            "Api-Version").get(0), Matchers.equalTo("1.35")
+        );
+        MatcherAssert.assertThat(headers.get(
+            "Content-Type").get(0), Matchers.equalTo("application/json")
+        );
+        MatcherAssert.assertThat(headers.get(
+            "Docker-Experimental").get(0), Matchers.equalTo("false")
+        );
+        MatcherAssert.assertThat(headers.get(
+            "Connection").get(0), Matchers.equalTo("close")
+        );
+        MatcherAssert.assertThat(headers.get(
+            "Content-Length").get(0), Matchers.equalTo("2")
+        );
+    }
+
+    /**
+     * A SocketResponse returns an empty Map when there are no headers.
+     */
+    @Test
+    public void noHeaders() {
+        final String responseString = "HTTP/1.1 200 OK\n";
+        final Response resp = new SocketResponse(null, responseString);
+        final Map<String, List<String>> headers = resp.headers();
+        MatcherAssert.assertThat(headers.isEmpty(), Matchers.is(Boolean.TRUE));
     }
 }
