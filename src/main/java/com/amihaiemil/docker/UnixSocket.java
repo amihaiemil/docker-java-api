@@ -26,13 +26,10 @@
 package com.amihaiemil.docker;
 
 import com.jcabi.http.*;
-import com.jcabi.http.request.DefaultResponse;
 import jnr.unixsocket.UnixSocketAddress;
 import jnr.unixsocket.UnixSocketChannel;
 
 import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.channels.Channels;
 import java.util.Collection;
 import java.util.Map;
@@ -164,12 +161,11 @@ final class UnixSocket implements Request {
                 final InputStream response = Channels.newInputStream(channel)
             ) {
                 client.write(request.getBytes());
-                System.out.println("read from server: \n\n" +
-                    this.readContent(response)
+                System.out.println("read from server: \n\n"
+                    + this.readContent(response)
                 );
 
             }
-//            Response  = new DefaultResponse();
             return null;
         }
 
