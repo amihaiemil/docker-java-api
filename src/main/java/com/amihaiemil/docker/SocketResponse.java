@@ -39,8 +39,6 @@ import java.util.stream.Collectors;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #14:30min Refine the body reading logic. Have to take into account
- *  the Transfer-Encoding header and cover the empty body case.
  */
 final class SocketResponse implements Response {
 
@@ -114,14 +112,41 @@ final class SocketResponse implements Response {
 
     @Override
     public String body() {
-        return this.response.substring(this.response.indexOf("\n\n")).trim();
+        final Map<String, List<String>> headers = this.headers();
+        final String body;
+        if(headers.get("Content-Length") != null) {
+            final int length = Integer.valueOf(
+                headers.get("Content-Length").get(0)
+            );
+            body = this.response.substring(
+                this.response.indexOf("\n\n")
+            ).trim().substring(0, length);
+        } else {
+            if(headers.get("Transfer-Encoding") == null) {
+                throw new IllegalStateException(
+                    "Transfer-Encoding header is missing from the response."
+                );
+            } else {
+                final String enc = headers.get("Transfer-Encoding").get(0);
+                if("chunked".equalsIgnoreCase(enc)) {
+                    body = new ChunkedContent(
+                        this.response.substring(
+                            this.response.indexOf("\n\n")
+                        ).trim()
+                    ).toString();
+                } else {
+                    throw new IllegalStateException(
+                        "Only chunked encoding is supported for now."
+                    );
+                }
+            }
+        }
+        return body;
     }
 
     @Override
     public byte[] binary() {
-        return this.response.substring(
-            this.response.indexOf("\n\n")
-        ).getBytes();
+        return this.body().getBytes();
     }
 
     @Override
@@ -133,6 +158,44 @@ final class SocketResponse implements Response {
                 | IllegalAccessException | NoSuchMethodException
                 | InvocationTargetException ex) {
             throw new IllegalStateException(ex);
+        }
+    }
+
+    /**
+     * Chunked content from an HTTP response.
+     */
+    final class ChunkedContent {
+
+        /**
+         * Content.
+         */
+        final String content;
+
+        /**
+         * Ctor.
+         * @param content Chunked content.
+         */
+        ChunkedContent(final String content) {
+            this.content = content;
+        }
+
+        /**
+         * Iterate over the lines of the chunked response and concatenate
+         * the chunks. Skip the first and next every second line since they
+         * contain the chunk's size. Ignore the last line since it's supposed
+         * to be 0. This is according to the "Transfer-Encoding: chunked" spec.
+         * @return The response's concatenated chunks, separated by whitespace.
+         */
+        @Override
+        public String toString() {
+            String concat = "";
+            final List<String> chunks = Arrays.asList(
+                this.content.split("\n")
+            );
+            for(int idx = 1; idx < chunks.size() - 1; idx += 2) {
+                concat += chunks.get(idx) + " ";
+            }
+            return concat.trim();
         }
     }
 }
