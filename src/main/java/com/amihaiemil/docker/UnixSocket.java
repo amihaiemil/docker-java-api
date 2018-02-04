@@ -161,12 +161,12 @@ final class UnixSocket implements Request {
                 final InputStream response = Channels.newInputStream(channel)
             ) {
                 client.write(request.getBytes());
+                final String resp = this.readContent(response);
                 System.out.println("read from server: \n\n"
                     + this.readContent(response)
                 );
-
+                return new SocketResponse(req, resp);
             }
-            return null;
         }
 
         /**
