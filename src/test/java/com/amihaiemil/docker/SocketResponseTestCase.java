@@ -26,7 +26,6 @@
 package com.amihaiemil.docker;
 
 import com.jcabi.http.Response;
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
