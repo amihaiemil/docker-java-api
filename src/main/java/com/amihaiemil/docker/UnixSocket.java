@@ -115,9 +115,6 @@ final class UnixSocket implements Request {
 
     /**
      * Wire through which this request is sent.
-     * @todo #9:30min We need an implementation of Response (to be returned
-     *  by method send(...)) which will animate the output received from the
-     *  server.
      * @checkstyle ParameterNumber (20 lines).
      */
     private static final class SocketWire implements Wire {
