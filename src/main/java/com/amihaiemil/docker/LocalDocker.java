@@ -25,54 +25,56 @@
  */
 package com.amihaiemil.docker;
 
-import com.jcabi.http.Request;
-
 /**
- * Restful Docker.
+ * Local Docker API. Use this when you want to communicate with the local
+ * Docker engine.
+ *
+ * <pre>
+ *     final Docker docker = new LocalDocker("unix:///var/run/dicker.sock");
+ * </pre>
+ *
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #11:30min Implement RemoteDocker which will make the requests over
- *  a tcp socket and TLS if certificates are provided.
- * @todo #11:30min Implement method ping() to check Docker's availability.
  */
-abstract class RtDocker implements Docker {
+public final class LocalDocker extends RtDocker {
 
     /**
-     * HTTP request.
+     * Local Docker engine.
+     * @param unixSocket Path to the unix socket
+     *     (e.g. unix:///var/run/docker.sock).
      */
-    private Request entry;
+    public LocalDocker(final String unixSocket){
+        this(unixSocket, "v1.35");
+    }
 
     /**
-     * Ctor.
-     * @param req HTTP Request. (see {@link Request})
+     * Local Docker engine.
+     * @param unixSocket Path to the unix socket
+     *     (e.g. unix:///var/run/docker.sock).
+     * @param version API version (e.g. v1.30).
      */
-    RtDocker(final Request req) {
-        this.entry = req;
+    public LocalDocker(final String unixSocket, final String version){
+        super(
+            new UnixSocket(sanitize(unixSocket), "/" + version)
+        );
     }
 
-    @Override
-    public final Containers containers() {
-        return null;
+
+    /**
+     * Sanitize the path to the unix socket.
+     * @param unixSocket Path to the unix socket.
+     * @return Sanitized path.
+     */
+    private static String sanitize(final String unixSocket) {
+        String sanitized = unixSocket;
+        if(unixSocket.startsWith("unix://")) {
+            sanitized = unixSocket.substring("unix://".length());
+        }
+        if(!sanitized.startsWith("/")) {
+            sanitized = "/" + sanitized;
+        }
+        return sanitized;
     }
 
-    @Override
-    public final Images images() {
-        return null;
-    }
-
-    @Override
-    public final Networks networs() {
-        return null;
-    }
-
-    @Override
-    public final Volumes volumes() {
-        return null;
-    }
-
-    @Override
-    public final Exec exec() {
-        return null;
-    }
 }

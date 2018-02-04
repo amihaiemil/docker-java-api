@@ -25,54 +25,33 @@
  */
 package com.amihaiemil.docker;
 
-import com.jcabi.http.Request;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 /**
- * Restful Docker.
+ * Unit tests for LocalDocker.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #11:30min Implement RemoteDocker which will make the requests over
- *  a tcp socket and TLS if certificates are provided.
- * @todo #11:30min Implement method ping() to check Docker's availability.
  */
-abstract class RtDocker implements Docker {
+public final class LocalDockerTestCase {
 
     /**
-     * HTTP request.
+     * LocalDocker can be instantiated with the unix:// scheme.
      */
-    private Request entry;
+    @Test
+    public void canInstantiateWithScheme() {
+        final Docker docker = new LocalDocker("unix:///var/run/docker.sock");
+        MatcherAssert.assertThat(docker, Matchers.notNullValue());
+    }
 
     /**
-     * Ctor.
-     * @param req HTTP Request. (see {@link Request})
+     * LocalDocker can be instantiated without the unix:// scheme.
      */
-    RtDocker(final Request req) {
-        this.entry = req;
-    }
-
-    @Override
-    public final Containers containers() {
-        return null;
-    }
-
-    @Override
-    public final Images images() {
-        return null;
-    }
-
-    @Override
-    public final Networks networs() {
-        return null;
-    }
-
-    @Override
-    public final Volumes volumes() {
-        return null;
-    }
-
-    @Override
-    public final Exec exec() {
-        return null;
+    @Test
+    public void canInstantiateWithoutScheme() {
+        final Docker docker = new LocalDocker("/var/run/docker.sock");
+        MatcherAssert.assertThat(docker, Matchers.notNullValue());
     }
 }
