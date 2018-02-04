@@ -25,53 +25,26 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 /**
- * Docker API entry point.
+ * Integration tests for LocalDocker.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #1:30min Start implementing the other parts of the API,
- *  such as Swarm, Nodes, Services etc.
  */
-public interface Docker {
+public final class LocalDockerITCase {
 
     /**
-     * Ping the Docker Engine.
-     * @return True if it responds with 200 OK, false otherwise.
-     * @throws IOException If there's network problem.
+     * LocalDocker can ping the Docker Engine.
+     * @throws Exception If something goes wrong.
      */
-    boolean ping() throws IOException;
-
-    /**
-     * Entry point for the Containers API.
-     * @return Containers.
-     */
-    Containers containers();
-
-    /**
-     * Entry point for the Images API.
-     * @return Images.
-     */
-    Images images();
-
-    /**
-     * Entry point for the Networks API.
-     * @return Networks.
-     */
-    Networks networs();
-
-    /**
-     * Entry point for the Volumes API.
-     * @return Volumes.
-     */
-    Volumes volumes();
-
-    /**
-     * Entry point for the Exec API.
-     * @return Exec.
-     */
-    Exec exec();
+    @Test
+    public void pingsDocker() throws Exception {
+        final Docker docker = new LocalDocker("/var/run/docker.sock");
+        MatcherAssert.assertThat(docker.ping(), Matchers.is(Boolean.TRUE));
+    }
 
 }

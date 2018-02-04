@@ -27,6 +27,9 @@ package com.amihaiemil.docker;
 
 import com.jcabi.http.Request;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+
 /**
  * Restful Docker.
  * @author Mihai Andronache (amihaiemil@gmail.com)
@@ -34,7 +37,6 @@ import com.jcabi.http.Request;
  * @since 0.0.1
  * @todo #11:30min Implement RemoteDocker which will make the requests over
  *  a tcp socket and TLS if certificates are provided.
- * @todo #11:30min Implement method ping() to check Docker's availability.
  */
 abstract class RtDocker implements Docker {
 
@@ -48,7 +50,14 @@ abstract class RtDocker implements Docker {
      * @param req HTTP Request. (see {@link Request})
      */
     RtDocker(final Request req) {
-        this.entry = req;
+        this.entry = req.header("Connection", "close");
+    }
+
+    @Override
+    public final boolean ping() throws IOException {
+        return this.entry
+                   .uri().path("/_ping").back()
+                   .fetch().status() == HttpURLConnection.HTTP_OK;
     }
 
     @Override

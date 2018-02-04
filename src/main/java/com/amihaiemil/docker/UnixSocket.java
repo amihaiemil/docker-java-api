@@ -143,13 +143,12 @@ final class UnixSocket implements Request {
                 hdrs.append(header.getKey() + ": " + header.getValue())
                     .append("\n");
             }
+
             final String request = String.format(
                 this.template(), method, home,
                 hdrs.toString().trim(), this.readContent(content)
             );
 
-            System.out.print(request.toString());
-            System.out.println("*******");
             try (
                 final UnixSocketChannel channel = UnixSocketChannel.open(
                     new UnixSocketAddress(this.path)
@@ -158,11 +157,7 @@ final class UnixSocket implements Request {
                 final InputStream response = Channels.newInputStream(channel)
             ) {
                 client.write(request.getBytes());
-                final String resp = this.readContent(response);
-                System.out.println("read from server: \n\n"
-                    + this.readContent(response)
-                );
-                return new SocketResponse(req, resp);
+                return new SocketResponse(req, this.readContent(response));
             }
         }
 
@@ -173,11 +168,11 @@ final class UnixSocket implements Request {
         private String template() {
             final StringBuilder message = new StringBuilder();
             message
-                .append("%s %s HTTP/1.1\n")
+                .append("%s %s HTTP/1.1\r\n")
                 .append("%s")
-                .append("\n").append("\n")
+                .append("\r\n").append("\r\n")
                 .append("%s")
-                .append("\n");
+                .append("\r\n");
             return message.toString().trim();
         }
 

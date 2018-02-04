@@ -57,6 +57,7 @@ public final class LocalDocker extends RtDocker {
     public LocalDocker(final String unixSocket, final String version){
         super(
             new UnixSocket(sanitize(unixSocket), "/" + version)
+                .header("Host", "localhost")
         );
     }
 

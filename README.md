@@ -24,3 +24,11 @@ Make sure the maven build:
 
 passes before making a PR. [Checkstyle](http://checkstyle.sourceforge.net/) will make sure
 you're following our code style and guidlines.
+
+### Running Integration Tests
+
+In order to run the integration tests add the ``itcases`` profile to the maven command:
+
+``$mvn clean install -Pcheckstyle -Pitcases``
+
+Docker has to be intalled on the machine, with the default configuration, in order for the IT cases to work.
