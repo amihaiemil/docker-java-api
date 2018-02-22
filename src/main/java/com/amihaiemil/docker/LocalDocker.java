@@ -25,6 +25,8 @@
  */
 package com.amihaiemil.docker;
 
+import org.apache.http.impl.client.HttpClientBuilder;
+
 /**
  * Local Docker API. Use this when you want to communicate with the local
  * Docker engine.
@@ -36,6 +38,9 @@ package com.amihaiemil.docker;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @todo #27:30min Build an HttpClient which works over unix socket. The actual
+ *  Socket can be created using the jnr-unixsocket library. Then, pass the
+ *  created socket to a connection pool used by the HttpClientBuilder.
  */
 public final class LocalDocker extends RtDocker {
 
@@ -55,10 +60,7 @@ public final class LocalDocker extends RtDocker {
      * @param version API version (e.g. v1.30).
      */
     public LocalDocker(final String unixSocket, final String version){
-        super(
-            new UnixSocket(sanitize(unixSocket), "/" + version)
-                .header("Host", "localhost")
-        );
+        super(HttpClientBuilder.create().build());
     }
 
 

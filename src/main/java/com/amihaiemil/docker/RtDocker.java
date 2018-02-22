@@ -25,10 +25,9 @@
  */
 package com.amihaiemil.docker;
 
-import com.jcabi.http.Request;
+import org.apache.http.client.HttpClient;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 
 /**
  * Restful Docker.
@@ -41,23 +40,21 @@ import java.net.HttpURLConnection;
 abstract class RtDocker implements Docker {
 
     /**
-     * HTTP request.
+     * Apache HttpClient which sends the requests.
      */
-    private Request entry;
+    private final HttpClient client;
 
     /**
      * Ctor.
-     * @param req HTTP Request. (see {@link Request})
+     * @param client Given HTTP Client.
      */
-    RtDocker(final Request req) {
-        this.entry = req.header("Connection", "close");
+    RtDocker(final HttpClient client) {
+        this.client = client;
     }
 
     @Override
     public final boolean ping() throws IOException {
-        return this.entry
-                   .uri().path("/_ping").back()
-                   .fetch().status() == HttpURLConnection.HTTP_OK;
+        return true;
     }
 
     @Override
