@@ -38,9 +38,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #27:30min Build an HttpClient which works over unix socket. The actual
- *  Socket can be created using the jnr-unixsocket library. Then, pass the
- *  created socket to a connection pool used by the HttpClientBuilder.
  */
 public final class LocalDocker extends RtDocker {
 
