@@ -25,9 +25,12 @@
  */
 package com.amihaiemil.docker;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
-
+import org.apache.http.client.methods.HttpGet;
 import java.io.IOException;
+import java.net.URI;
 
 /**
  * Restful Docker.
@@ -36,9 +39,6 @@ import java.io.IOException;
  * @since 0.0.1
  * @todo #11:30min Implement RemoteDocker which will make the requests over
  *  a tcp socket and TLS if certificates are provided.
- * @todo #32:30min Reimplement ping() with the new HttpClient architecture.
- *  It should create an HttpGet method and send it with the encapsulated
- *  client.
  */
 abstract class RtDocker implements Docker {
 
@@ -48,16 +48,26 @@ abstract class RtDocker implements Docker {
     private final HttpClient client;
 
     /**
+     * Base URI..
+     */
+    private final URI baseUri;
+
+    /**
      * Ctor.
      * @param client Given HTTP Client.
+     * @param baseUri Base URI.
      */
-    RtDocker(final HttpClient client) {
+    RtDocker(final HttpClient client, final URI baseUri) {
         this.client = client;
+        this.baseUri = baseUri;
     }
 
     @Override
     public final boolean ping() throws IOException {
-        return true;
+        final HttpResponse response = this.client.execute(
+            new HttpGet(this.baseUri.toString() + "/_ping")
+        );
+        return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
     }
 
     @Override

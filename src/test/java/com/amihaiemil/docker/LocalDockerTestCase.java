@@ -36,28 +36,24 @@ import java.io.File;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @todo #39:1h Implement a unix socket server so we can also unit
+ *  test the calls made with UnixHttpClient. The user should be able
+ *  to specify what response it expected with each request to a certain
+ *  path.
  */
 public final class LocalDockerTestCase {
 
     /**
-     * LocalDocker can be instantiated with the unix:// scheme.
+     * LocalDocker can be instantiated.
      */
     @Test
-    public void canInstantiateWithScheme() {
-        final Docker docker = new LocalDocker(
-            new File("/var/run/docker.sock")
+    public void canBeInstantiate() {
+        MatcherAssert.assertThat(
+            new LocalDocker(
+                new File("/var/run/docker.sock")
+            ),
+            Matchers.notNullValue()
         );
-        MatcherAssert.assertThat(docker, Matchers.notNullValue());
     }
 
-    /**
-     * LocalDocker can be instantiated without the unix:// scheme.
-     */
-    @Test
-    public void canInstantiateWithoutScheme() {
-        final Docker docker = new LocalDocker(
-            new File("/var/run/docker.sock")
-        );
-        MatcherAssert.assertThat(docker, Matchers.notNullValue());
-    }
 }

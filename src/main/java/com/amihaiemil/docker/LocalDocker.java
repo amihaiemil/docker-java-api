@@ -26,6 +26,7 @@
 package com.amihaiemil.docker;
 
 import java.io.File;
+import java.net.URI;
 
 /**
  * Local Docker API. Use this when you want to communicate with the local
@@ -57,7 +58,10 @@ public final class LocalDocker extends RtDocker {
      * @param version API version (e.g. v1.30).
      */
     public LocalDocker(final File unixSocket, final String version){
-        super(new UnixHttpClient(unixSocket));
+        super(
+            new UnixHttpClient(unixSocket),
+            URI.create("unix://localhost:80/" + version)
+        );
     }
 
 }
