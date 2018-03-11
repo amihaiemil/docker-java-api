@@ -38,6 +38,8 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -49,7 +51,18 @@ import java.io.IOException;
 public final class UnixHttpClientTestCase {
 
     /**
-     * UnixHttoClient returns its HttpParams.
+     * UnixHttpClient can be instantiated with a socket File.
+     */
+    @Test
+    public void instantiatesWithSocket() {
+        MatcherAssert.assertThat(
+            new UnixHttpClient(new File("/var/run/docker.sock")),
+            Matchers.notNullValue()
+        );
+    }
+
+    /**
+     * UnixHttpClient returns its HttpParams.
      */
     @Test
     public void getsHttpParams() {
@@ -65,7 +78,7 @@ public final class UnixHttpClientTestCase {
     }
 
     /**
-     * UnixHttoClient returns its ClientConnectionManager.
+     * UnixHttpClient returns its ClientConnectionManager.
      */
     @Test
     public void getsClientConnectionManager() {

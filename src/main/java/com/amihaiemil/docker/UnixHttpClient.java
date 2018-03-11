@@ -25,17 +25,25 @@
  */
 package com.amihaiemil.docker;
 
+import jnr.unixsocket.UnixSocketAddress;
+import jnr.unixsocket.UnixSocketChannel;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
+import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
 /**
  * An HttpClient which works over a UnixSocket.
@@ -44,10 +52,9 @@ import java.io.IOException;
  * @version $Id$
  * @since 0.0.1
  * @checkstyle ParameterNumber (150 lines)
- * @todo #29:30min Implement a ConnectionSocketFactory which builds
- *  UnixSocket objects.
+ * @checkstyle AnonInnerLength (150 lines)
  */
-public final class UnixHttpClient implements HttpClient {
+final class UnixHttpClient implements HttpClient {
 
     /**
      * Decorated HttpClient.
@@ -56,17 +63,51 @@ public final class UnixHttpClient implements HttpClient {
 
     /**
      * Ctor.
-     * @param socketFile Path to the unix socket on disk.
+     * @param socketFile Unix socket on disk.
      */
-    public UnixHttpClient(final String socketFile) {
-        this(HttpClientBuilder.create().build());
+    UnixHttpClient(final File socketFile) {
+        this(
+            HttpClientBuilder.create().setConnectionManager(
+                new BasicHttpClientConnectionManager(
+                    RegistryBuilder
+                        .<ConnectionSocketFactory>create()
+                        .register(
+                            "unix",
+                            new ConnectionSocketFactory() {
+                                @Override
+                                public Socket createSocket(
+                                    final HttpContext httpContext
+                                ) throws IOException {
+                                    return UnixSocketChannel.open().socket();
+                                }
+
+                                @Override
+                                public Socket connectSocket(
+                                    final int connectionTimeout,
+                                    final Socket socket,
+                                    final HttpHost host,
+                                    final InetSocketAddress remoteAddress,
+                                    final InetSocketAddress localAddress,
+                                    final HttpContext context
+                                ) throws IOException {
+                                    socket.setSoTimeout(connectionTimeout);
+                                    socket.getChannel().connect(
+                                        new UnixSocketAddress(socketFile)
+                                    );
+                                    return socket;
+                                }
+                            })
+                        .build()
+                )
+            ).build()
+        );
     }
 
     /**
      * Ctor.
      * @param client Decorated HttpClient.
      */
-    public UnixHttpClient(final HttpClient client) {
+    UnixHttpClient(final HttpClient client) {
         this.client = client;
     }
 

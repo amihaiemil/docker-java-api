@@ -25,7 +25,7 @@
  */
 package com.amihaiemil.docker;
 
-import org.apache.http.impl.client.HttpClientBuilder;
+import java.io.File;
 
 /**
  * Local Docker API. Use this when you want to communicate with the local
@@ -43,38 +43,21 @@ public final class LocalDocker extends RtDocker {
 
     /**
      * Local Docker engine.
-     * @param unixSocket Path to the unix socket
-     *     (e.g. unix:///var/run/docker.sock).
+     * @param unixSocket Unix socket File on disk.
+     *     (most likely /var/run/docker.sock).
      */
-    public LocalDocker(final String unixSocket){
+    public LocalDocker(final File unixSocket){
         this(unixSocket, "v1.35");
     }
 
     /**
      * Local Docker engine.
-     * @param unixSocket Path to the unix socket
-     *     (e.g. unix:///var/run/docker.sock).
+     * @param unixSocket Unix socket File on disk.
+     *     (most likely /var/run/docker.sock).
      * @param version API version (e.g. v1.30).
      */
-    public LocalDocker(final String unixSocket, final String version){
-        super(HttpClientBuilder.create().build());
-    }
-
-
-    /**
-     * Sanitize the path to the unix socket.
-     * @param unixSocket Path to the unix socket.
-     * @return Sanitized path.
-     */
-    private static String sanitize(final String unixSocket) {
-        String sanitized = unixSocket;
-        if(unixSocket.startsWith("unix://")) {
-            sanitized = unixSocket.substring("unix://".length());
-        }
-        if(!sanitized.startsWith("/")) {
-            sanitized = "/" + sanitized;
-        }
-        return sanitized;
+    public LocalDocker(final File unixSocket, final String version){
+        super(new UnixHttpClient(unixSocket));
     }
 
 }

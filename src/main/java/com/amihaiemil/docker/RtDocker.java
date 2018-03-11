@@ -36,6 +36,9 @@ import java.io.IOException;
  * @since 0.0.1
  * @todo #11:30min Implement RemoteDocker which will make the requests over
  *  a tcp socket and TLS if certificates are provided.
+ *  @todo #32:30min Reimplement ping() with the new HttpClient architecture.
+ *   It should create an HttpGet method and send it with the encapsulated
+ *   client.
  */
 abstract class RtDocker implements Docker {
 

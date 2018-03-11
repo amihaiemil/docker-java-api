@@ -29,6 +29,8 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
+import java.io.File;
+
 /**
  * Integration tests for LocalDocker.
  * @author Mihai Andronache (amihaiemil@gmail.com)
@@ -43,7 +45,9 @@ public final class LocalDockerITCase {
      */
     @Test
     public void pingsDocker() throws Exception {
-        final Docker docker = new LocalDocker("/var/run/docker.sock");
+        final Docker docker = new LocalDocker(
+            new File("/var/run/docker.sock")
+        );
         MatcherAssert.assertThat(docker.ping(), Matchers.is(Boolean.TRUE));
     }
 

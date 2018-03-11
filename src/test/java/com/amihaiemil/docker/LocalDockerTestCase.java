@@ -29,6 +29,8 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
+import java.io.File;
+
 /**
  * Unit tests for LocalDocker.
  * @author Mihai Andronache (amihaiemil@gmail.com)
@@ -42,7 +44,9 @@ public final class LocalDockerTestCase {
      */
     @Test
     public void canInstantiateWithScheme() {
-        final Docker docker = new LocalDocker("unix:///var/run/docker.sock");
+        final Docker docker = new LocalDocker(
+            new File("/var/run/docker.sock")
+        );
         MatcherAssert.assertThat(docker, Matchers.notNullValue());
     }
 
@@ -51,7 +55,9 @@ public final class LocalDockerTestCase {
      */
     @Test
     public void canInstantiateWithoutScheme() {
-        final Docker docker = new LocalDocker("/var/run/docker.sock");
+        final Docker docker = new LocalDocker(
+            new File("/var/run/docker.sock")
+        );
         MatcherAssert.assertThat(docker, Matchers.notNullValue());
     }
 }
