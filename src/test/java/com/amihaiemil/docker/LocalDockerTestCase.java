@@ -52,4 +52,17 @@ public final class LocalDockerTestCase {
         );
     }
 
+    /**
+     * LocalDocker can return the Containers.
+     */
+    @Test
+    public void getsContainers() {
+        MatcherAssert.assertThat(
+            new LocalDocker(
+                new File("/var/run/docker.sock")
+            ).containers(),
+            Matchers.notNullValue()
+        );
+    }
+
 }
