@@ -48,7 +48,7 @@ abstract class RtDocker implements Docker {
     private final HttpClient client;
 
     /**
-     * Base URI..
+     * Base URI.
      */
     private final URI baseUri;
 
@@ -72,7 +72,9 @@ abstract class RtDocker implements Docker {
 
     @Override
     public final Containers containers() {
-        return null;
+        return new RtContainers(
+            this.client, URI.create(this.baseUri.toString() + "/containers")
+        );
     }
 
     @Override

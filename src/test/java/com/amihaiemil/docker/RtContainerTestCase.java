@@ -25,29 +25,34 @@
  */
 package com.amihaiemil.docker;
 
+import org.apache.http.client.HttpClient;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
-import java.io.File;
+import org.mockito.Mockito;
+
+import java.net.URI;
 
 /**
- * Integration tests for LocalDocker.
+ * Unit tests for RtContainer.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
  */
-public final class LocalDockerITCase {
+public final class RtContainerTestCase {
 
     /**
-     * LocalDocker can ping the Docker Engine.
-     * @throws Exception If something goes wrong.
+     * RtContainer can return its id.
      */
     @Test
-    public void pingsDocker() throws Exception {
-        final Docker docker = new LocalDocker(
-            new File("/var/run/docker.sock")
+    public void returnsId() {
+        final Container container = new RtContainer(
+            Mockito.mock(HttpClient.class),
+            URI.create("unix://localhost:80/1.30/containers/123id456")
         );
-        MatcherAssert.assertThat(docker.ping(), Matchers.is(Boolean.TRUE));
+        MatcherAssert.assertThat(
+            container.containerId(),
+            Matchers.equalTo("123id456")
+        );
     }
-
 }

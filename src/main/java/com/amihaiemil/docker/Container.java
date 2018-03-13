@@ -25,29 +25,30 @@
  */
 package com.amihaiemil.docker;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.Test;
-import java.io.File;
+import javax.json.JsonObject;
+import java.io.IOException;
 
 /**
- * Integration tests for LocalDocker.
+ * A Docker container.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
  */
-public final class LocalDockerITCase {
+public interface Container {
 
     /**
-     * LocalDocker can ping the Docker Engine.
-     * @throws Exception If something goes wrong.
+     * Inspect this container, return low-level information
+     * about it in Json format. It is recommended to wrap this
+     * Json into a live object, with an interface, which would animate
+     * it.
+     * @return Container info in Json format.
+     * @throws IOException If something goes wrong.
      */
-    @Test
-    public void pingsDocker() throws Exception {
-        final Docker docker = new LocalDocker(
-            new File("/var/run/docker.sock")
-        );
-        MatcherAssert.assertThat(docker.ping(), Matchers.is(Boolean.TRUE));
-    }
+    JsonObject inspect() throws IOException;
 
+    /**
+     * This Container's id.
+     * @return String id.
+     */
+    String containerId();
 }

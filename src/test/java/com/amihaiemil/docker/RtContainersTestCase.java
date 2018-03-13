@@ -25,29 +25,14 @@
  */
 package com.amihaiemil.docker;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.Test;
-import java.io.File;
-
 /**
- * Integration tests for LocalDocker.
+ * Unit tests for RtContainers.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @todo #26:30min Write unit tests for all the methods of RtContainers.
+ *  AssertRequest should be passed in the ctor, with the right expected
+ *  response and predicates.
  */
-public final class LocalDockerITCase {
-
-    /**
-     * LocalDocker can ping the Docker Engine.
-     * @throws Exception If something goes wrong.
-     */
-    @Test
-    public void pingsDocker() throws Exception {
-        final Docker docker = new LocalDocker(
-            new File("/var/run/docker.sock")
-        );
-        MatcherAssert.assertThat(docker.ping(), Matchers.is(Boolean.TRUE));
-    }
-
+public final class RtContainersTestCase {
 }

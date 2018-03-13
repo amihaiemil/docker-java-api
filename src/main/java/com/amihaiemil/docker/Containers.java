@@ -25,6 +25,9 @@
  */
 package com.amihaiemil.docker;
 
+import javax.json.JsonObject;
+import java.io.IOException;
+
 /**
  * Containers API.
  * @author Mihai Andronache (amihaiemil@gmail.com)
@@ -32,4 +35,40 @@ package com.amihaiemil.docker;
  * @since 0.0.1
  */
 public interface Containers {
+
+    /**
+     * Create a container with a random name.
+     * @param image The image to use.
+     * @return Created Container.
+     * @throws IOException If something goes wrong.
+     */
+    Container create(final String image) throws IOException;
+
+    /**
+     * Create a container.
+     * @param name The container's name.
+     * @param image The image to use.
+     * @return Created Container.
+     * @throws IOException If something goes wrong.
+     */
+    Container create(final String name, final String image) throws IOException;
+
+    /**
+     * Create a container.
+     * @param name Container's name.
+     * @param container Json config as specified in the API's docs.
+     * @return Created Container.
+     * @throws IOException If something goes wrong.
+     */
+    Container create(
+        final String name, final JsonObject container
+    ) throws IOException;
+
+    /**
+     * Create a container with a random name.
+     * @param container Json config as specified in the API's docs.
+     * @return Created Container.
+     * @throws IOException If something goes wrong.
+     */
+    Container create(final JsonObject container) throws IOException;
 }
