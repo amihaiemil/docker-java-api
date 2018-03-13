@@ -59,19 +59,16 @@ public final class LocalDocker extends RtDocker {
      * @param version API version (e.g. v1.30).
      */
     public LocalDocker(final File unixSocket, final String version){
-        this(
-            new UnixHttpClient(unixSocket),
-            URI.create("unix://localhost:80/" + version)
-        );
+        this(new UnixHttpClient(unixSocket), version);
     }
 
     /**
      * Local Docker engine.
      * @param client The http client to use.
-     * @param baseUri Base URI.
+     * @param version API version (e.g. v1.30).
      */
-    LocalDocker(final HttpClient client, final URI baseUri) {
-        super(client, baseUri);
+    LocalDocker(final HttpClient client, final String version) {
+        super(client, URI.create("unix://localhost:80/" + version));
     }
 
 }
