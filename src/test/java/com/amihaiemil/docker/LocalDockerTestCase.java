@@ -36,10 +36,6 @@ import java.io.File;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #39:1h Implement a unix socket server so we can also unit
- *  test the calls made with UnixHttpClient. The user should be able
- *  to specify what response it expected with each request to a certain
- *  path.
  */
 public final class LocalDockerTestCase {
 

@@ -60,7 +60,7 @@ public interface Docker {
      * Entry point for the Networks API.
      * @return Networks.
      */
-    Networks networs();
+    Networks networks();
 
     /**
      * Entry point for the Volumes API.

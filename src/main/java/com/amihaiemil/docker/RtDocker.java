@@ -81,7 +81,7 @@ abstract class RtDocker implements Docker {
     }
 
     @Override
-    public final Networks networs() {
+    public final Networks networks() {
         return null;
     }
 
