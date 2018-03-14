@@ -39,6 +39,8 @@ import org.junit.Test;
  * Tests for {@link AssertRequest}.
  *
  * @author George Aristy (george.aristy@gmail.com)
+ * @version $Id$
+ * @since 0.0.1
  */
 public final class AssertRequestTestCase {
     /**

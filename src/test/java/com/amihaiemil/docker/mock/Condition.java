@@ -44,7 +44,7 @@ public final class Condition {
     /**
      * The test that the http request must satisfy.
      */
-    private final Predicate<HttpRequest> test;
+    private final Predicate<HttpRequest> predicate;
 
     /**
      * Ctor.
@@ -54,7 +54,7 @@ public final class Condition {
      */
     public Condition(final String msg, final Predicate<HttpRequest> test) {
         this.msg = msg;
-        this.test = test;
+        this.predicate = test;
     }
 
     /**
@@ -64,7 +64,7 @@ public final class Condition {
      * @throws AssertionError if the request does not satisfy this condition
      */
     public void test(final HttpRequest request) {
-        if (!this.test.test(request)) {
+        if (!this.predicate.test(request)) {
             Assert.fail(this.msg);
         }
     }
