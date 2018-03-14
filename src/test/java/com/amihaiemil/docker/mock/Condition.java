@@ -27,6 +27,7 @@ package com.amihaiemil.docker.mock;
 
 import java.util.function.Predicate;
 import org.apache.http.HttpRequest;
+import org.junit.Assert;
 
 /**
  * Condition that an {@link HttpRequest} must satisfy.
@@ -57,20 +58,14 @@ public final class Condition {
     }
 
     /**
-     * The failure message.
+     * Tests the request.
      * 
-     * @return The failure message.
+     * @param request The request to test.
+     * @throws AssertionError if the request does not satisfy this condition
      */
-    public String msg() {
-        return this.msg;
-    }
-
-    /**
-     * The test for the http request.
-     * 
-     * @return The test for the http request.
-     */
-    public Predicate<HttpRequest> test() {
-        return this.test;
+    public void test(final HttpRequest request) {
+        if (!this.test.test(request)) {
+            Assert.fail(this.msg);
+        }
     }
 }

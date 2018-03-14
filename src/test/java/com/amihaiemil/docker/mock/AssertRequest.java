@@ -152,9 +152,7 @@ public final class AssertRequest implements HttpClient {
      */
     private void check(final HttpRequest request) {
         this.conditions.forEach(cond -> {
-            if (!cond.test().test(request)) {
-                Assert.fail(cond.msg());
-            }
+            cond.test(request);
         });
     }
 }
