@@ -25,14 +25,175 @@
  */
 package com.amihaiemil.docker;
 
+import com.amihaiemil.docker.mock.AssertRequest;
+import com.amihaiemil.docker.mock.Condition;
+import com.amihaiemil.docker.mock.PayloadOf;
+import com.amihaiemil.docker.mock.Response;
+import java.io.IOException;
+import java.net.URI;
+import org.apache.http.HttpStatus;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Ignore;
+import org.junit.Test;
+
 /**
  * Unit tests for RtContainers.
  * @author Mihai Andronache (amihaiemil@gmail.com)
+ * @see <a href="https://docs.docker.com/engine/api/v1.30/#operation/ContainerCreate">Docker ContainerCreate API</a>
  * @version $Id$
  * @since 0.0.1
- * @todo #26:30min Write unit tests for all the methods of RtContainers.
- *  AssertRequest should be passed in the ctor, with the right expected
- *  response and predicates.
+ * @checkstyle MethodName (500 lines)
+ * @todo #47:30min Implement tests on the rest of the methods of RtContainers.
+ *  Currently only testing the create(String name) method.
+ * @todo #47:30min Impediment: once #45 is done, unignore the following tests
+ *  and refactor accordingly if needed: ioErrorIfResponseIs400,
+ *  ioErrorIfResponseIs404, ioErrorIfResponseIs406, ioErrorIfResponseIs409,
+ *  ioErrorIfResponseIs500.
  */
 public final class RtContainersTestCase {
+    /**
+     * The request should be welformed.
+     * 
+     * @throws Exception unexpected
+     */
+    @Test
+    public void welformedRequestForCreateContainerFromImage() throws Exception {
+        new RtContainers(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_CREATED, "{ \"Id\": \"df2419f4\" }"
+                ),
+                new Condition(
+                    "The 'Content-Type' header must be set.",
+                    req -> req.getHeaders("Content-Type").length > 0
+                ),
+                new Condition(
+                    "Content-Type must be 'application/json'.",
+                    // @checkstyle LineLength (1 line)
+                    req -> "application/json".equals(req.getHeaders("Content-Type")[0].getValue())
+                ),
+                new Condition(
+                    "Resource path must be /containers/create",
+                    // @checkstyle LineLength (1 line)
+                    req -> req.getRequestLine().getUri().endsWith("/containers/create")
+                ),
+                new Condition(
+                    "The 'Image' attribute must be set in the payload.",
+                    // @checkstyle LineLength (1 line)
+                    req -> "some_image".equals(new PayloadOf(req).getString("Image"))
+                )
+            ), URI.create("http://localhost/test")
+        ).create("some_image");
+    }
+
+    /**
+     * Returns a container if the service call is successful.
+     * 
+     * @throws Exception unexpected
+     */
+    @Test
+    public void returnsContainerIfCallIsSuccessful() throws Exception {
+        MatcherAssert.assertThat(
+            new RtContainers(
+                new AssertRequest(
+                    new Response(
+                        HttpStatus.SC_CREATED,
+                        "{ \"Id\": \"df2419f4\" }"
+                    )
+                ), URI.create("http://localhost/test")
+            ).create("some_image"),
+            Matchers.notNullValue()
+        );
+    }
+
+    /**
+     * Must fail if docker responds with error code 400.
+     * 
+     * @throws IOException due to code 400
+     */
+    @Ignore
+    @Test(expected = IOException.class)
+    public void ioErrorIfResponseIs400() throws IOException {
+        new RtContainers(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_BAD_REQUEST,
+                    ""
+                )
+            ), URI.create("http://localhost/test")
+        ).create("some_image");
+    }
+
+    /**
+     * Must fail if docker responds with error code 404.
+     * 
+     * @throws IOException due to code 404
+     */
+    @Ignore
+    @Test(expected = IOException.class)
+    public void ioErrorIfResponseIs404() throws IOException {
+        new RtContainers(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NOT_FOUND,
+                    ""
+                )
+            ), URI.create("http://localhost/test")
+        ).create("some_image");
+    }
+
+    /**
+     * Must fail if docker responds with error code 406.
+     * 
+     * @throws IOException due to code 406
+     */
+    @Ignore
+    @Test(expected = IOException.class)
+    public void ioErrorIfResponseIs406() throws IOException {
+        new RtContainers(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NOT_ACCEPTABLE,
+                    ""
+                )
+            ), URI.create("http://localhost/test")
+        ).create("some_image");
+    }
+
+    /**
+     * Must fail if docker responds with error code 409.
+     * 
+     * @throws IOException due to code 409
+     */
+    @Ignore
+    @Test(expected = IOException.class)
+    public void ioErrorIfResponseIs409() throws IOException {
+        new RtContainers(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_CONFLICT,
+                    ""
+                )
+            ), URI.create("http://localhost/test")
+        ).create("some_image");
+    }
+
+    /**
+     * Must fail if docker responds with error code 500.
+     * 
+     * @throws IOException due to code 500
+     */
+    @Ignore
+    @Test(expected = IOException.class)
+    public void ioErrorIfResponseIs500() throws IOException {
+        new RtContainers(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR,
+                    ""
+                )
+            ), URI.create("http://localhost/test")
+        ).create("some_image");
+    }
 }
