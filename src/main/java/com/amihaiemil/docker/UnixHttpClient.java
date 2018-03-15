@@ -37,13 +37,14 @@ import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.function.Supplier;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
 /**
  * An HttpClient which works over a UnixSocket.
@@ -53,6 +54,8 @@ import java.net.Socket;
  * @since 0.0.1
  * @checkstyle ParameterNumber (150 lines)
  * @checkstyle AnonInnerLength (150 lines)
+ * @todo #44:30min Connection pooling is currently hardcoded at 10 connections
+ *  max. Figure out how to make this configurable.
  */
 final class UnixHttpClient implements HttpClient {
 
@@ -66,9 +69,9 @@ final class UnixHttpClient implements HttpClient {
      * @param socketFile Unix socket on disk.
      */
     UnixHttpClient(final File socketFile) {
-        this(
-            HttpClientBuilder.create().setConnectionManager(
-                new BasicHttpClientConnectionManager(
+        this(() -> {
+            final PoolingHttpClientConnectionManager pool =
+                new PoolingHttpClientConnectionManager(
                     RegistryBuilder
                         .<ConnectionSocketFactory>create()
                         .register(
@@ -98,9 +101,21 @@ final class UnixHttpClient implements HttpClient {
                                 }
                             })
                         .build()
-                )
-            ).build()
-        );
+                );
+            pool.setDefaultMaxPerRoute(10);
+            pool.setMaxTotal(10);
+            return HttpClientBuilder.create()
+                .setConnectionManager(pool)
+                .build();
+        });
+    }
+
+    /**
+     * Ctor.
+     * @param client The HttpClient.
+     */
+    UnixHttpClient(final Supplier<HttpClient> client) {
+        this(client.get());
     }
 
     /**
