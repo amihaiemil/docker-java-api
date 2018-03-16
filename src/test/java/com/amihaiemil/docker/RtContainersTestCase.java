@@ -74,9 +74,9 @@ public final class RtContainersTestCase {
                     req -> "application/json".equals(req.getHeaders("Content-Type")[0].getValue())
                 ),
                 new Condition(
-                    "Resource path must be /containers/create",
+                    "Resource path must be /create",
                     // @checkstyle LineLength (1 line)
-                    req -> req.getRequestLine().getUri().endsWith("/containers/create")
+                    req -> req.getRequestLine().getUri().endsWith("/create")
                 ),
                 new Condition(
                     "The 'Image' attribute must be set in the payload.",

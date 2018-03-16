@@ -14,7 +14,7 @@ import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 
 /**
- * Encapsulates the JSON payload of an HttpRequest as a JSON object.
+ * JSON payload of an HttpRequest.
  *
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
