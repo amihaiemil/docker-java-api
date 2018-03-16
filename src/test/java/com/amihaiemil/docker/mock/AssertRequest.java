@@ -28,7 +28,6 @@ package com.amihaiemil.docker.mock;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.function.Predicate;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -49,10 +48,6 @@ import org.junit.Assert;
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #38:30min Figure out how to let the user specify the failure message
- *  for each condition in case a test on the request fails. This way, if the
- *  request does not meet a given condition, then the test's error will show the
- *  reason why it didn't.
  */
 public final class AssertRequest implements HttpClient {
     /**
@@ -62,7 +57,7 @@ public final class AssertRequest implements HttpClient {
     /**
      * Conditions against which to validate requests.
      */
-    private final Collection<Predicate<HttpRequest>> conditions;
+    private final Collection<Condition> conditions;
 
     /**
      * Ctor.
@@ -73,7 +68,7 @@ public final class AssertRequest implements HttpClient {
      */
     @SuppressWarnings("unchecked")
     public AssertRequest(final HttpResponse response,
-        final Predicate<HttpRequest>... conditions) {
+        final Condition... conditions) {
         this.response = response;
         this.conditions = Arrays.asList(conditions);
     }
@@ -157,9 +152,7 @@ public final class AssertRequest implements HttpClient {
      */
     private void check(final HttpRequest request) {
         this.conditions.forEach(cond -> {
-            if (!cond.test(request)) {
-                Assert.fail();
-            }
+            cond.test(request);
         });
     }
 }
