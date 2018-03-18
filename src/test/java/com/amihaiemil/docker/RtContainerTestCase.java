@@ -25,12 +25,17 @@
  */
 package com.amihaiemil.docker;
 
+import com.amihaiemil.docker.mock.AssertRequest;
+import com.amihaiemil.docker.mock.Condition;
+import com.amihaiemil.docker.mock.Response;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mockito.Mockito;
-
+import javax.json.Json;
+import javax.json.JsonObject;
 import java.net.URI;
 
 /**
@@ -54,5 +59,70 @@ public final class RtContainerTestCase {
             container.containerId(),
             Matchers.equalTo("123id456")
         );
+    }
+
+    /**
+     * RtContainer can return info about itself.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void inspectsItself() throws Exception {
+        final Container container = new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    Json.createObjectBuilder()
+                        .add("Id", "123")
+                        .add("Image", "some/image")
+                        .add("Name", "boring_euclid")
+                        .build().toString()
+                ),
+                new Condition(
+                    "Method should be a GET",
+                    req -> req.getRequestLine().getMethod().equals("GET")
+                ),
+                new Condition(
+                    "Resource path must be /{id}/json",
+                    req -> req.getRequestLine().getUri().endsWith("/123/json")
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        );
+        final JsonObject info = container.inspect();
+        MatcherAssert.assertThat(info.keySet(), Matchers.hasSize(3));
+        MatcherAssert.assertThat(
+            info.getString("Id"), Matchers.equalTo("123")
+        );
+        MatcherAssert.assertThat(
+            info.getString("Image"), Matchers.equalTo("some/image")
+        );
+        MatcherAssert.assertThat(
+            info.getString("Name"), Matchers.equalTo("boring_euclid")
+        );
+
+    }
+
+    /**
+     * RtContainer can start with no problem.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void startsOk() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NO_CONTENT, ""
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> req.getRequestLine().getMethod().equals("POST")
+                ),
+                new Condition(
+                    "Resource path must be /{id}/start",
+                    req -> req.getRequestLine().getUri().endsWith("/123/start")
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).start();
     }
 }

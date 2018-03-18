@@ -1,6 +1,12 @@
 package com.amihaiemil.docker;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+
+import javax.json.Json;
 import javax.json.JsonObject;
 import java.io.IOException;
 import java.net.URI;
@@ -11,8 +17,8 @@ import java.net.URI;
  * @version $Id$
  * @since 0.0.1
  * @todo #26:30min This class represents a Container. It has to implement the
- *  API's methods which are acting upon a docker Container like inspect, logs,
- *  delete, start, stop etc).
+ *  API's methods which are acting upon a docker Container like logs,
+ *  delete, stop etc).
  */
 final class RtContainer implements Container {
 
@@ -38,7 +44,32 @@ final class RtContainer implements Container {
 
     @Override
     public JsonObject inspect() throws IOException {
-        return null;
+        final HttpGet inspect = new HttpGet(this.baseUri.toString() + "/json");
+        final HttpResponse response = this.client.execute(inspect);
+        final JsonObject info;
+        if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            info = Json
+                .createReader(response.getEntity().getContent()).readObject();
+        } else {
+            info = null;
+        }
+        inspect.releaseConnection();
+        return info;
+    }
+
+    @Override
+    public void start() throws IOException {
+        final HttpPost start = new HttpPost(
+            this.baseUri.toString() + "/start"
+        );
+        final HttpResponse response = this.client.execute(start);
+        final int status = response.getStatusLine().getStatusCode();
+        if(status!= HttpStatus.SC_NO_CONTENT) {
+            throw new IllegalStateException(
+                "Container#start() expected status 204, but got " + status
+            );
+        }
+        start.releaseConnection();
     }
 
     @Override

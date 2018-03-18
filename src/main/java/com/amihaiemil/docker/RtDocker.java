@@ -64,9 +64,9 @@ abstract class RtDocker implements Docker {
 
     @Override
     public final boolean ping() throws IOException {
-        final HttpResponse response = this.client.execute(
-            new HttpGet(this.baseUri.toString() + "/_ping")
-        );
+        final HttpGet ping = new HttpGet(this.baseUri.toString() + "/_ping");
+        final HttpResponse response = this.client.execute(ping);
+        ping.releaseConnection();
         return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
     }
 

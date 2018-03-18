@@ -47,6 +47,12 @@ public interface Container {
     JsonObject inspect() throws IOException;
 
     /**
+     * Start a container.
+     * @throws IOException If something goes wrong.
+     */
+    void start() throws IOException;
+
+    /**
      * This Container's id.
      * @return String id.
      */
