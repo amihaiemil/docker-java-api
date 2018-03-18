@@ -16,7 +16,7 @@ import java.net.URI;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #26:30min This class represents a Container. It has to implement the
+ * @todo #46:30min This class represents a Container. It has to implement the
  *  API's methods which are acting upon a docker Container like logs,
  *  delete, stop etc).
  */
