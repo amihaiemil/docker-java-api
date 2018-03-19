@@ -19,6 +19,9 @@ import java.net.URI;
  * @todo #46:30min This class represents a Container. It has to implement the
  *  API's methods which are acting upon a docker Container like logs,
  *  delete, stop etc).
+ * @todo #46:30min Once we have the CI environment properly setup with a Docker
+ *  instance, write integration tests for this class as well
+ *  (RtContainerITCase).
  */
 final class RtContainer implements Container {
 
@@ -64,7 +67,7 @@ final class RtContainer implements Container {
         );
         final HttpResponse response = this.client.execute(start);
         final int status = response.getStatusLine().getStatusCode();
-        if(status!= HttpStatus.SC_NO_CONTENT) {
+        if(status != HttpStatus.SC_NO_CONTENT) {
             throw new IllegalStateException(
                 "Container#start() expected status 204, but got " + status
             );

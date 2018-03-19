@@ -99,7 +99,30 @@ public final class RtContainerTestCase {
         MatcherAssert.assertThat(
             info.getString("Name"), Matchers.equalTo("boring_euclid")
         );
+    }
 
+    /**
+     * RtContainer.inspect() returns null because the HTTP Response's status
+     * is not 200 OK.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void inspectsNotFound() throws Exception {
+        final Container container = new RtContainer(
+            new AssertRequest(
+                new Response(HttpStatus.SC_NOT_FOUND, ""),
+                new Condition(
+                    "Method should be a GET",
+                    req -> req.getRequestLine().getMethod().equals("GET")
+                ),
+                new Condition(
+                    "Resource path must be /{id}/json",
+                    req -> req.getRequestLine().getUri().endsWith("/123/json")
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        );
+        MatcherAssert.assertThat(container.inspect(), Matchers.nullValue());
     }
 
     /**
@@ -112,6 +135,30 @@ public final class RtContainerTestCase {
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NO_CONTENT, ""
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> req.getRequestLine().getMethod().equals("POST")
+                ),
+                new Condition(
+                    "Resource path must be /{id}/start",
+                    req -> req.getRequestLine().getUri().endsWith("/123/start")
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).start();
+    }
+
+    /**
+     * RtContainer throws ISE if it cannot start.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = IllegalStateException.class)
+    public void startsWithServerError() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
                 ),
                 new Condition(
                     "Method should be a POST",
