@@ -50,8 +50,6 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
  * @since 0.0.1
  * @checkstyle ParameterNumber (150 lines)
  * @checkstyle AnonInnerLength (150 lines)
- * @todo #44:30min Connection pooling is currently hardcoded at 10 connections
- *  max. Figure out how to make this configurable.
  */
 final class UnixHttpClient implements HttpClient {
 
