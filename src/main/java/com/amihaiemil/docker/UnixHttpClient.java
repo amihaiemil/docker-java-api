@@ -25,8 +25,6 @@
  */
 package com.amihaiemil.docker;
 
-import jnr.unixsocket.UnixSocketAddress;
-import jnr.unixsocket.UnixSocketChannel;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -41,8 +39,6 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
 import java.io.File;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.function.Supplier;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
@@ -74,32 +70,7 @@ final class UnixHttpClient implements HttpClient {
                 new PoolingHttpClientConnectionManager(
                     RegistryBuilder
                         .<ConnectionSocketFactory>create()
-                        .register(
-                            "unix",
-                            new ConnectionSocketFactory() {
-                                @Override
-                                public Socket createSocket(
-                                    final HttpContext httpContext
-                                ) throws IOException {
-                                    return UnixSocketChannel.open().socket();
-                                }
-
-                                @Override
-                                public Socket connectSocket(
-                                    final int connectionTimeout,
-                                    final Socket socket,
-                                    final HttpHost host,
-                                    final InetSocketAddress remoteAddress,
-                                    final InetSocketAddress localAddress,
-                                    final HttpContext context
-                                ) throws IOException {
-                                    socket.setSoTimeout(connectionTimeout);
-                                    socket.getChannel().connect(
-                                        new UnixSocketAddress(socketFile)
-                                    );
-                                    return socket;
-                                }
-                            })
+                        .register("unix", new UnixSocketFactory(socketFile))
                         .build()
                 );
             pool.setDefaultMaxPerRoute(10);
