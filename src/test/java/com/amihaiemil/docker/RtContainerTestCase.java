@@ -110,15 +110,7 @@ public final class RtContainerTestCase {
     public void inspectsNotFound() throws Exception {
         new RtContainer(
             new AssertRequest(
-                new Response(HttpStatus.SC_NOT_FOUND, ""),
-                new Condition(
-                    "Method should be a GET",
-                    req -> req.getRequestLine().getMethod().equals("GET")
-                ),
-                new Condition(
-                    "Resource path must be /{id}/json",
-                    req -> req.getRequestLine().getUri().endsWith("/123/json")
-                )
+                new Response(HttpStatus.SC_NOT_FOUND, "")
             ),
             URI.create("http://localhost:80/1.30/containers/123")
         ).inspect();
@@ -158,14 +150,6 @@ public final class RtContainerTestCase {
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
-                ),
-                new Condition(
-                    "Method should be a POST",
-                    req -> req.getRequestLine().getMethod().equals("POST")
-                ),
-                new Condition(
-                    "Resource path must be /{id}/start",
-                    req -> req.getRequestLine().getUri().endsWith("/123/start")
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -182,14 +166,6 @@ public final class RtContainerTestCase {
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NOT_FOUND, ""
-                ),
-                new Condition(
-                    "Method should be a POST",
-                    req -> req.getRequestLine().getMethod().equals("POST")
-                ),
-                new Condition(
-                    "Resource path must be /{id}/start",
-                    req -> req.getRequestLine().getUri().endsWith("/123/start")
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -206,14 +182,6 @@ public final class RtContainerTestCase {
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NOT_MODIFIED, ""
-                ),
-                new Condition(
-                "Method should be a POST",
-                    req -> req.getRequestLine().getMethod().equals("POST")
-                ),
-                new Condition(
-                    "Resource path must be /{id}/start",
-                    req -> req.getRequestLine().getUri().endsWith("/123/start")
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
