@@ -102,13 +102,13 @@ public final class RtContainerTestCase {
     }
 
     /**
-     * RtContainer.inspect() returns null because the HTTP Response's status
+     * RtContainer.inspect() throws ISE because the HTTP Response's status
      * is not 200 OK.
      * @throws Exception If something goes wrong.
      */
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void inspectsNotFound() throws Exception {
-        final Container container = new RtContainer(
+        new RtContainer(
             new AssertRequest(
                 new Response(HttpStatus.SC_NOT_FOUND, ""),
                 new Condition(
@@ -121,8 +121,7 @@ public final class RtContainerTestCase {
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
-        );
-        MatcherAssert.assertThat(container.inspect(), Matchers.nullValue());
+        ).inspect();
     }
 
     /**
@@ -150,7 +149,7 @@ public final class RtContainerTestCase {
     }
 
     /**
-     * RtContainer throws ISE if it cannot start.
+     * RtContainer throws ISE if it receives server error on start.
      * @throws Exception If something goes wrong.
      */
     @Test(expected = IllegalStateException.class)
@@ -162,6 +161,54 @@ public final class RtContainerTestCase {
                 ),
                 new Condition(
                     "Method should be a POST",
+                    req -> req.getRequestLine().getMethod().equals("POST")
+                ),
+                new Condition(
+                    "Resource path must be /{id}/start",
+                    req -> req.getRequestLine().getUri().endsWith("/123/start")
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).start();
+    }
+
+    /**
+     * RtContainer throws ISE if it receives "Not Found" on start.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = IllegalStateException.class)
+    public void startsWithNotFound() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NOT_FOUND, ""
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> req.getRequestLine().getMethod().equals("POST")
+                ),
+                new Condition(
+                    "Resource path must be /{id}/start",
+                    req -> req.getRequestLine().getUri().endsWith("/123/start")
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).start();
+    }
+
+    /**
+     * RtContainer throws ISE if it receives "Not Modified" on start.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = IllegalStateException.class)
+    public void startsWithNotModified() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NOT_MODIFIED, ""
+                ),
+                new Condition(
+                "Method should be a POST",
                     req -> req.getRequestLine().getMethod().equals("POST")
                 ),
                 new Condition(
