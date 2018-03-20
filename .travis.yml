@@ -1,7 +1,10 @@
+sudo: required
+services:
+  - docker
 language: java
 jdk:
   - oraclejdk8
   - openjdk8
 script:
   - set -e
-  - mvn clean install -Pcheckstyle jacoco:report coveralls:report
+  - mvn clean install -Pcheckstyle,itcases jacoco:report coveralls:report
