@@ -53,12 +53,12 @@ import org.junit.Test;
  */
 public final class RtContainersTestCase {
     /**
-     * The request should be welformed.
-     * 
-     * @throws Exception unexpected
+     * The request should be well-formed.
+     * @throws Exception If something goes wrong.
      */
     @Test
-    public void welformedRequestForCreateContainerFromImage() throws Exception {
+    public void wellformedRequestForCreateContainerFromImage()
+        throws Exception {
         new RtContainers(
             new AssertRequest(
                 new Response(
@@ -89,8 +89,7 @@ public final class RtContainersTestCase {
 
     /**
      * Returns a container if the service call is successful.
-     * 
-     * @throws Exception unexpected
+     * @throws Exception If something goes wrong.
      */
     @Test
     public void returnsContainerIfCallIsSuccessful() throws Exception {
@@ -109,7 +108,6 @@ public final class RtContainersTestCase {
 
     /**
      * Must fail if docker responds with error code 400.
-     * 
      * @throws IOException due to code 400
      */
     @Ignore
@@ -127,7 +125,6 @@ public final class RtContainersTestCase {
 
     /**
      * Must fail if docker responds with error code 404.
-     * 
      * @throws IOException due to code 404
      */
     @Ignore
@@ -145,7 +142,6 @@ public final class RtContainersTestCase {
 
     /**
      * Must fail if docker responds with error code 406.
-     * 
      * @throws IOException due to code 406
      */
     @Ignore
@@ -163,7 +159,6 @@ public final class RtContainersTestCase {
 
     /**
      * Must fail if docker responds with error code 409.
-     * 
      * @throws IOException due to code 409
      */
     @Ignore
@@ -181,7 +176,6 @@ public final class RtContainersTestCase {
 
     /**
      * Must fail if docker responds with error code 500.
-     * 
      * @throws IOException due to code 500
      */
     @Ignore
@@ -200,12 +194,11 @@ public final class RtContainersTestCase {
     /**
      * Test for
      * {@link RtContainers#create(String, String)}: The request URI should be
-     * welformed and include the 'name' query param.
-     * 
-     * @throws Exception unexpected
+     * well-formed and include the 'name' query param.
+     * @throws Exception If something goes wrong.
      */
     @Test
-    public void welformedUriForCreateNameImage() throws Exception {
+    public void wellformedUriForCreateNameImage() throws Exception {
         new RtContainers(
             new AssertRequest(
                 new Response(
@@ -222,12 +215,11 @@ public final class RtContainersTestCase {
 
     /**
      * Test for {@link RtContainers#create(JsonObject)}: request URI must be
-     * welformed and payload must include the input JSON.
-     * 
-     * @throws Exception unexpected
+     * well-formed and payload must include the input JSON.
+     * @throws Exception If something goes wrong.
      */
     @Test
-    public void welformedUriAndPayloadForCreateJson() throws Exception {
+    public void wellformedUriAndPayloadForCreateJson() throws Exception {
         final JsonObject json = Json.createObjectBuilder()
             .add("Image", "ubuntu")
             .add("Entrypoint", "script.sh")
@@ -258,12 +250,11 @@ public final class RtContainersTestCase {
 
     /**
      * Test for {@link RtContainers#create(String, JsonObject)}: request URI
-     * must be  welformed and payload must include the input JSON.
-     * 
-     * @throws Exception unexpected
+     * must be  well-formed and payload must include the input JSON.
+     * @throws Exception If something goes wrong.
      */
     @Test
-    public void welformedUriAndPayloadForCreateNameAndJson() throws Exception {
+    public void wellformedUriAndPayloadForCreateNameAndJson() throws Exception {
         final JsonObject json = Json.createObjectBuilder()
             .add("Image", "ubuntu")
             .add("Entrypoint", "script.sh")
