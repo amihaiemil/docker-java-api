@@ -31,6 +31,8 @@ import com.amihaiemil.docker.mock.PayloadOf;
 import com.amihaiemil.docker.mock.Response;
 import java.io.IOException;
 import java.net.URI;
+import javax.json.Json;
+import javax.json.JsonObject;
 import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -44,8 +46,6 @@ import org.junit.Test;
  * @version $Id$
  * @since 0.0.1
  * @checkstyle MethodName (500 lines)
- * @todo #47:30min Implement tests on the rest of the methods of RtContainers.
- *  Currently only testing the create(String name) method.
  * @todo #47:30min Impediment: once #45 is done, unignore the following tests
  *  and refactor accordingly if needed: ioErrorIfResponseIs400,
  *  ioErrorIfResponseIs404, ioErrorIfResponseIs406, ioErrorIfResponseIs409,
@@ -53,12 +53,12 @@ import org.junit.Test;
  */
 public final class RtContainersTestCase {
     /**
-     * The request should be welformed.
-     * 
-     * @throws Exception unexpected
+     * The request should be well-formed.
+     * @throws Exception If something goes wrong.
      */
     @Test
-    public void welformedRequestForCreateContainerFromImage() throws Exception {
+    public void wellformedRequestForCreateContainerFromImage()
+        throws Exception {
         new RtContainers(
             new AssertRequest(
                 new Response(
@@ -89,8 +89,7 @@ public final class RtContainersTestCase {
 
     /**
      * Returns a container if the service call is successful.
-     * 
-     * @throws Exception unexpected
+     * @throws Exception If something goes wrong.
      */
     @Test
     public void returnsContainerIfCallIsSuccessful() throws Exception {
@@ -109,7 +108,6 @@ public final class RtContainersTestCase {
 
     /**
      * Must fail if docker responds with error code 400.
-     * 
      * @throws IOException due to code 400
      */
     @Ignore
@@ -127,7 +125,6 @@ public final class RtContainersTestCase {
 
     /**
      * Must fail if docker responds with error code 404.
-     * 
      * @throws IOException due to code 404
      */
     @Ignore
@@ -145,7 +142,6 @@ public final class RtContainersTestCase {
 
     /**
      * Must fail if docker responds with error code 406.
-     * 
      * @throws IOException due to code 406
      */
     @Ignore
@@ -163,7 +159,6 @@ public final class RtContainersTestCase {
 
     /**
      * Must fail if docker responds with error code 409.
-     * 
      * @throws IOException due to code 409
      */
     @Ignore
@@ -181,7 +176,6 @@ public final class RtContainersTestCase {
 
     /**
      * Must fail if docker responds with error code 500.
-     * 
      * @throws IOException due to code 500
      */
     @Ignore
@@ -195,5 +189,98 @@ public final class RtContainersTestCase {
                 )
             ), URI.create("http://localhost/test")
         ).create("some_image");
+    }
+
+    /**
+     * Test for
+     * {@link RtContainers#create(String, String)}: The request URI should be
+     * well-formed and include the 'name' query param.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void wellformedUriForCreateNameImage() throws Exception {
+        new RtContainers(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_CREATED, "{ \"Id\": \"df2419f4\" }"
+                ),
+                new Condition(
+                    "Resource path must be /create?name=some_name",
+                    // @checkstyle LineLength (1 line)
+                    req -> req.getRequestLine().getUri().endsWith("/create?name=some_name")
+                )
+            ), URI.create("http://localhost/test")
+        ).create("some_name", "some_image");
+    }
+
+    /**
+     * Test for {@link RtContainers#create(JsonObject)}: request URI must be
+     * well-formed and payload must include the input JSON.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void wellformedUriAndPayloadForCreateJson() throws Exception {
+        final JsonObject json = Json.createObjectBuilder()
+            .add("Image", "ubuntu")
+            .add("Entrypoint", "script.sh")
+            .add("StopSignal", "SIGTERM")
+            .build();
+        new RtContainers(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_CREATED, "{ \"Id\": \"df2419f4\" }"
+                ),
+                new Condition(
+                    "Resource path must be /create",
+                    req -> req.getRequestLine().getUri().endsWith("/create")
+                ),
+                new Condition(
+                    "Payload must include the input JSON attributes.",
+                    req -> {
+                        final JsonObject payload = new PayloadOf(req);
+                        // @checkstyle LineLength (3 lines)
+                        return payload.getString("Image").equals(json.getString("Image"))
+                            && payload.getString("Entrypoint").equals(json.getString("Entrypoint"))
+                            && payload.getString("StopSignal").equals(json.getString("StopSignal"));
+                    }
+                )
+            ), URI.create("http://localhost/test")
+        ).create(json);
+    }
+
+    /**
+     * Test for {@link RtContainers#create(String, JsonObject)}: request URI
+     * must be  well-formed and payload must include the input JSON.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void wellformedUriAndPayloadForCreateNameAndJson() throws Exception {
+        final JsonObject json = Json.createObjectBuilder()
+            .add("Image", "ubuntu")
+            .add("Entrypoint", "script.sh")
+            .add("StopSignal", "SIGTERM")
+            .build();
+        new RtContainers(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_CREATED, "{ \"Id\": \"df2419f4\" }"
+                ),
+                new Condition(
+                    "Resource path must be /create?name=image_name",
+                    // @checkstyle LineLength (1 line)
+                    req -> req.getRequestLine().getUri().endsWith("/create?name=image_name")
+                ),
+                new Condition(
+                    "Payload must include the input JSON attributes.",
+                    req -> {
+                        final JsonObject payload = new PayloadOf(req);
+                        // @checkstyle LineLength (3 lines)
+                        return payload.getString("Image").equals(json.getString("Image"))
+                            && payload.getString("Entrypoint").equals(json.getString("Entrypoint"))
+                            && payload.getString("StopSignal").equals(json.getString("StopSignal"));
+                    }
+                )
+            ), URI.create("http://localhost/test")
+        ).create("image_name", json);
     }
 }
