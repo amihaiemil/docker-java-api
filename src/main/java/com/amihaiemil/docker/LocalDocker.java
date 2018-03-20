@@ -36,6 +36,10 @@ import org.apache.http.client.HttpClient;
  * <pre>
  *     final Docker docker = new LocalDocker("unix:///var/run/dicker.sock");
  * </pre>
+ * 
+ * This implementation manages an internal pool of 10 http connections. Users
+ * who wish to alter this behaviour may provide their own {@link HttpClient}
+ * via {@link #LocalDocker(HttpClient, String)}.
  *
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
@@ -64,10 +68,13 @@ public final class LocalDocker extends RtDocker {
 
     /**
      * Local Docker engine.
+     * <p>
+     * Users may supply their own {@link HttpClient} that must register a
+     * {@link UnixSocketFactory}.
      * @param client The http client to use.
      * @param version API version (e.g. v1.30).
      */
-    LocalDocker(final HttpClient client, final String version) {
+    public LocalDocker(final HttpClient client, final String version) {
         super(client, URI.create("unix://localhost:80/" + version));
     }
 
