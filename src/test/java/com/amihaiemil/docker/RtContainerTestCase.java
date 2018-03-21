@@ -106,7 +106,7 @@ public final class RtContainerTestCase {
      * is not 200 OK.
      * @throws Exception If something goes wrong.
      */
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = UnexpectedResponseException.class)
     public void inspectsNotFound() throws Exception {
         new RtContainer(
             new AssertRequest(
@@ -144,7 +144,7 @@ public final class RtContainerTestCase {
      * RtContainer throws ISE if it receives server error on start.
      * @throws Exception If something goes wrong.
      */
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = UnexpectedResponseException.class)
     public void startsWithServerError() throws Exception {
         new RtContainer(
             new AssertRequest(
@@ -160,7 +160,7 @@ public final class RtContainerTestCase {
      * RtContainer throws ISE if it receives "Not Found" on start.
      * @throws Exception If something goes wrong.
      */
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = UnexpectedResponseException.class)
     public void startsWithNotFound() throws Exception {
         new RtContainer(
             new AssertRequest(
@@ -176,7 +176,7 @@ public final class RtContainerTestCase {
      * RtContainer throws ISE if it receives "Not Modified" on start.
      * @throws Exception If something goes wrong.
      */
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = UnexpectedResponseException.class)
     public void startsWithNotModified() throws Exception {
         new RtContainer(
             new AssertRequest(

@@ -55,8 +55,8 @@ final class RtContainer implements Container {
             info = Json
                 .createReader(response.getEntity().getContent()).readObject();
         } else {
-            throw new IllegalStateException(
-                "Container#inspect() expected status 200, but got " + status
+            throw new UnexpectedResponseException(
+                "Containers#inspect()", status, HttpStatus.SC_OK
             );
         }
         inspect.releaseConnection();
@@ -71,8 +71,8 @@ final class RtContainer implements Container {
         final HttpResponse response = this.client.execute(start);
         final int status = response.getStatusLine().getStatusCode();
         if(status != HttpStatus.SC_NO_CONTENT) {
-            throw new IllegalStateException(
-                "Container#start() expected status 204, but got " + status
+            throw new UnexpectedResponseException(
+                "Containers#start()", status, HttpStatus.SC_NO_CONTENT
             );
         }
         start.releaseConnection();
