@@ -26,9 +26,9 @@
 package com.amihaiemil.docker;
 
 /**
- * Runtime exception thrown in case the response is not part of the happy flow
- * For instance, when Container#inspect() gets a different response status than
- * 200 OK.
+ * Signals that the response received from the docker API was not expected.
+ * For instance, it is thrown when Container#inspect() gets a different
+ * response status than 200 OK.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
