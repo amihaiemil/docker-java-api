@@ -118,7 +118,7 @@ final class RtContainers implements Containers {
             );
         }
         throw new UnexpectedResponseException(
-            "Containers#create(...)", status, HttpStatus.SC_CREATED
+            uri, status, HttpStatus.SC_CREATED
         );
     }
 

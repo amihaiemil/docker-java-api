@@ -25,71 +25,70 @@
  */
 package com.amihaiemil.docker;
 
-import javax.json.JsonObject;
+import org.apache.http.HttpStatus;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 /**
- * Signals that the response received from the docker API was not expected.
- * For instance, it is thrown when Container#inspect() gets a different
- * response status than 200 OK.
+ * Unit tests for {@link UnexpectedResponseException}.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- * @version $Id$
  * @since 0.0.1
+ * @version $Id$
  */
-public final class UnexpectedResponseException extends RuntimeException {
+public final class UnexpectedResponseExceptionTestCase {
 
     /**
-     * Called endpoint.
+     * UnexpectedResponseException can return the actual status.
      */
-    private final String endpoint;
-
-    /**
-     * Actual response status.
-     */
-    private final int actualStatus;
-
-    /**
-     * Expected response status.
-     */
-    private final int expectedStatus;
-
-    /**
-     * Ctor.
-     * @param endpoint Endpoint that was called.
-     * @param actualStatus Received status.
-     * @param expectedStatus Expected status.
-     */
-    public UnexpectedResponseException(
-        final String endpoint, final int actualStatus, final int expectedStatus
-    ) {
-        // @checkstyle LineLength (1 line)
-        super("Expected status " + expectedStatus + " but got " + actualStatus + " when calling " + endpoint);
-        this.endpoint = endpoint;
-        this.actualStatus = actualStatus;
-        this.expectedStatus = expectedStatus;
+    @Test
+    public void returnsActualStatus() {
+        MatcherAssert.assertThat(
+            new UnexpectedResponseException(
+                "/uri", HttpStatus.SC_NOT_FOUND, HttpStatus.SC_OK
+            ).actualStatus(),
+            Matchers.equalTo(HttpStatus.SC_NOT_FOUND)
+        );
     }
 
     /**
-     * Called endpoint.
-     * @return String.
+     * UnexpectedResponseException can return the expected status.
      */
-    public String endpoint() {
-        return this.endpoint;
+    @Test
+    public void returnsExpectedStatus() {
+        MatcherAssert.assertThat(
+            new UnexpectedResponseException(
+                "/uri", HttpStatus.SC_NOT_FOUND, HttpStatus.SC_OK
+            ).expectedStatus(),
+            Matchers.equalTo(HttpStatus.SC_OK)
+        );
     }
 
     /**
-     * Actual status.
-     * @return Integer HTTP status.
+     * UnexpectedResponseException can return the endpoing.
      */
-    public int actualStatus() {
-        return this.actualStatus;
+    @Test
+    public void returnsEndpoint() {
+        MatcherAssert.assertThat(
+            new UnexpectedResponseException(
+                "/uri", HttpStatus.SC_NOT_FOUND, HttpStatus.SC_OK
+            ).endpoint(),
+            Matchers.equalTo("/uri")
+        );
     }
 
     /**
-     * Expected status.
-     * @return Integer HTTP status.
+     * UnexpectedResponseException has a proper message.
      */
-    public int expectedStatus() {
-        return this.expectedStatus;
+    @Test
+    public void returnsMessage() {
+        MatcherAssert.assertThat(
+            new UnexpectedResponseException(
+                "/uri", HttpStatus.SC_NOT_FOUND, HttpStatus.SC_OK
+            ).getMessage(),
+            Matchers.equalTo(
+                "Expected status 200 but got 404 when calling /uri"
+            )
+        );
     }
-
 }

@@ -56,7 +56,7 @@ final class RtContainer implements Container {
                 .createReader(response.getEntity().getContent()).readObject();
         } else {
             throw new UnexpectedResponseException(
-                "Containers#inspect()", status, HttpStatus.SC_OK
+                inspect.getURI().toString(), status, HttpStatus.SC_OK
             );
         }
         inspect.releaseConnection();
@@ -72,7 +72,7 @@ final class RtContainer implements Container {
         final int status = response.getStatusLine().getStatusCode();
         if(status != HttpStatus.SC_NO_CONTENT) {
             throw new UnexpectedResponseException(
-                "Containers#start()", status, HttpStatus.SC_NO_CONTENT
+                start.getURI().toString(), status, HttpStatus.SC_NO_CONTENT
             );
         }
         start.releaseConnection();
