@@ -25,8 +25,6 @@
  */
 package com.amihaiemil.docker;
 
-import javax.json.JsonObject;
-
 /**
  * Signals that the response received from the docker API was not expected.
  * For instance, it is thrown when Container#inspect() gets a different
