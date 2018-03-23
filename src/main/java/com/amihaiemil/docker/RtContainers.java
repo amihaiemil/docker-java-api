@@ -41,10 +41,6 @@ import java.net.URI;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #26:30min We should handle unexpected responses somehow, responses
- *  that are not part of the happy flow (e.g. response 500 instead of 201
- *  on create). We could implement an exception which would parse the
- *  HttpResonse and provide a meaningful, well-formatted message.
  */
 final class RtContainers implements Containers {
 
@@ -109,20 +105,21 @@ final class RtContainers implements Containers {
         post.setEntity(new StringEntity(container.toString()));
         post.setHeader(new BasicHeader("Content-Type", "application/json"));
         final HttpResponse response = this.client.execute(post);
-        final Container created;
-        if(response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
+        final int status = response.getStatusLine().getStatusCode();
+        if(status == HttpStatus.SC_CREATED) {
             final JsonObject json = Json
                 .createReader(response.getEntity().getContent()).readObject();
-            created = new RtContainer(
+            post.releaseConnection();
+            return new RtContainer(
                 this.client,
                 URI.create(
                     this.baseUri.toString() + "/" + json.getString("Id")
                 )
             );
-        } else {
-            created = null;
         }
-        return created;
+        throw new UnexpectedResponseException(
+            uri, status, HttpStatus.SC_CREATED
+        );
     }
 
 }
