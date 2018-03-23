@@ -25,73 +25,34 @@
  */
 package com.amihaiemil.docker;
 
-import org.apache.http.HttpResponse;
+import com.amihaiemil.docker.mock.AssertRequest;
+import com.amihaiemil.docker.mock.Response;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import java.io.IOException;
-import java.net.URI;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 /**
- * Restful Docker.
- * @author Mihai Andronache (amihaiemil@gmail.com)
+ * Unit tests for {@link DefaultHttpClient}.
+ * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @checkstyle MethodName (500 lines)
  */
-abstract class RtDocker implements Docker {
-
+public final class DefaultHttpClientTestCase {
     /**
-     * Apache HttpClient which sends the requests.
+     * DefaultHttpClient can execute the request and return the response.
+     * @throws Exception If an error occurs.
      */
-    private final HttpClient client;
-
-    /**
-     * Base URI.
-     */
-    private final URI baseUri;
-
-    /**
-     * Ctor.
-     * @param client Given HTTP Client.
-     * @param baseUri Base URI.
-     */
-    RtDocker(final HttpClient client, final URI baseUri) {
-        this.client = client;
-        this.baseUri = baseUri;
-    }
-
-    @Override
-    public final boolean ping() throws IOException {
-        final HttpGet ping = new HttpGet(this.baseUri.toString() + "/_ping");
-        final HttpResponse response = this.client.execute(ping);
-        ping.releaseConnection();
-        return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
-    }
-
-    @Override
-    public final Containers containers() {
-        return new RtContainers(
-            this.client, URI.create(this.baseUri.toString() + "/containers")
+    @Test
+    public void executesRequestAndReturnsResponse() throws Exception {
+        final Response response = new Response(HttpStatus.SC_OK, "");
+        MatcherAssert.assertThat(
+            new DefaultHttpClient(
+                new AssertRequest(response)
+            ).execute(new HttpGet()),
+            Matchers.is(response)
         );
-    }
-
-    @Override
-    public final Images images() {
-        return null;
-    }
-
-    @Override
-    public final Networks networks() {
-        return null;
-    }
-
-    @Override
-    public final Volumes volumes() {
-        return null;
-    }
-
-    @Override
-    public final Exec exec() {
-        return null;
     }
 }

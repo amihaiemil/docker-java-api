@@ -25,73 +25,55 @@
  */
 package com.amihaiemil.docker;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import java.io.IOException;
+import com.amihaiemil.docker.mock.AssertRequest;
+import com.amihaiemil.docker.mock.Response;
 import java.net.URI;
+import org.apache.http.HttpStatus;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 /**
- * Restful Docker.
- * @author Mihai Andronache (amihaiemil@gmail.com)
+ * Unit tests for {@link RemoteDocker}.
+ * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @checkstyle MethodName (500 lines)
+ * @todo #23:30min RemoteDocker: implement the rest of the test cases
+ *  (including integration tests) for RemoteDocker.
  */
-abstract class RtDocker implements Docker {
-
+public final class RemoteDockerTestCase {
     /**
-     * Apache HttpClient which sends the requests.
+     * Ping must be TRUE if response is OK.
+     * @throws Exception If an error occurs.
      */
-    private final HttpClient client;
-
-    /**
-     * Base URI.
-     */
-    private final URI baseUri;
-
-    /**
-     * Ctor.
-     * @param client Given HTTP Client.
-     * @param baseUri Base URI.
-     */
-    RtDocker(final HttpClient client, final URI baseUri) {
-        this.client = client;
-        this.baseUri = baseUri;
-    }
-
-    @Override
-    public final boolean ping() throws IOException {
-        final HttpGet ping = new HttpGet(this.baseUri.toString() + "/_ping");
-        final HttpResponse response = this.client.execute(ping);
-        ping.releaseConnection();
-        return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
-    }
-
-    @Override
-    public final Containers containers() {
-        return new RtContainers(
-            this.client, URI.create(this.baseUri.toString() + "/containers")
+    @Test
+    public void pingTrueIfResponseIsOk() throws Exception {
+        MatcherAssert.assertThat(
+            new RemoteDocker(
+                new AssertRequest(
+                    new Response(HttpStatus.SC_OK, "")
+                ),
+                URI.create("http://remotedocker")
+            ).ping(),
+            Matchers.is(true)
         );
     }
 
-    @Override
-    public final Images images() {
-        return null;
-    }
-
-    @Override
-    public final Networks networks() {
-        return null;
-    }
-
-    @Override
-    public final Volumes volumes() {
-        return null;
-    }
-
-    @Override
-    public final Exec exec() {
-        return null;
+    /**
+     * Ping must be False if response is not OK.
+     * @throws Exception If an error occurs.
+     */
+    @Test
+    public void pingFalseIfResponseIsNotOk() throws Exception {
+        MatcherAssert.assertThat(
+            new RemoteDocker(
+                new AssertRequest(
+                    new Response(HttpStatus.SC_NOT_FOUND, "")
+                ),
+                URI.create("http://remotedocker")
+            ).ping(),
+            Matchers.is(false)
+        );
     }
 }
