@@ -36,7 +36,6 @@ import javax.json.JsonObject;
 import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -46,10 +45,6 @@ import org.junit.Test;
  * @version $Id$
  * @since 0.0.1
  * @checkstyle MethodName (500 lines)
- * @todo #47:30min Impediment: once #45 is done, unignore the following tests
- *  and refactor accordingly if needed: ioErrorIfResponseIs400,
- *  ioErrorIfResponseIs404, ioErrorIfResponseIs406, ioErrorIfResponseIs409,
- *  ioErrorIfResponseIs500.
  */
 public final class RtContainersTestCase {
     /**
@@ -110,9 +105,8 @@ public final class RtContainersTestCase {
      * Must fail if docker responds with error code 400.
      * @throws IOException due to code 400
      */
-    @Ignore
-    @Test(expected = IOException.class)
-    public void ioErrorIfResponseIs400() throws IOException {
+    @Test(expected = UnexpectedResponseException.class)
+    public void unexpectedResponseErrorIfResponseIs400() throws IOException {
         new RtContainers(
             new AssertRequest(
                 new Response(
@@ -127,9 +121,8 @@ public final class RtContainersTestCase {
      * Must fail if docker responds with error code 404.
      * @throws IOException due to code 404
      */
-    @Ignore
-    @Test(expected = IOException.class)
-    public void ioErrorIfResponseIs404() throws IOException {
+    @Test(expected = UnexpectedResponseException.class)
+    public void unexpectedResponseErrorIfResponseIs404() throws IOException {
         new RtContainers(
             new AssertRequest(
                 new Response(
@@ -144,9 +137,8 @@ public final class RtContainersTestCase {
      * Must fail if docker responds with error code 406.
      * @throws IOException due to code 406
      */
-    @Ignore
-    @Test(expected = IOException.class)
-    public void ioErrorIfResponseIs406() throws IOException {
+    @Test(expected = UnexpectedResponseException.class)
+    public void unexpectedResponseErrorIfResponseIs406() throws IOException {
         new RtContainers(
             new AssertRequest(
                 new Response(
@@ -161,9 +153,8 @@ public final class RtContainersTestCase {
      * Must fail if docker responds with error code 409.
      * @throws IOException due to code 409
      */
-    @Ignore
-    @Test(expected = IOException.class)
-    public void ioErrorIfResponseIs409() throws IOException {
+    @Test(expected = UnexpectedResponseException.class)
+    public void unexpectedResponseErrorIfResponseIs409() throws IOException {
         new RtContainers(
             new AssertRequest(
                 new Response(
@@ -178,9 +169,8 @@ public final class RtContainersTestCase {
      * Must fail if docker responds with error code 500.
      * @throws IOException due to code 500
      */
-    @Ignore
-    @Test(expected = IOException.class)
-    public void ioErrorIfResponseIs500() throws IOException {
+    @Test(expected = UnexpectedResponseException.class)
+    public void unexpectedResponseErrorIfResponseIs500() throws IOException {
         new RtContainers(
             new AssertRequest(
                 new Response(
