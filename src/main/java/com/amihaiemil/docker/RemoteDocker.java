@@ -41,7 +41,7 @@ public final class RemoteDocker extends RtDocker {
      * @param uri Remote Docker URI.
      */
     public RemoteDocker(final URI uri) {
-        this(new DefaultHttpClient(), uri);
+        this(new SslHttpClient(), uri);
     }
 
     /**

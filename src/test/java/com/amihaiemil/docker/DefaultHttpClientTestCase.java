@@ -34,7 +34,7 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
- * Unit tests for {@link DefaultHttpClient}.
+ * Unit tests for {@link SslHttpClient}.
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
@@ -48,8 +48,7 @@ public final class DefaultHttpClientTestCase {
     @Test
     public void executesRequestAndReturnsResponse() throws Exception {
         final Response response = new Response(HttpStatus.SC_OK, "");
-        MatcherAssert.assertThat(
-            new DefaultHttpClient(
+        MatcherAssert.assertThat(new SslHttpClient(
                 new AssertRequest(response)
             ).execute(new HttpGet()),
             Matchers.is(response)

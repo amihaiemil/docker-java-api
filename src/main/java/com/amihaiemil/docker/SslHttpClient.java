@@ -45,8 +45,11 @@ import org.apache.http.protocol.HttpContext;
  * @version $Id$
  * @since 0.0.1
  * @checkstyle ParameterNumber (150 lines)
+ * @todo #23:30min Add path for certificates as a parameter and, with those
+ *  certificates, register the http/https protocols, similar to how "unix" is
+ *  registered in UnixHttpClient.
  */
-final class DefaultHttpClient implements HttpClient {
+final class SslHttpClient implements HttpClient {
     /**
      * Decorated HttpClient.
      */
@@ -55,7 +58,7 @@ final class DefaultHttpClient implements HttpClient {
     /**
      * Ctor.
      */
-    DefaultHttpClient() {
+    SslHttpClient() {
         this(
             HttpClients.custom()
                 .setMaxConnPerRoute(10)
@@ -68,7 +71,7 @@ final class DefaultHttpClient implements HttpClient {
      * Ctor.
      * @param client Decorated HttpClient.
      */
-    DefaultHttpClient(final HttpClient client) {
+    SslHttpClient(final HttpClient client) {
         this.origin = client;
     }
   
