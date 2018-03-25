@@ -25,56 +25,31 @@
  */
 package com.amihaiemil.docker;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.Test;
-
-import java.io.File;
+import java.io.IOException;
+import javax.json.JsonObject;
 
 /**
- * Unit tests for LocalDocker.
- * @author Mihai Andronache (amihaiemil@gmail.com)
+ * Docker engines can be clustered together in a swarm.
+ * <p>
+ * See the <a href="https://docs.docker.com/engine/swarm/">swarm mode</a> and
+ * <a href="https://docs.docker.com/engine/api/v1.35/#tag/Swarm">swarm API</a>
+ * documentation for more information.
+ * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @todo #3:30min Implement all of the Swarm operations. See
+ *  https://docs.docker.com/engine/api/v1.35/#tag/Swarm for reference and also
+ *  the roadmap laid out here:
+ *  https://github.com/amihaiemil/docker-java-api/issues/3#issuecomment-375821822
  */
-public final class LocalDockerTestCase {
-
+public interface Swarm {
     /**
-     * LocalDocker can be instantiated.
+     * Inspects this swarm, returning low-level information
+     * about it in Json format. It is recommended to wrap this
+     * Json into a live object, with an interface, which would animate
+     * it.
+     * @return Swarm info in Json format.
+     * @throws IOException If something goes wrong.
      */
-    @Test
-    public void canBeInstantiate() {
-        MatcherAssert.assertThat(
-            new LocalDocker(
-                new File("/var/run/docker.sock")
-            ),
-            Matchers.notNullValue()
-        );
-    }
-
-    /**
-     * LocalDocker can return the Containers.
-     */
-    @Test
-    public void getsContainers() {
-        MatcherAssert.assertThat(
-            new LocalDocker(
-                new File("/var/run/docker.sock")
-            ).containers(),
-            Matchers.notNullValue()
-        );
-    }
-
-    /**
-     * LocalDocker can return the Swarm.
-     */
-    @Test
-    public void returnsSwarm() {
-        MatcherAssert.assertThat(
-            new LocalDocker(
-                new File("/var/run/docker.sock")
-            ).swarm(),
-            Matchers.notNullValue()
-        );
-    }
+    JsonObject inspect() throws IOException;
 }
