@@ -40,7 +40,7 @@ import org.junit.Test;
  * @since 0.0.1
  * @checkstyle MethodName (500 lines)
  */
-public final class DefaultHttpClientTestCase {
+public final class SslHttpClientTestCase {
     /**
      * DefaultHttpClient can execute the request and return the response.
      * @throws Exception If an error occurs.
@@ -48,7 +48,8 @@ public final class DefaultHttpClientTestCase {
     @Test
     public void executesRequestAndReturnsResponse() throws Exception {
         final Response response = new Response(HttpStatus.SC_OK, "");
-        MatcherAssert.assertThat(new SslHttpClient(
+        MatcherAssert.assertThat(
+            new SslHttpClient(
                 new AssertRequest(response)
             ).execute(new HttpGet()),
             Matchers.is(response)
