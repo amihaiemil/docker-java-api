@@ -32,6 +32,8 @@ import java.io.IOException;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @todo #3:30min Continue implementing the rest of the Docker API (except
+ *  for Swarm, which is being handled in another ticket).
  */
 public interface Docker {
 
@@ -73,7 +75,7 @@ public interface Docker {
     Exec exec();
 
     /**
-     * Entry point fr the Swarm API.
+     * Entry point for the Swarm API.
      * @return Swarm.
      */
     Swarm swarm();
