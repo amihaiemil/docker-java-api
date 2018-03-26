@@ -25,73 +25,42 @@
  */
 package com.amihaiemil.docker;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import java.io.IOException;
 import java.net.URI;
+import org.apache.http.client.HttpClient;
 
 /**
- * Restful Docker.
- * @author Mihai Andronache (amihaiemil@gmail.com)
+ * Use this to communicate with a remote Docker API.
+ *
+ * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
  */
-abstract class RtDocker implements Docker {
+public final class RemoteDocker extends RtDocker {
+    /**
+     * Remote Docker engine.
+     * @param uri Remote Docker URI.
+     */
+    public RemoteDocker(final URI uri) {
+        this(new SslHttpClient(), uri);
+    }
 
     /**
-     * Apache HttpClient which sends the requests.
+     * Remote Docker engine.
+     * @param client The http client to use.
+     * @param uri Remote Docker URI.
      */
-    private final HttpClient client;
+    public RemoteDocker(final HttpClient client, final URI uri) {
+        this(client, uri, "v1.35");
+    }
 
     /**
-     * Base URI.
+     * Remote Docker engine.
+     * @param client The http client to use.
+     * @param uri Remote Docker URI.
+     * @param version API version (eg. v1.35).
      */
-    private final URI baseUri;
-
-    /**
-     * Ctor.
-     * @param client Given HTTP Client.
-     * @param baseUri Base URI.
-     */
-    RtDocker(final HttpClient client, final URI baseUri) {
-        this.client = client;
-        this.baseUri = baseUri;
-    }
-
-    @Override
-    public final boolean ping() throws IOException {
-        final HttpGet ping = new HttpGet(this.baseUri.toString() + "/_ping");
-        final HttpResponse response = this.client.execute(ping);
-        ping.releaseConnection();
-        return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
-    }
-
-    @Override
-    public final Containers containers() {
-        return new RtContainers(
-            this.client, URI.create(this.baseUri.toString() + "/containers")
-        );
-    }
-
-    @Override
-    public final Images images() {
-        return null;
-    }
-
-    @Override
-    public final Networks networks() {
-        return null;
-    }
-
-    @Override
-    public final Volumes volumes() {
-        return null;
-    }
-
-    @Override
-    public final Exec exec() {
-        return null;
+    public RemoteDocker(final HttpClient client, final URI uri,
+        final String version) {
+        super(client, uri);
     }
 }
