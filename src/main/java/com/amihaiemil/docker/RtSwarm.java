@@ -25,21 +25,25 @@
  */
 package com.amihaiemil.docker;
 
+import java.io.IOException;
+import java.net.URI;
+import javax.json.Json;
+import javax.json.JsonObject;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import java.io.IOException;
-import java.net.URI;
 
 /**
- * Restful Docker.
- * @author Mihai Andronache (amihaiemil@gmail.com)
+ * Swarm API.
+ * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @todo #3:30min The code for inspect() is essentially copy-pasta from
+ *  RtContainer.inspect(). Considering that there will be more "inspect"
+ *  methods down the road, we should make this code reusable somehow.
  */
-abstract class RtDocker implements Docker {
-
+final class RtSwarm implements Swarm {
     /**
      * Apache HttpClient which sends the requests.
      */
@@ -53,53 +57,32 @@ abstract class RtDocker implements Docker {
     /**
      * Ctor.
      * @param client Given HTTP Client.
-     * @param baseUri Base URI.
+     * @param baseUri Base URI, ending with /swarm.
      */
-    RtDocker(final HttpClient client, final URI baseUri) {
+    RtSwarm(final HttpClient client, final URI baseUri) {
         this.client = client;
         this.baseUri = baseUri;
     }
 
     @Override
-    public final boolean ping() throws IOException {
-        final HttpGet ping = new HttpGet(this.baseUri.toString() + "/_ping");
-        final HttpResponse response = this.client.execute(ping);
-        ping.releaseConnection();
-        return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
-    }
-
-    @Override
-    public final Containers containers() {
-        return new RtContainers(
-            this.client, URI.create(this.baseUri.toString() + "/containers")
-        );
-    }
-
-    @Override
-    public final Images images() {
-        return null;
-    }
-
-    @Override
-    public final Networks networks() {
-        return null;
-    }
-
-    @Override
-    public final Volumes volumes() {
-        return null;
-    }
-
-    @Override
-    public final Exec exec() {
-        return null;
-    }
-
-    @Override
-    public final Swarm swarm() {
-        return new RtSwarm(
-            this.client,
-            URI.create(this.baseUri.toString().concat("/swarm")) 
-        );
+    public JsonObject inspect() throws IOException {
+        final HttpGet inspect = new HttpGet(this.baseUri.toString());
+        try {
+            final HttpResponse response = this.client.execute(inspect);
+            final int status = response.getStatusLine().getStatusCode();
+            final JsonObject info;
+            if(status == HttpStatus.SC_OK) {
+                info = Json
+                    .createReader(response.getEntity().getContent())
+                    .readObject();
+            } else {
+                throw new UnexpectedResponseException(
+                    inspect.getURI().toString(), status, HttpStatus.SC_OK
+                );
+            }
+            return info;
+        } finally {
+            inspect.releaseConnection();
+        }
     }
 }
