@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/amihaiemil/docker-java-api.svg?branch=master)](https://travis-ci.org/amihaiemil/docker-java-api)
 [![Coverage Status](https://coveralls.io/repos/github/amihaiemil/docker-java-api/badge.svg?branch=master)](https://coveralls.io/github/amihaiemil/docker-java-api?branch=master)
 
+[![Donate via Zerocracy](https://www.0crat.com/contrib-badge/G6LPQQV2P.svg)](https://www.0crat.com/contrib/G6LPQQV2P)
 [![DevOps By Rultor.com](http://www.rultor.com/b/amihaiemil/docker-java-api)](http://www.rultor.com/p/amihaiemil/docker-java-api)
 [![We recommend IntelliJ IDEA](http://amihaiemil.github.io/images/intellij-idea-recommend.svg)](https://www.jetbrains.com/idea/)
 
