@@ -37,7 +37,7 @@ import javax.json.JsonObject;
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #3:30min Implement all of the Swarm operations. See
+ * @todo #70:30min Continue implementing all of the Swarm operations. See
  *  https://docs.docker.com/engine/api/v1.35/#tag/Swarm for reference and also
  *  the roadmap laid out here:
  *  https://github.com/amihaiemil/docker-java-api/issues/3#issuecomment-375821822
@@ -52,4 +52,22 @@ public interface Swarm {
      * @throws IOException If something goes wrong.
      */
     JsonObject inspect() throws IOException;
+
+    /**
+     * Initialize a new swarm.
+     * @param listenAddress Listen address used for inter-manager communication.
+     *     This can either be in the form of '192.168.1.1:4567' or 'eth0:4567'
+     *     where the port number is optional in both cases.
+     * @return The swarm's token.
+     * @throws IOException If something goes wrong.
+     */
+    String init(String listenAddress) throws IOException;
+
+    /**
+     * Initialize a new swarm by providing a full specification.
+     * @param spec Full specification for the swarm.
+     * @return The swarm's token.
+     * @throws IOException If something goes wrong.
+     */
+    String init(JsonObject spec) throws IOException;
 }
