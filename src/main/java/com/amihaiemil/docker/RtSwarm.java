@@ -32,7 +32,6 @@ import javax.json.JsonObject;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -43,9 +42,6 @@ import org.apache.http.util.EntityUtils;
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #3:30min The code for inspect() is essentially copy-pasta from
- *  RtContainer.inspect(). Considering that there will be more "inspect"
- *  methods down the road, we should make this code reusable somehow.
  */
 final class RtSwarm implements Swarm {
     /**
@@ -70,24 +66,7 @@ final class RtSwarm implements Swarm {
 
     @Override
     public JsonObject inspect() throws IOException {
-        final HttpGet inspect = new HttpGet(this.baseUri.toString());
-        try {
-            final HttpResponse response = this.client.execute(inspect);
-            final int status = response.getStatusLine().getStatusCode();
-            final JsonObject info;
-            if(status == HttpStatus.SC_OK) {
-                info = Json
-                    .createReader(response.getEntity().getContent())
-                    .readObject();
-            } else {
-                throw new UnexpectedResponseException(
-                    inspect.getURI().toString(), status, HttpStatus.SC_OK
-                );
-            }
-            return info;
-        } finally {
-            inspect.releaseConnection();
-        }
+        return new Inspection(this.client, this.baseUri.toString());
     }
 
     @Override
