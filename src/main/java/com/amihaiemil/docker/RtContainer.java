@@ -39,9 +39,9 @@ import java.net.URI;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #46:30min This class represents a Container. It has to implement the
- *  API's methods which are acting upon a docker Container like logs,
- *  delete, stop etc).
+ * @todo #57:30min Keep implementing the rest of the Container operations.
+ *  See the Docker API Docs for reference:
+ *  https://docs.docker.com/engine/api/v1.35/#tag/Container
  * @todo #46:30min Once we have the CI environment properly setup with a Docker
  *  instance, write integration tests for this class as well
  *  (RtContainerITCase).
@@ -93,5 +93,24 @@ final class RtContainer implements Container {
         return this.baseUri.toString().substring(
             this.baseUri.toString().lastIndexOf("/") + 1
         );
+    }
+
+    @Override
+    public void stop() throws IOException {
+        final HttpPost stop = new HttpPost(
+            this.baseUri.toString() + "/stop"
+        );
+        try {
+            final int status = this.client.execute(stop)
+                .getStatusLine()
+                .getStatusCode();
+            if (status != HttpStatus.SC_NO_CONTENT) {
+                throw new UnexpectedResponseException(
+                    stop.getURI().toString(), status, HttpStatus.SC_NO_CONTENT
+                );
+            }
+        } finally {
+            stop.releaseConnection();
+        }
     }
 }
