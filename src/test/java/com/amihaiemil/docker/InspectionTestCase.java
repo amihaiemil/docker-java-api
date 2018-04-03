@@ -25,40 +25,55 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
-import java.net.URI;
-import javax.json.JsonObject;
-import org.apache.http.client.HttpClient;
+import com.amihaiemil.docker.mock.AssertRequest;
+import com.amihaiemil.docker.mock.Condition;
+import com.amihaiemil.docker.mock.Response;
+import org.apache.http.HttpStatus;
+import org.junit.Test;
 
 /**
- * Swarm API.
+ * Unit tests for {@link Inspection}.
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @checkstyle MethodName (500 lines)
  */
-final class RtSwarm implements Swarm {
+public final class InspectionTestCase {
     /**
-     * Apache HttpClient which sends the requests.
+     * Request should be wellformed.
+     * @throws Exception If something goes wrong.
      */
-    private final HttpClient client;
-
-    /**
-     * Base URI.
-     */
-    private final URI baseUri;
-
-    /**
-     * Ctor.
-     * @param client Given HTTP Client.
-     * @param baseUri Base URI, ending with /swarm.
-     */
-    RtSwarm(final HttpClient client, final URI baseUri) {
-        this.client = client;
-        this.baseUri = baseUri;
+    @Test
+    public void wellformedRequest() throws Exception {
+        final String url = "http://localhost/docker";
+        new Inspection(
+            new AssertRequest(
+                new Response(HttpStatus.SC_OK, "{}"),
+                new Condition(
+                    "Request method must be GET.",
+                    req -> "GET".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "Must point to the same URL given.",
+                    req -> url.equals(req.getRequestLine().getUri())
+                )
+            ),
+            url
+        );
     }
 
-    @Override
-    public JsonObject inspect() throws IOException {
-        return new Inspection(this.client, this.baseUri.toString());
+    /**
+     * Must throw {@link UnexpectedResponseException} if the response code
+     * is not 200.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void unexpectedResponseErrorIfResponseNot200() throws Exception {
+        new Inspection(
+            new AssertRequest(
+                new Response(HttpStatus.SC_NOT_FOUND, "")
+            ),
+            "http://localhost"
+        );
     }
 }
