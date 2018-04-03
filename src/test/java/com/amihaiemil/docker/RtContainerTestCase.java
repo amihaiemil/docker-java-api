@@ -187,4 +187,76 @@ public final class RtContainerTestCase {
             URI.create("http://localhost:80/1.30/containers/123")
         ).start();
     }
+
+    /**
+     * RtContainer can stop with no problem.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void stopsOk() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NO_CONTENT, ""
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> req.getRequestLine().getMethod().equals("POST")
+                ),
+                new Condition(
+                    "Resource path must be /{id}/stop",
+                    req -> req.getRequestLine().getUri().endsWith("/123/stop")
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).stop();
+    }
+
+    /**
+     * RtContainer throws ISE if it receives server error on stop.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void stopsWithServerError() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).stop();
+    }
+
+    /**
+     * RtContainer throws ISE if it receives "Not Found" on stop.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void stopsWithNotFound() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NOT_FOUND, ""
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).stop();
+    }
+
+    /**
+     * RtContainer throws ISE if it receives "Not Modified" on stop.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void stopsWithNotModified() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NOT_MODIFIED, ""
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).stop();
+    }
 }

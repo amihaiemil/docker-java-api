@@ -57,4 +57,10 @@ public interface Container {
      * @return String id.
      */
     String containerId();
+
+    /**
+     * Stops the container.
+     * @throws IOException If something goes wrong.
+     */
+    void stop() throws IOException;
 }
