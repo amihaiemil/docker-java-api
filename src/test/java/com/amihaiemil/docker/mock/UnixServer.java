@@ -48,9 +48,21 @@ import jnr.unixsocket.UnixSocketChannel;
  * @since 0.0.1
  */
 public final class UnixServer implements Closeable {
+    /**
+     * The UNIX socket file.
+     */
     private final Path socketFile;
+    /**
+     * The unix socket channel.
+     */
     private final UnixServerSocketChannel channel;
+    /**
+     * Selector.
+     */
     private final Selector selector;
+    /**
+     * The service runs in a thread in this pool.
+     */
     private final ExecutorService threadPool;
   
     /**
@@ -63,7 +75,9 @@ public final class UnixServer implements Closeable {
         this.socketFile = Files.createTempFile("", "");
         this.channel = UnixServerSocketChannel.open();
         this.channel.configureBlocking(false);
-        this.channel.socket().bind(new UnixSocketAddress(this.socketFile.toFile()));
+        this.channel.socket().bind(
+            new UnixSocketAddress(this.socketFile.toFile())
+        );
         this.selector = NativeSelectorProvider.getInstance().openSelector();
         this.channel.register(this.selector, SelectionKey.OP_READ);
         this.threadPool = Executors.newSingleThreadExecutor();
@@ -87,16 +101,19 @@ public final class UnixServer implements Closeable {
     }
   
     /**
-     * Background thread that handles requests to socket.
+     * Background thread that handles requests to the socket.
      */
     private static final class Service implements Callable<Void> {
+        /**
+         * Selector.
+         */
         private final Selector selector;
   
         /**
          * Ctor.
-         * @param channel 
+         * @param selector The selector to listen on.
          */
-        private Service(Selector selector) {
+        private Service(final Selector selector) {
             this.selector = selector;
         }
   
@@ -109,10 +126,12 @@ public final class UnixServer implements Closeable {
                 while (iter.hasNext()) {
                     final SelectionKey key = iter.next();
                     iter.remove();
-                    final UnixSocketChannel channel
-                        = (UnixSocketChannel) key.channel();
+                    final UnixSocketChannel channel =
+                        (UnixSocketChannel) key.channel();
                     channel.configureBlocking(false);
-                    final ByteBuffer buffer = ByteBuffer.wrap("".getBytes()); //WHAT SHOULD BE OUR RESPONSE?
+                    // @todo #41:30min Make the response from this buffer
+                    //  configurable and then implement some tests.
+                    final ByteBuffer buffer = ByteBuffer.wrap("".getBytes());
                     channel.write(buffer);
                 }
             }

@@ -47,9 +47,6 @@ import java.io.IOException;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #38:30min Implement a unix socket server so that we can also test
- *  the calls made with UnixHttpClient. The user should be able to specify
- *  what response it expected with each request to a certain path.
  */
 public final class UnixHttpClientTestCase {
 
