@@ -32,16 +32,16 @@ import javax.json.JsonObject;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
 
 /**
  * Swarm API.
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #3:30min The code for inspect() is essentially copy-pasta from
- *  RtContainer.inspect(). Considering that there will be more "inspect"
- *  methods down the road, we should make this code reusable somehow.
  */
 final class RtSwarm implements Swarm {
     /**
@@ -66,23 +66,38 @@ final class RtSwarm implements Swarm {
 
     @Override
     public JsonObject inspect() throws IOException {
-        final HttpGet inspect = new HttpGet(this.baseUri.toString());
+        return new Inspection(this.client, this.baseUri.toString());
+    }
+
+    @Override
+    public String init(final String listenAddress) throws IOException {
+        return this.init(
+            Json.createObjectBuilder()
+                .add("ListenAddr", listenAddress)
+                .add("ForceNewCluster", false)
+                .build()
+        );
+    }
+
+    @Override
+    public String init(final JsonObject spec) throws IOException {
+        final HttpPost init = new HttpPost(this.baseUri.toString() + "/init");
         try {
-            final HttpResponse response = this.client.execute(inspect);
+            init.setEntity(
+                new StringEntity(
+                    spec.toString(), ContentType.APPLICATION_JSON
+                )
+            );
+            final HttpResponse response = this.client.execute(init);
             final int status = response.getStatusLine().getStatusCode();
-            final JsonObject info;
-            if(status == HttpStatus.SC_OK) {
-                info = Json
-                    .createReader(response.getEntity().getContent())
-                    .readObject();
-            } else {
-                throw new UnexpectedResponseException(
-                    inspect.getURI().toString(), status, HttpStatus.SC_OK
-                );
+            if (status == HttpStatus.SC_OK) {
+                return EntityUtils.toString(response.getEntity());
             }
-            return info;
+            throw new UnexpectedResponseException(
+                init.getRequestLine().getUri(), status, HttpStatus.SC_OK
+            );
         } finally {
-            inspect.releaseConnection();
+            init.releaseConnection();
         }
     }
 }

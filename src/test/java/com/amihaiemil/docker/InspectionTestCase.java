@@ -25,44 +25,55 @@
  */
 package com.amihaiemil.docker;
 
-import javax.json.JsonObject;
-import java.io.IOException;
+import com.amihaiemil.docker.mock.AssertRequest;
+import com.amihaiemil.docker.mock.Condition;
+import com.amihaiemil.docker.mock.Response;
+import org.apache.http.HttpStatus;
+import org.junit.Test;
 
 /**
- * A Docker container.
- * @author Mihai Andronache (amihaiemil@gmail.com)
+ * Unit tests for {@link Inspection}.
+ * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @checkstyle MethodName (500 lines)
  */
-public interface Container {
+public final class InspectionTestCase {
+    /**
+     * Request should be wellformed.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void wellformedRequest() throws Exception {
+        final String url = "http://localhost/docker";
+        new Inspection(
+            new AssertRequest(
+                new Response(HttpStatus.SC_OK, "{}"),
+                new Condition(
+                    "Request method must be GET.",
+                    req -> "GET".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "Must point to the same URL given.",
+                    req -> url.equals(req.getRequestLine().getUri())
+                )
+            ),
+            url
+        );
+    }
 
     /**
-     * Inspect this container, return low-level information
-     * about it in Json format. It is recommended to wrap this
-     * Json into a live object, with an interface, which would animate
-     * it.
-     * @return Container info in Json format.
-     * @throws IOException If something goes wrong.
+     * Must throw {@link UnexpectedResponseException} if the response code
+     * is not 200.
+     * @throws Exception If something goes wrong.
      */
-    JsonObject inspect() throws IOException;
-
-    /**
-     * Start a container.
-     * @throws IOException If something goes wrong.
-     */
-    void start() throws IOException;
-
-    /**
-     * This Container's id.
-     * @return String id.
-     */
-    String containerId();
-
-    /**
-     * Stops the container.
-     * @throws IOException If something goes wrong.
-     * @throws UnexpectedResponseException If the status response is not
-     *     expected.
-     */
-    void stop() throws IOException, UnexpectedResponseException;
+    @Test(expected = UnexpectedResponseException.class)
+    public void unexpectedResponseErrorIfResponseNot200() throws Exception {
+        new Inspection(
+            new AssertRequest(
+                new Response(HttpStatus.SC_NOT_FOUND, "")
+            ),
+            "http://localhost"
+        );
+    }
 }

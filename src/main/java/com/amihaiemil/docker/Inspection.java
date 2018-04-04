@@ -23,7 +23,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.docker.mock;
+package com.amihaiemil.docker;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -35,40 +35,47 @@ import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
-import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 
 /**
- * JSON payload of an HttpRequest.
- *
+ * An inpsection upon any of the Docker resources.
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
  */
-public final class PayloadOf implements JsonObject {
+final class Inspection implements JsonObject {
     /**
-     * The request's payload.
+     * Enclosed json object.
      */
     private final JsonObject json;
 
     /**
      * Ctor.
-     * 
-     * @param request The http request
-     * @throws IllegalStateException if the request's payload cannot be read
+     * @param client The Http client.
+     * @param url The request URL.
+     * @throws UnexpectedResponseException If Docker's response code is not 200.
+     * @throws IOException If an I/O error occurs.
      */
-    public PayloadOf(final HttpRequest request) {
+    Inspection(final HttpClient client, final String url)
+        throws UnexpectedResponseException, IOException {
+        final HttpGet inspect = new HttpGet(url);
         try {
-            if (request instanceof HttpEntityEnclosingRequest) {
-                this.json = Json.createReader(
-                    ((HttpEntityEnclosingRequest) request).getEntity()
-                        .getContent()
-                ).readObject();
+            final HttpResponse response = client.execute(inspect);
+            final int status = response.getStatusLine().getStatusCode();
+            if (status == HttpStatus.SC_OK) {
+                this.json = Json
+                    .createReader(response.getEntity().getContent())
+                    .readObject();
             } else {
-                this.json = Json.createObjectBuilder().build();
+                throw new UnexpectedResponseException(
+                    url, status, HttpStatus.SC_OK
+                );
             }
-        } catch (final IOException ex) {
-            throw new IllegalStateException("Cannot read request payload", ex);
+        } finally {
+            inspect.releaseConnection();
         }
     }
 
