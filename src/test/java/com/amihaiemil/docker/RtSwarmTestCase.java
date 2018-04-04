@@ -27,6 +27,7 @@ package com.amihaiemil.docker;
 
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Condition;
+import com.amihaiemil.docker.mock.PayloadOf;
 import com.amihaiemil.docker.mock.Response;
 import java.net.URI;
 import org.apache.http.HttpStatus;
@@ -130,5 +131,77 @@ public final class RtSwarmTestCase {
                 new Response(HttpStatus.SC_SERVICE_UNAVAILABLE, "")
             ), URI.create("http://localhost")
         ).inspect();
+    }
+
+    /**
+     * The init request should have correct URI, method, and also its JSON
+     * payload should have at least the 'ListenAddr' and 'ForceNewCluster'
+     * properties.
+     * @throws Exception If an error occurs.
+     */
+    @Test
+    public void initRequestWellformed() throws Exception {
+        final String listenAddress = "172.27.9.10";
+        new RtSwarm(
+            new AssertRequest(
+                new Response(HttpStatus.SC_OK, "sometoken123"),
+                new Condition(
+                    "Request method must be POST.",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "The 'ListenAddr' attribute is mandatory.",
+                    req -> new PayloadOf(req).containsKey("ListenAddr")
+                ),
+                new Condition(
+                    "The 'ListenAddr' value must be the same as the one given.",
+                    req -> listenAddress.equals(
+                        new PayloadOf(req).getString("ListenAddr")
+                    )
+                ),
+                new Condition(
+                    "The 'ForceNewCluster' attribute is mandatory.",
+                    req -> new PayloadOf(req).containsKey("ForceNewCluster")
+                ),
+                new Condition(
+                    "The 'ForceNewCluster' attribute cannot be empty.",
+                    req -> !new PayloadOf(req).isNull("ForceNewCluster")
+
+                )
+            ),
+            URI.create("http://docker/swarm")
+        ).init(listenAddress);
+    }
+
+    /**
+     * Must return the same token returned by Docker.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void initReturnsSwarmToken() throws Exception {
+        MatcherAssert.assertThat(
+            new RtSwarm(
+                new AssertRequest(
+                    new Response(HttpStatus.SC_OK, "sometoken123")
+                ),
+                URI.create("http://docker")
+            ).init("123"),
+            Matchers.is("sometoken123")
+        );
+    }
+
+    /**
+     * Must throw {@link UnexpectedResponseException} if docker responds with
+     * a code different from 200.
+     * @throws Exception If an error occurs.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void initUnexpectedErrorIfResponseIsNot200() throws Exception {
+        new RtSwarm(
+            new AssertRequest(
+                new Response(HttpStatus.SC_BAD_REQUEST, "")
+            ),
+            URI.create("http://docker")
+        ).init("123");
     }
 }

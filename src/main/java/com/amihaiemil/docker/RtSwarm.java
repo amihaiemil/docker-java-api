@@ -27,8 +27,15 @@ package com.amihaiemil.docker;
 
 import java.io.IOException;
 import java.net.URI;
+import javax.json.Json;
 import javax.json.JsonObject;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
 
 /**
  * Swarm API.
@@ -60,5 +67,37 @@ final class RtSwarm implements Swarm {
     @Override
     public JsonObject inspect() throws IOException {
         return new Inspection(this.client, this.baseUri.toString());
+    }
+
+    @Override
+    public String init(final String listenAddress) throws IOException {
+        return this.init(
+            Json.createObjectBuilder()
+                .add("ListenAddr", listenAddress)
+                .add("ForceNewCluster", false)
+                .build()
+        );
+    }
+
+    @Override
+    public String init(final JsonObject spec) throws IOException {
+        final HttpPost init = new HttpPost(this.baseUri.toString() + "/init");
+        try {
+            init.setEntity(
+                new StringEntity(
+                    spec.toString(), ContentType.APPLICATION_JSON
+                )
+            );
+            final HttpResponse response = this.client.execute(init);
+            final int status = response.getStatusLine().getStatusCode();
+            if (status == HttpStatus.SC_OK) {
+                return EntityUtils.toString(response.getEntity());
+            }
+            throw new UnexpectedResponseException(
+                init.getRequestLine().getUri(), status, HttpStatus.SC_OK
+            );
+        } finally {
+            init.releaseConnection();
+        }
     }
 }
