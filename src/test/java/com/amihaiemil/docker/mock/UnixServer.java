@@ -27,7 +27,6 @@ package com.amihaiemil.docker.mock;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.file.Files;
@@ -69,9 +68,10 @@ public final class UnixServer implements Closeable {
      * Ctor.
      * <p>
      * Eagerly opens a unix file socket created in a temp directory.
+     * @param response The mock response to send back to the caller.
      * @throws IOException If an I/O error occurs.
      */
-    public UnixServer() throws IOException {
+    public UnixServer(final Response response) throws IOException {
         this.socketFile = Files.createTempFile("", "");
         this.channel = UnixServerSocketChannel.open();
         this.channel.configureBlocking(false);
@@ -81,7 +81,7 @@ public final class UnixServer implements Closeable {
         this.selector = NativeSelectorProvider.getInstance().openSelector();
         this.channel.register(this.selector, SelectionKey.OP_READ);
         this.threadPool = Executors.newSingleThreadExecutor();
-        this.threadPool.submit(new Service(this.selector));
+        this.threadPool.submit(new Service(this.selector, response));
     }
   
     /**
@@ -108,13 +108,19 @@ public final class UnixServer implements Closeable {
          * Selector.
          */
         private final Selector selector;
+        /**
+         * Response to send back to caller.
+         */
+        private final Response response;
   
         /**
          * Ctor.
          * @param selector The selector to listen on.
+         * @param response The response to send back to the client.
          */
-        private Service(final Selector selector) {
+        private Service(final Selector selector, final Response response) {
             this.selector = selector;
+            this.response = response;
         }
   
         @Override
@@ -129,10 +135,7 @@ public final class UnixServer implements Closeable {
                     final UnixSocketChannel channel =
                         (UnixSocketChannel) key.channel();
                     channel.configureBlocking(false);
-                    // @todo #41:30min Make the response from this buffer
-                    //  configurable and then implement some tests.
-                    final ByteBuffer buffer = ByteBuffer.wrap("".getBytes());
-                    channel.write(buffer);
+                    this.response.printTo(channel);
                 }
             }
             return null;

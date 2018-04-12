@@ -25,6 +25,11 @@
  */
 package com.amihaiemil.docker.mock;
 
+import com.sun.grizzly.util.Charsets;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
+import java.time.Instant;
 import java.util.Locale;
 import org.apache.http.Header;
 import org.apache.http.HeaderIterator;
@@ -37,6 +42,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
 
 /**
  * An {@link HttpResponse} suitable for tests. Can be configured with 
@@ -45,6 +51,9 @@ import org.apache.http.params.HttpParams;
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @todo 79:30min The 'asString()' method needs a little more work (fix the
+ *  formatting on the date header value, etc) and then test the 'printTo()'
+ *  method in conjunction with the UnixServer.
  */
 public final class Response implements HttpResponse {
     /**
@@ -206,5 +215,48 @@ public final class Response implements HttpResponse {
     @Override
     public void setParams(final HttpParams params) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * Prints itself to the channel.
+     * @param channel The channel.
+     * @throws IOException If an error occurs.
+     */
+    public void printTo(final WritableByteChannel channel) throws IOException {
+        channel.write(
+            ByteBuffer.wrap(
+                this.asString().getBytes(Charsets.UTF8_CHARSET)
+            )
+        );
+    }
+
+    /**
+     * This response as a string.
+     * @return String representation of this {@link Response}.
+     * @throws IOException If an error occurs.
+     */
+    private String asString() throws IOException {
+        final String CRLF = "" + (char) 0x0D + (char) 0x0A;
+        final StringBuilder builder = new StringBuilder("HTTP/")
+            .append(this.statusLine.getProtocolVersion())
+            .append(" ")
+            .append(this.statusLine.getStatusCode())
+            .append(" ")
+            .append(this.statusLine.getReasonPhrase())
+            .append(CRLF)
+            .append("Date: ")
+            .append(Instant.now())
+            .append(CRLF);
+        if (this.payload.getContentLength() > 0) {
+            builder.append("ContentType: ")
+                .append(this.payload.getContentType().getValue())
+                .append(CRLF)
+                .append("Content-Length: ")
+                .append(this.payload.getContentLength())
+                .append(CRLF)
+                .append(CRLF)
+                .append(EntityUtils.toString(this.payload));
+        }
+        return builder.toString();
     }
 }
