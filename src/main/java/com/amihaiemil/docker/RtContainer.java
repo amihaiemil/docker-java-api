@@ -39,7 +39,7 @@ import java.net.URI;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #57:30min Keep implementing the rest of the Container operations.
+ * @todo #76:30min Continue implementing the rest of the Container operations.
  *  See the Docker API Docs for reference:
  *  https://docs.docker.com/engine/api/v1.35/#tag/Container
  * @todo #46:30min Once we have the CI environment properly setup with a Docker
@@ -99,6 +99,25 @@ final class RtContainer implements Container {
     public void stop() throws IOException {
         final HttpPost stop = new HttpPost(
             this.baseUri.toString() + "/stop"
+        );
+        try {
+            final int status = this.client.execute(stop)
+                .getStatusLine()
+                .getStatusCode();
+            if (status != HttpStatus.SC_NO_CONTENT) {
+                throw new UnexpectedResponseException(
+                    stop.getURI().toString(), status, HttpStatus.SC_NO_CONTENT
+                );
+            }
+        } finally {
+            stop.releaseConnection();
+        }
+    }
+
+    @Override
+    public void restart() throws IOException, UnexpectedResponseException {
+        final HttpPost stop = new HttpPost(
+            this.baseUri.toString() + "/restart"
         );
         try {
             final int status = this.client.execute(stop)

@@ -65,4 +65,12 @@ public interface Container {
      *     expected.
      */
     void stop() throws IOException, UnexpectedResponseException;
+
+    /**
+     * Restarts the container.
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *     expected.
+     */
+    void restart() throws IOException, UnexpectedResponseException;
 }
