@@ -28,65 +28,61 @@ package com.amihaiemil.docker;
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Response;
 import java.net.URI;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.json.Json;
 import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
- * Unit tests for {@link RemoteDocker}.
+ * Unit tests for {@link RtImages}.
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
  * @checkstyle MethodName (500 lines)
- * @todo #23:30min RemoteDocker: implement the rest of the test cases
- *  (including integration tests) for RemoteDocker.
  */
-public final class RemoteDockerTestCase {
+public final class RtImagesTestCase {
     /**
-     * Ping must be TRUE if response is OK.
+     * Must return the same number of images as there are elements in the
+     * json array returned by the service.
      * @throws Exception If an error occurs.
      */
     @Test
-    public void pingTrueIfResponseIsOk() throws Exception {
+    public void iterateReturnsImages() throws Exception {
+        final AtomicInteger count = new AtomicInteger();
+        new RtImages(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    Json.createArrayBuilder()
+                        .add(
+                            Json.createObjectBuilder()
+                                .add("Id", "sha256:e216a057b1cb1efc1")
+                        ).add(
+                            Json.createObjectBuilder()
+                                .add("Id", "sha256:3e314f95dcace0f5e")
+                        ).build().toString()
+                )
+            ), URI.create("http://localhost")
+        ).iterate().forEach(image -> count.incrementAndGet());
         MatcherAssert.assertThat(
-            new RemoteDocker(
-                new AssertRequest(
-                    new Response(HttpStatus.SC_OK, "")
-                ),
-                URI.create("http://remotedocker")
-            ).ping(),
-            Matchers.is(true)
+            count.get(),
+            Matchers.is(2)
         );
     }
 
     /**
-     * Ping must be False if response is not OK.
-     * @throws Exception If an error occurs.
+     * Must throw {@link UnexpectedResponseException} if response code is 500.
+     * @throws Exception The UnexpectedException.
      */
-    @Test
-    public void pingFalseIfResponseIsNotOk() throws Exception {
-        MatcherAssert.assertThat(
-            new RemoteDocker(
-                new AssertRequest(
-                    new Response(HttpStatus.SC_NOT_FOUND, "")
-                ),
-                URI.create("http://remotedocker")
-            ).ping(),
-            Matchers.is(false)
-        );
-    }
-
-    /**
-     * RemoteDocker can return Images.
-     */
-    @Test
-    public void returnsImages() {
-        MatcherAssert.assertThat(
-            new RemoteDocker(
-                URI.create("http://localhost")
-            ).images(),
-            Matchers.notNullValue()
-        );
+    @Test(expected = UnexpectedResponseException.class)
+    public void iterateFailsIfResponseIs500() throws Exception {
+        new RtImages(
+            new AssertRequest(
+                new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR, "")
+            ),
+            URI.create("http://localhost")
+        ).iterate();
     }
 }

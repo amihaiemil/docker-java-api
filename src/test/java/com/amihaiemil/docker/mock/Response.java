@@ -51,7 +51,7 @@ import org.apache.http.util.EntityUtils;
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo 79:30min The 'asString()' method needs a little more work (fix the
+ * @todo #79:30min The 'asString()' method needs a little more work (fix the
  *  formatting on the date header value, etc) and then test the 'printTo()'
  *  method in conjunction with the UnixServer.
  */

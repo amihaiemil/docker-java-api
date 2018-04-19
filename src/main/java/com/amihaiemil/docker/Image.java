@@ -25,69 +25,13 @@
  */
 package com.amihaiemil.docker;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.Test;
-
-import java.io.File;
-
 /**
- * Unit tests for LocalDocker.
- * @author Mihai Andronache (amihaiemil@gmail.com)
+ * A docker image.
+ * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
+ * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Image">Docker Images API</a>
  * @since 0.0.1
  */
-public final class LocalDockerTestCase {
+public interface Image {
 
-    /**
-     * LocalDocker can be instantiated.
-     */
-    @Test
-    public void canBeInstantiate() {
-        MatcherAssert.assertThat(
-            new LocalDocker(
-                new File("/var/run/docker.sock")
-            ),
-            Matchers.notNullValue()
-        );
-    }
-
-    /**
-     * LocalDocker can return the Containers.
-     */
-    @Test
-    public void getsContainers() {
-        MatcherAssert.assertThat(
-            new LocalDocker(
-                new File("/var/run/docker.sock")
-            ).containers(),
-            Matchers.notNullValue()
-        );
-    }
-
-    /**
-     * LocalDocker can return the Swarm.
-     */
-    @Test
-    public void returnsSwarm() {
-        MatcherAssert.assertThat(
-            new LocalDocker(
-                new File("/var/run/docker.sock")
-            ).swarm(),
-            Matchers.notNullValue()
-        );
-    }
-
-    /**
-     * LocalDocker can return Images.
-     */
-    @Test
-    public void returnsImages() {
-        MatcherAssert.assertThat(
-            new LocalDocker(
-                new File("/var/run/docker.sock")
-            ).images(),
-            Matchers.notNullValue()
-        );
-    }
 }

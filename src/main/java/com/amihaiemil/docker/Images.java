@@ -25,11 +25,24 @@
  */
 package com.amihaiemil.docker;
 
+import java.io.IOException;
+
 /**
  * Images API.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
+ * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Image">Docker Images API</a>
  * @since 0.0.1
+ * @todo #71:30min Continue implementing the rest of the operations for the
+ *  Images interface. See the docs referenced above for more details.
  */
 public interface Images {
+    /**
+     * All images on the docker server.
+     * @return The images.
+     * @throws IOException If an I/O error occurs.
+     * @throws UnexpectedResponseException If the API responds with an 
+     *  unexpected status.
+     */
+    Iterable<Image> iterate() throws IOException, UnexpectedResponseException;
 }
