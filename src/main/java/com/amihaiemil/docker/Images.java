@@ -43,6 +43,9 @@ public interface Images {
      * @throws IOException If an I/O error occurs.
      * @throws UnexpectedResponseException If the API responds with an 
      *  unexpected status.
+     * @todo #71:30min Images should extend Iterable<Image>. Refactor so that
+     *  the user should not have to call this `iterate()` method and instead
+     *  just iterate on 'docker.images()'.
      */
     Iterable<Image> iterate() throws IOException, UnexpectedResponseException;
 }

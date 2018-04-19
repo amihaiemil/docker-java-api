@@ -31,6 +31,8 @@ package com.amihaiemil.docker;
  * @version $Id$
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Image">Docker Images API</a>
  * @since 0.0.1
+ * @todo #71:30min Implement the operations that affect a single docker image,
+ *  see the link referenced above.
  */
 public interface Image {
 
