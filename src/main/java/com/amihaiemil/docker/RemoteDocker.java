@@ -26,6 +26,8 @@
 package com.amihaiemil.docker;
 
 import java.net.URI;
+import java.nio.file.Path;
+
 import org.apache.http.client.HttpClient;
 
 /**
@@ -36,16 +38,35 @@ import org.apache.http.client.HttpClient;
  * @since 0.0.1
  */
 public final class RemoteDocker extends RtDocker {
+
     /**
-     * Remote Docker engine.
+     * Remote Docker engine. API version is 1.35 by default.
      * @param uri Remote Docker URI.
+     * @param certs Path to the folder containing these 3:
+     *  CA certificate (ca.pem), client certificate (cert.pem)
+     *  and client key (key.pem).
      */
-    public RemoteDocker(final URI uri) {
-        this(new SslHttpClient(), uri);
+    public RemoteDocker(final URI uri, final Path certs) {
+        this(uri, "v1.35", certs);
     }
 
     /**
      * Remote Docker engine.
+     * @param uri Remote Docker URI.
+     * @param version API version (eg. v1.35).
+     * @param certs Path to the folder containing these 3:
+     *  CA certificate (ca.pem), client certificate (cert.pem)
+     *  and client key (key.pem).
+     */
+    public RemoteDocker(final URI uri, final String version, final Path certs) {
+        this(new SslHttpClient(certs), uri, version);
+    }
+
+    /**
+     * Remote Docker engine with custom HttpClient. Use this only
+     * if you really know what you're doing!<br><br>
+     *
+     * API version is 1.35 by default.
      * @param client The http client to use.
      * @param uri Remote Docker URI.
      */
@@ -54,13 +75,16 @@ public final class RemoteDocker extends RtDocker {
     }
 
     /**
-     * Remote Docker engine.
+     * Remote Docker engine with a custom HttpClient. Use this only
+     * if you really know what you're doing!
+     *
      * @param client The http client to use.
      * @param uri Remote Docker URI.
      * @param version API version (eg. v1.35).
      */
-    public RemoteDocker(final HttpClient client, final URI uri,
-        final String version) {
-        super(client, uri);
+    public RemoteDocker(
+        final HttpClient client, final URI uri, final String version
+    ) {
+        super(client, URI.create(uri.toString() + "/" + version));
     }
 }

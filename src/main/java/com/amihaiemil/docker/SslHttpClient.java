@@ -26,6 +26,8 @@
 package com.amihaiemil.docker;
 
 import java.io.IOException;
+import java.nio.file.Path;
+
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -45,8 +47,8 @@ import org.apache.http.protocol.HttpContext;
  * @version $Id$
  * @since 0.0.1
  * @checkstyle ParameterNumber (150 lines)
- * @todo #23:30min Add path for certificates as a parameter and, with those
- *  certificates, register the http/https protocols, similar to how "unix" is
+ * @todo #67:30min Using the provided certificates,
+ *  register the http/https protocols, similar to how "unix" is
  *  registered in UnixHttpClient.
  */
 final class SslHttpClient implements HttpClient {
@@ -57,8 +59,10 @@ final class SslHttpClient implements HttpClient {
 
     /**
      * Ctor.
+     * @param certs Path to the folder containing the following certificates:
+     *  ca.pem, cert.pem and key.pem.
      */
-    SslHttpClient() {
+    SslHttpClient(final Path certs) {
         this(
             HttpClients.custom()
                 .setMaxConnPerRoute(10)
