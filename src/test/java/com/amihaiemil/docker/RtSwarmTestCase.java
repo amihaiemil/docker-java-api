@@ -44,6 +44,95 @@ import org.junit.Test;
  * @checkstyle MethodName (500 lines)
  */
 public final class RtSwarmTestCase {
+
+    /**
+     * Leave request works with force.
+     * @throws Exception If an error occurs.
+     */
+    @Test
+    public void forcedLeave() throws Exception {
+        new RtSwarm(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    "{}"
+                ),
+                new Condition(
+                    "Request method should be GET",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "URI is not ok!",
+                    req -> "http://localhost/swarm/leave?force=true".equals(
+                        req.getRequestLine().getUri()
+                    )
+                )
+            ),
+            URI.create("http://localhost/swarm")
+        ).leave(true);
+    }
+
+    /**
+     * Leave request works without force.
+     * @throws Exception If an error occurs.
+     */
+    @Test
+    public void leavesWithoutForce() throws Exception {
+        new RtSwarm(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    "{}"
+                ),
+                new Condition(
+                    "Request method should be GET",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "URI is not ok!",
+                    req -> "http://localhost/swarm/leave?force=false".equals(
+                            req.getRequestLine().getUri()
+                    )
+                )
+            ),
+            URI.create("http://localhost/swarm")
+        ).leave(false);
+    }
+
+    /**
+     * Leave request receives 500 SERVER ERROR response.
+     * @throws Exception If an error occurs.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void leavesWithServerError() throws Exception {
+        new RtSwarm(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR,
+                    "Internal Error"
+                )
+            ),
+            URI.create("http://localhost/swarm")
+        ).leave(false);
+    }
+
+    /**
+     * Leave request receives 503 SERVICE UNAVAILABLE response.
+     * @throws Exception If an error occurs.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void leavesWithServiceUnavailable() throws Exception {
+        new RtSwarm(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_SERVICE_UNAVAILABLE,
+                    "Internal Error"
+                )
+            ),
+            URI.create("http://localhost/swarm")
+        ).leave(false);
+    }
+
     /**
      * Inspect request must be well-formed.
      * @throws Exception If an error occurs.
