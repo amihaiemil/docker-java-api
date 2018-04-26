@@ -50,7 +50,7 @@ public interface Image {
     JsonObject inspect() throws IOException, UnexpectedResponseException;
     
     /**
-     * Return parent layers of an Image.
+     * Return parent layers of this Image.
      * @return Images parent Images.
      * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ImageHistory">Image History</a>
      */
