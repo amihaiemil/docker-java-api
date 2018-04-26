@@ -25,15 +25,35 @@
  */
 package com.amihaiemil.docker;
 
+import java.io.IOException;
+import javax.json.JsonObject;
+
 /**
  * A docker image.
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Image">Docker Images API</a>
  * @since 0.0.1
- * @todo #71:30min Implement the operations that affect a single docker image,
- *  see the link referenced above.
+ * @todo #86:30min Continue implementing the operations that affect a single
+ *  docker image. See the link referenced above.
  */
 public interface Image {
 
+    /**
+     * Return low-level information about this image. 
+     * @return JsonObject information.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ImageInspect">Inspect Image</a>
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (200 OK).
+     */
+    JsonObject inspect() throws IOException, UnexpectedResponseException;
+    
+    /**
+     * Return parent layers of an Image.
+     * @return Images parent Images.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ImageHistory">Image History</a>
+     */
+    Images history();
+    
 }

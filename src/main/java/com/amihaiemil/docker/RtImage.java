@@ -25,7 +25,9 @@
  */
 package com.amihaiemil.docker;
 
+import java.io.IOException;
 import java.net.URI;
+import javax.json.JsonObject;
 import org.apache.http.client.HttpClient;
 
 /**
@@ -46,19 +48,25 @@ final class RtImage implements Image {
     private final URI baseUri;
 
     /**
-     * This image's id.
-     */
-    private final String id;
-
-    /**
      * Ctor.
      * @param client The http client.
      * @param uri The URI for this image.
-     * @param id This image's id.
      */
-    RtImage(final HttpClient client, final URI uri, final String id) {
+    RtImage(final HttpClient client, final URI uri) {
         this.client = client;
         this.baseUri = uri;
-        this.id = id;
+    }
+
+    @Override
+    public JsonObject inspect()
+        throws IOException, UnexpectedResponseException {
+        return new Inspection(this.client, this.baseUri.toString() + "/json");
+    }
+
+    @Override
+    public Images history() {
+        return new RtImages(
+            this.client, URI.create(this.baseUri.toString() + "/history")
+        );
     }
 }
