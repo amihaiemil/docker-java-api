@@ -25,44 +25,45 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
+import org.apache.http.client.utils.URIBuilder;
 
 /**
- * Images API.
- * @author Mihai Andronache (amihaiemil@gmail.com)
- * @version $Id$
- * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Image">Docker Images API</a>
- * @since 0.0.1
- * @todo #83:30min Keep implementing the rest of the operations for the
- *  Images interface. See the docs referenced above for more details.
+ * A {@link URIBuilder} that hides checked exceptions in the methods used
+ * throughout this library. Used under the assumption that the structure
+ * of URIs created using this class are valid.
+ * @author George Aristy (george.aristy@gmail.com)
  */
-public interface Images {
+final class UncheckedUriBuilder extends URIBuilder {
     /**
-     * All images on the docker server.
-     * @return The images.
-     * @throws IOException If an I/O error occurs.
-     * @throws UnexpectedResponseException If the API responds with an 
-     *  unexpected status.
-     * @todo #71:30min Images should extend Iterable<Image>. Refactor so that
-     *  the user should not have to call this `iterate()` method and instead
-     *  just iterate on 'docker.images()'.
+     * Ctor.
+     * @param uri Base URI.
+     * @throws IllegalArgumentException From {@link URI#create(String)}.
+     * @throws NullPointerException From {@link URI#create(String)}.
      */
-    Iterable<Image> iterate() throws IOException, UnexpectedResponseException;
+    UncheckedUriBuilder(
+        final String uri
+    ) throws IllegalArgumentException, NullPointerException {
+        super(URI.create(uri));
+    }
 
-    /**
-     * Creates an image by pulling it from a registry.
-     * @param name Name of the image to pull.
-     * @param source The URL from which the image can be retrieved.
-     * @param repo Repository name for the image when it is pulled.
-     * @param tag Tag or digest for the image.
-     * @return This {@link Images}.
-     * @throws IOException If an I/O error occurs.
-     * @throws UnexpectedResponseException If the API responds with an 
-     *  unexpected status.
-     * @checkstyle ParameterNumber (4 lines)
-     */
-    Images create(
-        final String name, final URL source, final String repo, final String tag
-    ) throws IOException, UnexpectedResponseException;
+    @Override
+    public UncheckedUriBuilder addParameter(
+        final String name, final String value
+    ) {
+        super.addParameter(name, value);
+        return this;
+    }
+
+    @Override
+    public URI build() {
+        try {
+            return super.build();
+        } catch (final URISyntaxException ex) {
+            throw new IllegalStateException(
+                "Unexpected error while building a URI!", ex
+            );
+        }
+    }
 }

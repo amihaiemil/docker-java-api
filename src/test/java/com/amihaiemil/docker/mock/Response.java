@@ -67,6 +67,16 @@ public final class Response implements HttpResponse {
 
     /**
      * Ctor.
+     * <p>
+     * Response with no payload.
+     * @param status The {@link HttpStatus http status code}
+     */
+    public Response(final int status) {
+        this(status, "");
+    }
+
+    /**
+     * Ctor.
      *
      * @param status The {@link HttpStatus http status code}
      * @param jsonPayload The json payload

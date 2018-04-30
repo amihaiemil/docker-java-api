@@ -26,8 +26,10 @@
 package com.amihaiemil.docker;
 
 import com.amihaiemil.docker.mock.AssertRequest;
+import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
 import java.net.URI;
+import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.json.Json;
 import org.apache.http.HttpStatus;
@@ -84,5 +86,67 @@ public final class RtImagesTestCase {
             ),
             URI.create("http://localhost")
         ).iterate();
+    }
+
+    /**
+     * {@link RtImages#create(String, URL, String, String)} must construct the
+     * URL with parameters correctly.
+     * <p>
+     * Notice the escaped characters for the 'fromSrc' parameter's value.
+     * @throws Exception If an error occurs.
+     */
+    @Test
+    public void createSetsGivenParameters() throws Exception {
+        new RtImages(
+            new AssertRequest(
+                new Response(HttpStatus.SC_OK),
+                new Condition(
+                    // @checkstyle LineLength (1 line)
+                    "RtImages.create() failed to correctly build the request URI.",
+                    req -> {
+                        System.out.println(req.getRequestLine().getUri());
+                        return req.getRequestLine().getUri().endsWith(
+                            // @checkstyle LineLength (1 line)
+                            "/create?fromImage=testImage&fromSrc=http%3A%2F%2Fdocker.registry.com&repo=testRepo&tag=1.23"
+                        );
+                    }
+                )
+            ),
+            URI.create("http://localhost")
+        )
+            .create(
+                "testImage", new URL("http://docker.registry.com"),
+                "testRepo", "1.23"
+        );
+    }
+
+    /**
+     * RtImages.create() must throw an {@link UnexpectedResponseException}
+     * if the docker API responds with status code 404.
+     * @throws Exception The UnexpectedResponseException.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void createErrorOnStatus404() throws Exception {
+        new RtImages(
+            new AssertRequest(
+                new Response(HttpStatus.SC_NOT_FOUND)
+            ),
+            URI.create("http://localhost")
+        ).create("", new URL("http://registry.docker.com"), "", "");
+    }
+
+    /**
+     * RtImages.create() must throw an {@link UnexpectedResponseException}
+     * if the docker API responds with status code 500.
+     * @throws Exception The UnexpectedResponseException.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void createErrorOnStatus500() throws Exception {
+        new RtImages(
+            new AssertRequest(
+                new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+            ),
+            URI.create("http://localhost")
+        ).create("", new URL("http://registry.docker.com"), "", "");
     }
 }
