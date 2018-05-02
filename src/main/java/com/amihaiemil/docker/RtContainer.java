@@ -39,8 +39,8 @@ import java.net.URI;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #76:30min Continue implementing the rest of the Container operations.
- *  See the Docker API Docs for reference:
+ * @todo #88:30min Continue implementing the rest of the Container operations
+ *  (pause, unpause, rename, logs etc) See the Docker API Docs for reference:
  *  https://docs.docker.com/engine/api/v1.35/#tag/Container
  * @todo #46:30min Once we have the CI environment properly setup with a Docker
  *  instance, write integration tests for this class as well
@@ -111,6 +111,25 @@ final class RtContainer implements Container {
             }
         } finally {
             stop.releaseConnection();
+        }
+    }
+
+    @Override
+    public void kill() throws IOException, UnexpectedResponseException {
+        final HttpPost kill = new HttpPost(
+            this.baseUri.toString() + "/kill"
+        );
+        try {
+            final int status = this.client.execute(kill)
+                .getStatusLine()
+                .getStatusCode();
+            if (status != HttpStatus.SC_NO_CONTENT) {
+                throw new UnexpectedResponseException(
+                    kill.getURI().toString(), status, HttpStatus.SC_NO_CONTENT
+                );
+            }
+        } finally {
+            kill.releaseConnection();
         }
     }
 
