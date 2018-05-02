@@ -58,7 +58,7 @@ public final class RtSwarmTestCase {
                     "{}"
                 ),
                 new Condition(
-                    "Request method should be GET",
+                    "Request method should be POST",
                     req -> "POST".equals(req.getRequestLine().getMethod())
                 ),
                 new Condition(
@@ -85,7 +85,7 @@ public final class RtSwarmTestCase {
                     "{}"
                 ),
                 new Condition(
-                    "Request method should be GET",
+                    "Request method should be POST",
                     req -> "POST".equals(req.getRequestLine().getMethod())
                 ),
                 new Condition(
