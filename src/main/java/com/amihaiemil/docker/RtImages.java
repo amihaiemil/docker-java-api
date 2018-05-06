@@ -83,7 +83,10 @@ final class RtImages implements Images {
                 .stream()
                 .map(json -> (JsonObject) json)
                 .map(json -> new RtImage(
-                    this.client, this.baseUri, json.getString("Id")
+                    this.client,
+                    URI.create(
+                        this.baseUri.toString() + "/" + json.getString("Id")
+                    )
                 )).collect(Collectors.toList());
         } finally {
             get.releaseConnection();

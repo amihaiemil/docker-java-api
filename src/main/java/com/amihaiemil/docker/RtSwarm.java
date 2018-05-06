@@ -100,4 +100,22 @@ final class RtSwarm implements Swarm {
             init.releaseConnection();
         }
     }
+
+    @Override
+    public void leave(final boolean force) throws IOException {
+        final HttpPost leave = new HttpPost(
+            this.baseUri.toString() + "/leave?force=" + String.valueOf(force)
+        );
+        try {
+            final HttpResponse response = this.client.execute(leave);
+            final int status = response.getStatusLine().getStatusCode();
+            if (status != HttpStatus.SC_OK) {
+                throw new UnexpectedResponseException(
+                    leave.getRequestLine().getUri(), status, HttpStatus.SC_OK
+                );
+            }
+        } finally {
+            leave.releaseConnection();
+        }
+    }
 }

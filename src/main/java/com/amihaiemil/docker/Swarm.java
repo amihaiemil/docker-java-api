@@ -37,7 +37,7 @@ import javax.json.JsonObject;
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #70:30min Continue implementing all of the Swarm operations. See
+ * @todo #77:30min Continue implementing the rest of the Swarm operations. See
  *  https://docs.docker.com/engine/api/v1.35/#tag/Swarm for reference and also
  *  the roadmap laid out here:
  *  https://github.com/amihaiemil/docker-java-api/issues/3#issuecomment-375821822
@@ -61,7 +61,7 @@ public interface Swarm {
      * @return The swarm's token.
      * @throws IOException If something goes wrong.
      */
-    String init(String listenAddress) throws IOException;
+    String init(final String listenAddress) throws IOException;
 
     /**
      * Initialize a new swarm by providing a full specification.
@@ -69,5 +69,13 @@ public interface Swarm {
      * @return The swarm's token.
      * @throws IOException If something goes wrong.
      */
-    String init(JsonObject spec) throws IOException;
+    String init(final JsonObject spec) throws IOException;
+
+    /**
+     * Leave the Swarm.
+     * @param force Force leave swarm, even if this is the last manager or that
+     *  it will break the cluster.
+     * @throws IOException If something goes wrong.
+     */
+    void leave(final boolean force) throws IOException;
 }
