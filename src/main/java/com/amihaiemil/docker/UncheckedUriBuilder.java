@@ -34,6 +34,8 @@ import org.apache.http.client.utils.URIBuilder;
  * throughout this library. Used under the assumption that the structure
  * of URIs created using this class are valid.
  * @author George Aristy (george.aristy@gmail.com)
+ * @version $Id$
+ * @since 0.0.1
  */
 final class UncheckedUriBuilder extends URIBuilder {
     /**
