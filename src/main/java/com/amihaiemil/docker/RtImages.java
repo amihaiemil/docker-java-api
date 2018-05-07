@@ -27,6 +27,7 @@ package com.amihaiemil.docker;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.util.stream.Collectors;
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -34,6 +35,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 
 /**
  * Runtime {@link Images}.
@@ -88,6 +90,39 @@ final class RtImages implements Images {
                 )).collect(Collectors.toList());
         } finally {
             get.releaseConnection();
+        }
+    }
+
+    // @todo #83:30min Several API calls required an authentication header as
+    //  explained here:
+    //  https://docs.docker.com/engine/api/v1.35/#section/Authentication
+    //  (including Images.create()). Find a way to make a reusable object from
+    //  that action and introduce it here.
+    // @checkstyle ParameterNumber (4 lines)
+    @Override
+    public Images create(
+        final String name, final URL source, final String repo, final String tag
+    ) throws IOException, UnexpectedResponseException {
+        final HttpPost create  = new HttpPost(
+            new UncheckedUriBuilder(this.baseUri.toString().concat("/create"))
+                .addParameter("fromImage", name)
+                .addParameter("fromSrc", source.toString())
+                .addParameter("repo", repo)
+                .addParameter("tag", tag)
+                .build()
+        );
+        try {
+            final int status = this.client.execute(create)
+                .getStatusLine()
+                .getStatusCode();
+            if (HttpStatus.SC_OK != status) {
+                throw new UnexpectedResponseException(
+                    create.getURI().toString(), status, HttpStatus.SC_OK
+                );
+            }
+            return this;
+        } finally {
+            create.releaseConnection();
         }
     }
 }
