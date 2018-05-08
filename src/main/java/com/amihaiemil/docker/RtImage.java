@@ -28,7 +28,9 @@ package com.amihaiemil.docker;
 import java.io.IOException;
 import java.net.URI;
 import javax.json.JsonObject;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 
 /**
  * Runtime {@link Image}.
@@ -48,13 +50,20 @@ final class RtImage implements Image {
     private final URI baseUri;
 
     /**
+     * The enclosing {@link Images} for this image.
+     */
+    private final Images parent;
+
+    /**
      * Ctor.
      * @param client The http client.
      * @param uri The URI for this image.
+     * @param images The parent Images API.
      */
-    RtImage(final HttpClient client, final URI uri) {
+    RtImage(final HttpClient client, final URI uri, final Images images) {
         this.client = client;
         this.baseUri = uri;
+        this.parent = images;
     }
 
     @Override
@@ -68,5 +77,23 @@ final class RtImage implements Image {
         return new RtImages(
             this.client, URI.create(this.baseUri.toString() + "/history")
         );
+    }
+
+    @Override
+    public Images delete() throws IOException, UnexpectedResponseException {
+        final HttpDelete delete = new HttpDelete(this.baseUri);
+        try {
+            final int status = this.client.execute(delete)
+                .getStatusLine()
+                .getStatusCode();
+            if (status != HttpStatus.SC_OK) {
+                throw new UnexpectedResponseException(
+                    delete.getRequestLine().getUri(), status, HttpStatus.SC_OK
+                );
+            }
+        } finally {
+            delete.releaseConnection();
+        }
+        return this.parent;
     }
 }

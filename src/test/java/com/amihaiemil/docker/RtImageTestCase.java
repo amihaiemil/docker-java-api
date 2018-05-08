@@ -28,7 +28,9 @@ package com.amihaiemil.docker;
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import javax.json.Json;
 import javax.json.JsonObject;
 import org.apache.http.HttpStatus;
@@ -41,6 +43,7 @@ import org.junit.Test;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @checkstyle MethodName (500 lines)
  */
 public final class RtImageTestCase {
 
@@ -70,7 +73,8 @@ public final class RtImageTestCase {
                     req -> req.getRequestLine().getUri().endsWith("/456/json")
                 )
             ),
-            URI.create("http://localhost:80/1.30/images/456")
+            URI.create("http://localhost:80/1.30/images/456"),
+            new MockImages()
         );
         final JsonObject info = image.inspect();
         MatcherAssert.assertThat(info.keySet(), Matchers.hasSize(4));
@@ -102,7 +106,8 @@ public final class RtImageTestCase {
                         Json.createArrayBuilder().build().toString()
                     )
                 ),
-                URI.create("http://localhost:80/1.30/images/456")
+                URI.create("http://localhost:80/1.30/images/456"),
+                new MockImages()
             ).history(),
             Matchers.allOf(
                 Matchers.notNullValue(),
@@ -110,4 +115,117 @@ public final class RtImageTestCase {
             )
         );
     }
+
+
+    /**
+     * RtImage.delete() must send a DELETE request to the image's url.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void deleteSendsCorrectRequest() throws Exception {
+        new RtImage(
+            new AssertRequest(
+                new Response(HttpStatus.SC_OK),
+                new Condition(
+                    "RtImages.delete() must send a DELETE HTTP request",
+                    req -> "DELETE".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "RtImages.delete() must send the request to the image url",
+                    req -> "http://localhost/images/test".equals(
+                        req.getRequestLine().getUri()
+                    )
+                )
+            ),
+            URI.create("http://localhost/images/test"),
+            new MockImages()
+        ).delete();
+    }
+
+    /**
+     * RtImage.delete() can delete itself and return the parent images.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void deleteItself() throws Exception {
+        final Images images = new MockImages();
+        MatcherAssert.assertThat(
+            new RtImage(
+                new AssertRequest(
+                    new Response(HttpStatus.SC_OK)
+                ),
+                URI.create("http://localhost/images/test"),
+                images
+            ).delete(),
+            Matchers.is(images)
+        );
+    }
+
+    /**
+     * RtImage.delete() must throw UnexpectedResponseException if service
+     * responds with 404.
+     * @throws Exception The UnexpectedResponseException
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void deleteErrorOn404() throws Exception {
+        new RtImage(
+            new AssertRequest(
+                new Response(HttpStatus.SC_NOT_FOUND)
+            ),
+            URI.create("http://localhost/images/test"),
+            new MockImages()
+        ).delete();
+    }
+
+    /**
+     * RtImage.delete() must throw UnexpectedResponseException if service
+     * responds with 409.
+     * @throws Exception The UnexpectedResponseException
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void deleteErrorOn409() throws Exception {
+        new RtImage(
+            new AssertRequest(
+                new Response(HttpStatus.SC_CONFLICT)
+            ),
+            URI.create("http://localhost/images/test"),
+            new MockImages()
+        ).delete();
+    }
+
+    /**
+     * RtImage.delete() must throw UnexpectedResponseException if service
+     * responds with 500.
+     * @throws Exception The UnexpectedResponseException
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void deleteErrorOn500() throws Exception {
+        new RtImage(
+            new AssertRequest(
+                new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+            ),
+            URI.create("http://localhost/images/test"),
+            new MockImages()
+        ).delete();
+    }
+
+    /**
+     * Mock {@link Images}.
+     */
+    private static class MockImages implements Images {
+        @Override
+        public Iterable<Image> iterate()
+            throws IOException, UnexpectedResponseException {
+            throw new UnsupportedOperationException();
+        }
+        @Override
+        // @checkstyle ParameterNumber (1 line)
+        public Images create(
+            final String name, final URL source,
+            final String repo, final String tag
+        ) throws IOException, UnexpectedResponseException {
+            throw new UnsupportedOperationException();
+        }
+    }
+
 }

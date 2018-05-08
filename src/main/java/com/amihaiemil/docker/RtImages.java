@@ -86,7 +86,8 @@ final class RtImages implements Images {
                     this.client,
                     URI.create(
                         this.baseUri.toString() + "/" + json.getString("Id")
-                    )
+                    ),
+                    this
                 )).collect(Collectors.toList());
         } finally {
             get.releaseConnection();
