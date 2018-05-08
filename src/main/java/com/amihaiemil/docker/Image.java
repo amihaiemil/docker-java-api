@@ -25,68 +25,35 @@
  */
 package com.amihaiemil.docker;
 
-import com.amihaiemil.docker.mock.AssertRequest;
-import com.amihaiemil.docker.mock.Response;
-import java.net.URI;
-import org.apache.http.HttpStatus;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.Test;
+import java.io.IOException;
+import javax.json.JsonObject;
 
 /**
- * Unit tests for {@link RemoteDocker}.
+ * A docker image.
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
+ * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Image">Docker Images API</a>
  * @since 0.0.1
- * @checkstyle MethodName (500 lines)
- * @todo #23:30min RemoteDocker: implement the rest of the test cases
- *  (including integration tests) for RemoteDocker.
+ * @todo #86:30min Continue implementing the operations that affect a single
+ *  docker image. See the link referenced above.
  */
-public final class RemoteDockerTestCase {
-    /**
-     * Ping must be TRUE if response is OK.
-     * @throws Exception If an error occurs.
-     */
-    @Test
-    public void pingTrueIfResponseIsOk() throws Exception {
-        MatcherAssert.assertThat(
-            new RemoteDocker(
-                new AssertRequest(
-                    new Response(HttpStatus.SC_OK, "")
-                ),
-                URI.create("http://remotedocker")
-            ).ping(),
-            Matchers.is(true)
-        );
-    }
+public interface Image {
 
     /**
-     * Ping must be False if response is not OK.
-     * @throws Exception If an error occurs.
+     * Return low-level information about this image. 
+     * @return JsonObject information.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ImageInspect">Inspect Image</a>
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (200 OK).
      */
-    @Test
-    public void pingFalseIfResponseIsNotOk() throws Exception {
-        MatcherAssert.assertThat(
-            new RemoteDocker(
-                new AssertRequest(
-                    new Response(HttpStatus.SC_NOT_FOUND, "")
-                ),
-                URI.create("http://remotedocker")
-            ).ping(),
-            Matchers.is(false)
-        );
-    }
-
+    JsonObject inspect() throws IOException, UnexpectedResponseException;
+    
     /**
-     * RemoteDocker can return Images.
+     * Return parent layers of this Image.
+     * @return Images parent Images.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ImageHistory">Image History</a>
      */
-    @Test
-    public void returnsImages() {
-        MatcherAssert.assertThat(
-            new RemoteDocker(
-                URI.create("http://localhost")
-            ).images(),
-            Matchers.notNullValue()
-        );
-    }
+    Images history();
+    
 }

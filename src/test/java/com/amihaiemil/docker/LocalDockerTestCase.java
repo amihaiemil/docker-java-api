@@ -77,4 +77,17 @@ public final class LocalDockerTestCase {
             Matchers.notNullValue()
         );
     }
+
+    /**
+     * LocalDocker can return Images.
+     */
+    @Test
+    public void returnsImages() {
+        MatcherAssert.assertThat(
+            new LocalDocker(
+                new File("/var/run/docker.sock")
+            ).images(),
+            Matchers.notNullValue()
+        );
+    }
 }

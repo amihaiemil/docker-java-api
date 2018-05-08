@@ -102,7 +102,7 @@ public final class RtContainerTestCase {
     }
 
     /**
-     * RtContainer.inspect() throws ISE because the HTTP Response's status
+     * RtContainer.inspect() throws URE because the HTTP Response's status
      * is not 200 OK.
      * @throws Exception If something goes wrong.
      */
@@ -141,7 +141,7 @@ public final class RtContainerTestCase {
     }
 
     /**
-     * RtContainer throws ISE if it receives server error on start.
+     * RtContainer throws URE if it receives server error on start.
      * @throws Exception If something goes wrong.
      */
     @Test(expected = UnexpectedResponseException.class)
@@ -157,7 +157,7 @@ public final class RtContainerTestCase {
     }
 
     /**
-     * RtContainer throws ISE if it receives "Not Found" on start.
+     * RtContainer throws URE if it receives "Not Found" on start.
      * @throws Exception If something goes wrong.
      */
     @Test(expected = UnexpectedResponseException.class)
@@ -173,7 +173,7 @@ public final class RtContainerTestCase {
     }
 
     /**
-     * RtContainer throws ISE if it receives "Not Modified" on start.
+     * RtContainer throws URE if it receives "Not Modified" on start.
      * @throws Exception If something goes wrong.
      */
     @Test(expected = UnexpectedResponseException.class)
@@ -213,7 +213,7 @@ public final class RtContainerTestCase {
     }
 
     /**
-     * RtContainer throws ISE if it receives server error on stop.
+     * RtContainer throws URE if it receives server error on stop.
      * @throws Exception If something goes wrong.
      */
     @Test(expected = UnexpectedResponseException.class)
@@ -229,7 +229,7 @@ public final class RtContainerTestCase {
     }
 
     /**
-     * RtContainer throws ISE if it receives "Not Found" on stop.
+     * RtContainer throws URE if it receives "Not Found" on stop.
      * @throws Exception If something goes wrong.
      */
     @Test(expected = UnexpectedResponseException.class)
@@ -245,7 +245,7 @@ public final class RtContainerTestCase {
     }
 
     /**
-     * RtContainer throws ISE if it receives "Not Modified" on stop.
+     * RtContainer throws URE if it receives "Not Modified" on stop.
      * @throws Exception If something goes wrong.
      */
     @Test(expected = UnexpectedResponseException.class)
@@ -258,5 +258,120 @@ public final class RtContainerTestCase {
             ),
             URI.create("http://localhost:80/1.30/containers/123")
         ).stop();
+    }
+
+    /**
+     * Wellformed request for the restart command.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void wellformedRestartRequest() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NO_CONTENT, ""
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> req.getRequestLine().getMethod().equals("POST")
+                ),
+                new Condition(
+                    "Resource path must be /{id}/restart",
+                    req -> req.getRequestLine()
+                        .getUri().endsWith("/9403/restart")
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/9403")
+        ).restart();
+    }
+
+    /**
+     * RtContainer throws UnexpectedResponseException if it receives server
+     * error 500 on restart.
+     * @throws Exception The UnexpectedResponseException.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void restartWithServerError() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).restart();
+    }
+
+    /**
+     * RtContainer throws UnexpectedResponseException if it receives 404 error
+     * on restart.
+     * @throws Exception The UnexpectedResponseException.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void restartsWithNotFound() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NOT_FOUND, ""
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).restart();
+    }
+
+    /**
+     * RtContainer can be killed with no problem.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void killedOk() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NO_CONTENT, ""
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> req.getRequestLine().getMethod().equals("POST")
+                ),
+                new Condition(
+                    "Resource path must be /{id}/kill",
+                    req -> req.getRequestLine().getUri().endsWith("/123/kill")
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).kill();
+    }
+
+    /**
+     * RtContainer throws URE if it receives server error on kill.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void killedWithServerError() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).kill();
+    }
+
+    /**
+     * RtContainer throws URE if it receives "Not Found" on kill.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void killedWithNotFound() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NOT_FOUND, ""
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).kill();
     }
 }

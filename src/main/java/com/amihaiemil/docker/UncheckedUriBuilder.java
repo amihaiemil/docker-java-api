@@ -25,68 +25,47 @@
  */
 package com.amihaiemil.docker;
 
-import com.amihaiemil.docker.mock.AssertRequest;
-import com.amihaiemil.docker.mock.Response;
 import java.net.URI;
-import org.apache.http.HttpStatus;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.Test;
+import java.net.URISyntaxException;
+import org.apache.http.client.utils.URIBuilder;
 
 /**
- * Unit tests for {@link RemoteDocker}.
+ * A {@link URIBuilder} that hides checked exceptions in the methods used
+ * throughout this library. Used under the assumption that the structure
+ * of URIs created using this class are valid.
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @checkstyle MethodName (500 lines)
- * @todo #23:30min RemoteDocker: implement the rest of the test cases
- *  (including integration tests) for RemoteDocker.
  */
-public final class RemoteDockerTestCase {
+final class UncheckedUriBuilder extends URIBuilder {
     /**
-     * Ping must be TRUE if response is OK.
-     * @throws Exception If an error occurs.
+     * Ctor.
+     * @param uri Base URI.
+     * @throws IllegalArgumentException From {@link URI#create(String)}.
+     * @throws NullPointerException From {@link URI#create(String)}.
      */
-    @Test
-    public void pingTrueIfResponseIsOk() throws Exception {
-        MatcherAssert.assertThat(
-            new RemoteDocker(
-                new AssertRequest(
-                    new Response(HttpStatus.SC_OK, "")
-                ),
-                URI.create("http://remotedocker")
-            ).ping(),
-            Matchers.is(true)
-        );
+    UncheckedUriBuilder(
+        final String uri
+    ) throws IllegalArgumentException, NullPointerException {
+        super(URI.create(uri));
     }
 
-    /**
-     * Ping must be False if response is not OK.
-     * @throws Exception If an error occurs.
-     */
-    @Test
-    public void pingFalseIfResponseIsNotOk() throws Exception {
-        MatcherAssert.assertThat(
-            new RemoteDocker(
-                new AssertRequest(
-                    new Response(HttpStatus.SC_NOT_FOUND, "")
-                ),
-                URI.create("http://remotedocker")
-            ).ping(),
-            Matchers.is(false)
-        );
+    @Override
+    public UncheckedUriBuilder addParameter(
+        final String name, final String value
+    ) {
+        super.addParameter(name, value);
+        return this;
     }
 
-    /**
-     * RemoteDocker can return Images.
-     */
-    @Test
-    public void returnsImages() {
-        MatcherAssert.assertThat(
-            new RemoteDocker(
-                URI.create("http://localhost")
-            ).images(),
-            Matchers.notNullValue()
-        );
+    @Override
+    public URI build() {
+        try {
+            return super.build();
+        } catch (final URISyntaxException ex) {
+            throw new IllegalStateException(
+                "Unexpected error while building a URI!", ex
+            );
+        }
     }
 }

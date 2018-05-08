@@ -25,68 +25,48 @@
  */
 package com.amihaiemil.docker;
 
-import com.amihaiemil.docker.mock.AssertRequest;
-import com.amihaiemil.docker.mock.Response;
+import java.io.IOException;
 import java.net.URI;
-import org.apache.http.HttpStatus;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.Test;
+import javax.json.JsonObject;
+import org.apache.http.client.HttpClient;
 
 /**
- * Unit tests for {@link RemoteDocker}.
+ * Runtime {@link Image}.
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @checkstyle MethodName (500 lines)
- * @todo #23:30min RemoteDocker: implement the rest of the test cases
- *  (including integration tests) for RemoteDocker.
  */
-public final class RemoteDockerTestCase {
+final class RtImage implements Image {
     /**
-     * Ping must be TRUE if response is OK.
-     * @throws Exception If an error occurs.
+     * Apache HttpClient which sends the requests.
      */
-    @Test
-    public void pingTrueIfResponseIsOk() throws Exception {
-        MatcherAssert.assertThat(
-            new RemoteDocker(
-                new AssertRequest(
-                    new Response(HttpStatus.SC_OK, "")
-                ),
-                URI.create("http://remotedocker")
-            ).ping(),
-            Matchers.is(true)
-        );
-    }
+    private final HttpClient client;
 
     /**
-     * Ping must be False if response is not OK.
-     * @throws Exception If an error occurs.
+     * Base URI.
      */
-    @Test
-    public void pingFalseIfResponseIsNotOk() throws Exception {
-        MatcherAssert.assertThat(
-            new RemoteDocker(
-                new AssertRequest(
-                    new Response(HttpStatus.SC_NOT_FOUND, "")
-                ),
-                URI.create("http://remotedocker")
-            ).ping(),
-            Matchers.is(false)
-        );
-    }
+    private final URI baseUri;
 
     /**
-     * RemoteDocker can return Images.
+     * Ctor.
+     * @param client The http client.
+     * @param uri The URI for this image.
      */
-    @Test
-    public void returnsImages() {
-        MatcherAssert.assertThat(
-            new RemoteDocker(
-                URI.create("http://localhost")
-            ).images(),
-            Matchers.notNullValue()
+    RtImage(final HttpClient client, final URI uri) {
+        this.client = client;
+        this.baseUri = uri;
+    }
+
+    @Override
+    public JsonObject inspect()
+        throws IOException, UnexpectedResponseException {
+        return new Inspection(this.client, this.baseUri.toString() + "/json");
+    }
+
+    @Override
+    public Images history() {
+        return new RtImages(
+            this.client, URI.create(this.baseUri.toString() + "/history")
         );
     }
 }

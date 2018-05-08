@@ -47,7 +47,7 @@ public interface Container {
     JsonObject inspect() throws IOException;
 
     /**
-     * Start a container.
+     * Start this container.
      * @throws IOException If something goes wrong.
      */
     void start() throws IOException;
@@ -59,10 +59,26 @@ public interface Container {
     String containerId();
 
     /**
-     * Stops the container.
+     * Stop this container.
      * @throws IOException If something goes wrong.
      * @throws UnexpectedResponseException If the status response is not
      *     expected.
      */
     void stop() throws IOException, UnexpectedResponseException;
+
+    /**
+     * Kill this container. SIGKILL is sent to this container.
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *     expected.
+     */
+    void kill() throws IOException, UnexpectedResponseException;
+
+    /**
+     * Restarts this container.
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *     expected.
+     */
+    void restart() throws IOException, UnexpectedResponseException;
 }
