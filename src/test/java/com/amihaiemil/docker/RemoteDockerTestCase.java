@@ -29,9 +29,11 @@ import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Response;
 import java.net.URI;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * Unit tests for {@link RemoteDocker}.
@@ -84,6 +86,7 @@ public final class RemoteDockerTestCase {
     public void returnsImages() {
         MatcherAssert.assertThat(
             new RemoteDocker(
+                Mockito.mock(HttpClient.class),
                 URI.create("http://localhost")
             ).images(),
             Matchers.notNullValue()
