@@ -59,11 +59,10 @@ public interface Image {
 
     /**
      * The parent {@link Images}.
-     * @return The parent {@link Images} API.
      * @throws IOException If something goes wrong.
      * @throws UnexpectedResponseException If the status response is not
      *  the expected one (200 OK).
      * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ImageDelete">Remove an image</a>
      */
-    Images delete() throws IOException, UnexpectedResponseException;
+    void delete() throws IOException, UnexpectedResponseException;
 }

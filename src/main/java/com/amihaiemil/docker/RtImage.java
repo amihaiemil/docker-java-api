@@ -50,20 +50,13 @@ final class RtImage implements Image {
     private final URI baseUri;
 
     /**
-     * The enclosing {@link Images} for this image.
-     */
-    private final Images parent;
-
-    /**
      * Ctor.
      * @param client The http client.
      * @param uri The URI for this image.
-     * @param images The parent Images API.
      */
-    RtImage(final HttpClient client, final URI uri, final Images images) {
+    RtImage(final HttpClient client, final URI uri) {
         this.client = client;
         this.baseUri = uri;
-        this.parent = images;
     }
 
     @Override
@@ -80,7 +73,7 @@ final class RtImage implements Image {
     }
 
     @Override
-    public Images delete() throws IOException, UnexpectedResponseException {
+    public void delete() throws IOException, UnexpectedResponseException {
         final HttpDelete delete = new HttpDelete(this.baseUri);
         try {
             final int status = this.client.execute(delete)
@@ -94,6 +87,5 @@ final class RtImage implements Image {
         } finally {
             delete.releaseConnection();
         }
-        return this.parent;
     }
 }
