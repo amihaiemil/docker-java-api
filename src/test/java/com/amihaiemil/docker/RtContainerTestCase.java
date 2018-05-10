@@ -374,4 +374,78 @@ public final class RtContainerTestCase {
             URI.create("http://localhost:80/1.30/containers/123")
         ).kill();
     }
+    
+    /**
+     * RtContainer can be renamed with no problem.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void renamedOk() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NO_CONTENT, ""
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> req.getRequestLine().getMethod().equals("POST")
+                ),
+                new Condition(
+                    "Resource path must be /{id}/rename?name=test",
+                    req -> req.getRequestLine().getUri().endsWith(
+                        "/123/rename?name=test"
+                    )
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).rename("test");
+    }
+    
+    /**
+     * RtContainer throws URE if it receives "Not Found" on rename.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void renameWithNotFound() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NOT_FOUND, ""
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).rename("test");
+    }
+    
+    /**
+     * RtContainer throws URE if it receives server error on rename.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void renameWithServerError() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).rename("newname");
+    }
+    
+    /**
+     * RtContainer throws URE if it receives conflict on rename.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void renameWithConflict() throws Exception {
+        new RtContainer(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_CONFLICT, ""
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).rename("duplicate");
+    }
 }

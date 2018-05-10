@@ -81,4 +81,16 @@ public interface Container {
      *     expected.
      */
     void restart() throws IOException, UnexpectedResponseException;
+    
+    /**
+     * Rename this container.
+     * @param name New name for the container.
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *     expected.
+     */
+    void rename(final String name)
+        throws IOException, UnexpectedResponseException;
+    
+    
 }
