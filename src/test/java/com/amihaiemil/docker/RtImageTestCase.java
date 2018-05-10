@@ -41,6 +41,7 @@ import org.junit.Test;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @checkstyle MethodName (500 lines)
  */
 public final class RtImageTestCase {
 
@@ -109,5 +110,74 @@ public final class RtImageTestCase {
                 Matchers.instanceOf(Images.class)
             )
         );
+    }
+
+    /**
+     * RtImage.delete() must send a DELETE request to the image's url.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void deleteSendsCorrectRequest() throws Exception {
+        new RtImage(
+            new AssertRequest(
+                new Response(HttpStatus.SC_OK),
+                new Condition(
+                    "RtImages.delete() must send a DELETE HTTP request",
+                    req -> "DELETE".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "RtImages.delete() must send the request to the image url",
+                    req -> "http://localhost/images/test".equals(
+                        req.getRequestLine().getUri()
+                    )
+                )
+            ),
+            URI.create("http://localhost/images/test")
+        ).delete();
+    }
+
+    /**
+     * RtImage.delete() must throw UnexpectedResponseException if service
+     * responds with 404.
+     * @throws Exception The UnexpectedResponseException
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void deleteErrorOn404() throws Exception {
+        new RtImage(
+            new AssertRequest(
+                new Response(HttpStatus.SC_NOT_FOUND)
+            ),
+            URI.create("http://localhost/images/test")
+        ).delete();
+    }
+
+    /**
+     * RtImage.delete() must throw UnexpectedResponseException if service
+     * responds with 409.
+     * @throws Exception The UnexpectedResponseException
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void deleteErrorOn409() throws Exception {
+        new RtImage(
+            new AssertRequest(
+                new Response(HttpStatus.SC_CONFLICT)
+            ),
+            URI.create("http://localhost/images/test")
+        ).delete();
+    }
+
+    /**
+     * RtImage.delete() must throw UnexpectedResponseException if service
+     * responds with 500.
+     * @throws Exception The UnexpectedResponseException
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void deleteErrorOn500() throws Exception {
+        new RtImage(
+            new AssertRequest(
+                new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+            ),
+            URI.create("http://localhost/images/test")
+        ).delete();
     }
 }

@@ -34,8 +34,9 @@ import javax.json.JsonObject;
  * @version $Id$
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Image">Docker Images API</a>
  * @since 0.0.1
- * @todo #86:30min Continue implementing the operations that affect a single
- *  docker image. See the link referenced above.
+ * @todo #96:30min Finish implementing the operations that affect a single
+ *  docker image (I think `tag` is the only one remaining). See the link
+ *  referenced above.
  */
 public interface Image {
 
@@ -55,5 +56,13 @@ public interface Image {
      * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ImageHistory">Image History</a>
      */
     Images history();
-    
+
+    /**
+     * The parent {@link Images}.
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (200 OK).
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ImageDelete">Remove an image</a>
+     */
+    void delete() throws IOException, UnexpectedResponseException;
 }
