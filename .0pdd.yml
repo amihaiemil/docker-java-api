@@ -1,5 +1,12 @@
 errors:
   - amihaiemil@gmail.com
+alerts:
+  suppress:
+    - on-found-puzzle
+    - on-lost-puzzle
+    - on-scope
+  github:
+    - amihaiemil
 tags:
   - pdd
   - bug
