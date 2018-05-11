@@ -48,9 +48,12 @@ public interface Container {
 
     /**
      * Start this container.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ContainerStart">Start Container</a>
      * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (204 NO CONTENT).
      */
-    void start() throws IOException;
+    void start() throws IOException, UnexpectedResponseException;
 
     /**
      * This Container's id.
@@ -60,34 +63,38 @@ public interface Container {
 
     /**
      * Stop this container.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ContainerStop">Stop Container</a>
      * @throws IOException If something goes wrong.
      * @throws UnexpectedResponseException If the status response is not
-     *     expected.
+     *  the expected one (204 NO CONTENT).
      */
     void stop() throws IOException, UnexpectedResponseException;
 
     /**
      * Kill this container. SIGKILL is sent to this container.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ContainerKill">Kill Container</a>
      * @throws IOException If something goes wrong.
      * @throws UnexpectedResponseException If the status response is not
-     *     expected.
+     *  the expected one (204 NO CONTENT).
      */
     void kill() throws IOException, UnexpectedResponseException;
 
     /**
      * Restarts this container.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ContainerRestart">Restart Container</a>
      * @throws IOException If something goes wrong.
      * @throws UnexpectedResponseException If the status response is not
-     *     expected.
+     *  the expected one (204 NO CONTENT).
      */
     void restart() throws IOException, UnexpectedResponseException;
     
     /**
      * Rename this container.
      * @param name New name for the container.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ContainerRename">Rename Container</a>
      * @throws IOException If something goes wrong.
      * @throws UnexpectedResponseException If the status response is not
-     *     expected.
+     *  the expected one (204 NO CONTENT).
      */
     void rename(final String name)
         throws IOException, UnexpectedResponseException;
