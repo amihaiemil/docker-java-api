@@ -39,8 +39,8 @@ import java.net.URI;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #88:30min Continue implementing the rest of the Container operations
- *  (pause, unpause, rename, logs etc) See the Docker API Docs for reference:
+ * @todo #97:30min Continue implementing the rest of the Container operations
+ *  (pause, unpause, logs etc) See the Docker API Docs for reference:
  *  https://docs.docker.com/engine/api/v1.35/#tag/Container
  * @todo #46:30min Once we have the CI environment properly setup with a Docker
  *  instance, write integration tests for this class as well
@@ -135,20 +135,41 @@ final class RtContainer implements Container {
 
     @Override
     public void restart() throws IOException, UnexpectedResponseException {
-        final HttpPost stop = new HttpPost(
+        final HttpPost restart = new HttpPost(
             this.baseUri.toString() + "/restart"
         );
         try {
-            final int status = this.client.execute(stop)
+            final int status = this.client.execute(restart)
                 .getStatusLine()
                 .getStatusCode();
             if (status != HttpStatus.SC_NO_CONTENT) {
                 throw new UnexpectedResponseException(
-                    stop.getURI().toString(), status, HttpStatus.SC_NO_CONTENT
+                    restart.getURI().toString(),
+                    status, HttpStatus.SC_NO_CONTENT
                 );
             }
         } finally {
-            stop.releaseConnection();
+            restart.releaseConnection();
+        }
+    }
+
+    @Override
+    public void rename(final String name)
+        throws IOException, UnexpectedResponseException {
+        final HttpPost rename = new HttpPost(
+            this.baseUri.toString() + "/rename?name=" + name
+        );
+        try {
+            final int status = this.client.execute(rename)
+                .getStatusLine()
+                .getStatusCode();
+            if (status != HttpStatus.SC_NO_CONTENT) {
+                throw new UnexpectedResponseException(
+                    rename.getURI().toString(), status, HttpStatus.SC_NO_CONTENT
+                );
+            }
+        } finally {
+            rename.releaseConnection();
         }
     }
 }
