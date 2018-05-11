@@ -118,7 +118,8 @@ public final class AssertRequest implements HttpClient {
     public <T> T execute(final HttpUriRequest request,
         final ResponseHandler<? extends T> responseHandler)
         throws IOException, ClientProtocolException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.check(request);
+        return responseHandler.handleResponse(this.response);
     }
 
     @Override
