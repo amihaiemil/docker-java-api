@@ -34,7 +34,7 @@ import java.net.URL;
  * @version $Id$
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Image">Docker Images API</a>
  * @since 0.0.1
- * @todo #83:30min Keep implementing the rest of the operations for the
+ * @todo #98:30min Continue implementing the rest of the operations for the
  *  Images interface. See the docs referenced above for more details.
  */
 public interface Images {
