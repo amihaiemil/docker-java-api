@@ -65,4 +65,12 @@ public interface Images {
     Images create(
         final String name, final URL source, final String repo, final String tag
     ) throws IOException, UnexpectedResponseException;
+
+    /**
+     * Deletes unused images.
+     * @throws IOException If an I/O error occurs.
+     * @throws UnexpectedResponseException If the API responds with an
+     *  unexpected status.
+     */
+    void prune() throws IOException, UnexpectedResponseException;
 }

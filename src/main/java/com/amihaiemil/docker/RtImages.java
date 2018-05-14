@@ -125,4 +125,19 @@ final class RtImages implements Images {
             create.releaseConnection();
         }
     }
+
+    @Override
+    public void prune() throws IOException, UnexpectedResponseException {
+        final HttpPost prune = new HttpPost(
+            this.baseUri.toString().concat("/prune")
+        );
+        try {
+            this.client.execute(
+                prune,
+                new MatchStatus(prune.getURI(), HttpStatus.SC_OK)
+            );
+        } finally {
+            prune.releaseConnection();
+        }
+    }
 }

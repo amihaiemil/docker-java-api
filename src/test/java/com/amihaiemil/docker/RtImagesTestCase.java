@@ -149,4 +149,43 @@ public final class RtImagesTestCase {
             URI.create("http://localhost")
         ).create("", new URL("http://registry.docker.com"), "", "");
     }
+
+    /**
+     * RtImages.prune() sends correct request and exist successfully on
+     * response code 200.
+     * @throws Exception If an error occurs.
+     */
+    @Test
+    public void prunesOk() throws Exception {
+        new RtImages(
+            new AssertRequest(
+                new Response(HttpStatus.SC_OK),
+                new Condition(
+                    "prune() must send a POST request",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "prune() resource URL must be '/images/prune'",
+                    req -> req.getRequestLine()
+                        .getUri().endsWith("/images/prune")
+                )
+            ),
+            URI.create("http://localhost/images")
+        ).prune();
+    }
+
+    /**
+     * RtImages.prune() must throw UnexpectedResponseException if service
+     * responds with 500.
+     * @throws Exception The UnexpectedResponseException.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void pruneThrowsErrorOnResponse500() throws Exception {
+        new RtImages(
+            new AssertRequest(
+                new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+            ),
+            URI.create("http://localhost/images")
+        ).prune();
+    }
 }
