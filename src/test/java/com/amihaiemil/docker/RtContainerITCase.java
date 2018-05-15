@@ -49,12 +49,12 @@ public final class RtContainerITCase {
         ).containers().create("Toomes", "hello-world");
         MatcherAssert.assertThat(
             container.inspect().getString("Name"),
-            Matchers.equalTo("Toomes")
+            Matchers.equalTo("/Toomes")
         );
         container.rename("Fury");
         MatcherAssert.assertThat(
             container.inspect().getString("Name"),
-            Matchers.equalTo("Fury")
+            Matchers.equalTo("/Fury")
         );
     }
 }
