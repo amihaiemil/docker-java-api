@@ -34,7 +34,7 @@ import java.net.URL;
  * @version $Id$
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Image">Docker Images API</a>
  * @since 0.0.1
- * @todo #83:30min Keep implementing the rest of the operations for the
+ * @todo #98:30min Continue implementing the rest of the operations for the
  *  Images interface. See the docs referenced above for more details.
  */
 public interface Images {
@@ -65,4 +65,12 @@ public interface Images {
     Images create(
         final String name, final URL source, final String repo, final String tag
     ) throws IOException, UnexpectedResponseException;
+
+    /**
+     * Deletes unused images.
+     * @throws IOException If an I/O error occurs.
+     * @throws UnexpectedResponseException If the API responds with an
+     *  unexpected status.
+     */
+    void prune() throws IOException, UnexpectedResponseException;
 }
