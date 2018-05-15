@@ -42,9 +42,9 @@ import java.net.URI;
  * @todo #97:30min Continue implementing the rest of the Container operations
  *  (pause, unpause, logs etc) See the Docker API Docs for reference:
  *  https://docs.docker.com/engine/api/v1.35/#tag/Container
- * @todo #46:30min Once we have the CI environment properly setup with a Docker
- *  instance, write integration tests for this class as well
- *  (RtContainerITCase).
+ * @todo #58:30min Now that we have the CI environment properly setup with
+ *  a Docker instance, continue integration tests for RtContainer(s) and other
+ *  parts of the API.
  */
 final class RtContainer implements Container {
 

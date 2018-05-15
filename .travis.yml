@@ -7,4 +7,5 @@ jdk:
   - openjdk8
 script:
   - set -e
+  - docker pull hello-world #for some IT cases
   - mvn clean install -Pcheckstyle,itcases jacoco:report coveralls:report

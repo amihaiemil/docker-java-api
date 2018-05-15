@@ -198,4 +198,9 @@ final class Inspection implements JsonObject {
     public Set<Entry<String, JsonValue>> entrySet() {
         return this.json.entrySet();
     }
+
+    @Override
+    public String toString() {
+        return this.json.toString();
+    }
 }
