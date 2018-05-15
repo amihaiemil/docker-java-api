@@ -93,11 +93,6 @@ final class RtImages implements Images {
         }
     }
 
-    // @todo #83:30min Several API calls required an authentication header as
-    //  explained here:
-    //  https://docs.docker.com/engine/api/v1.35/#section/Authentication
-    //  (including Images.create()). Find a way to make a reusable object from
-    //  that action and introduce it here.
     // @checkstyle ParameterNumber (4 lines)
     @Override
     public Images create(
