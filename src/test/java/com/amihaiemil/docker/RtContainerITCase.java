@@ -46,15 +46,15 @@ public final class RtContainerITCase {
     public void renamesContainer() throws Exception {
         final Container container = new LocalDocker(
             new File("/var/run/docker.sock")
-        ).containers().create("Adrian Toomes", "hello-world");
+        ).containers().create("Toomes", "hello-world");
         MatcherAssert.assertThat(
             container.inspect().getString("Name"),
-            Matchers.equalTo("Adrian Toomes")
+            Matchers.equalTo("Toomes")
         );
-        container.rename("Nick Fury");
+        container.rename("Fury");
         MatcherAssert.assertThat(
             container.inspect().getString("Name"),
-            Matchers.equalTo("Nick Fury")
+            Matchers.equalTo("Fury")
         );
     }
 }
