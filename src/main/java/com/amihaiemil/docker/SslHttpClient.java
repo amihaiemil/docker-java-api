@@ -27,6 +27,11 @@ package com.amihaiemil.docker;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -39,6 +44,7 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.ssl.SSLContexts;
 
 /**
  * An HttpClient that works over a normal network socket.
@@ -62,12 +68,21 @@ final class SslHttpClient implements HttpClient {
      * @param certs Path to the folder containing the following certificates:
      *  ca.pem, cert.pem and key.pem.
      */
-    SslHttpClient(final Path certs) {
+    SslHttpClient(final Path certs, final char[] passwd) throws IOException, NoSuchAlgorithmException, KeyStoreException, KeyStoreException, CertificateException, UnrecoverableKeyException, KeyManagementException {
         this(
             HttpClients.custom()
                 .setMaxConnPerRoute(10)
                 .setMaxConnTotal(10)
-                .build()
+                .setSSLContext(
+                    SSLContexts.custom()
+                        .loadTrustMaterial(
+                            certs.resolve("ca.pem").toFile()
+                        ).loadTrustMaterial(
+                            certs.resolve("cert.pem").toFile()
+                        ).loadKeyMaterial(
+                            certs.resolve("key.pem").toFile(), passwd, passwd
+                        ).build()
+                ).build()
         );
     }
 
