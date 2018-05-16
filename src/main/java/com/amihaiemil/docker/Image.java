@@ -34,9 +34,6 @@ import javax.json.JsonObject;
  * @version $Id$
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Image">Docker Images API</a>
  * @since 0.0.1
- * @todo #96:30min Finish implementing the operations that affect a single
- *  docker image (I think `tag` is the only one remaining). See the link
- *  referenced above.
  */
 public interface Image {
 
@@ -58,11 +55,25 @@ public interface Image {
     Images history();
 
     /**
-     * The parent {@link Images}.
+     * Remove an image, along with any untagged parent images that were
+     * referenced by that image.
      * @throws IOException If something goes wrong.
      * @throws UnexpectedResponseException If the status response is not
      *  the expected one (200 OK).
      * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ImageDelete">Remove an image</a>
      */
     void delete() throws IOException, UnexpectedResponseException;
+
+    /**
+     * Tags this image so that it becomes part of a repository.
+     * @param repo The repository to tag in. Eg.: "someuser/someimage"
+     * @param name The name of the new tag.
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ImageTag">Tag an image</a>
+     */
+    void tag(
+        String repo, String name
+    ) throws IOException, UnexpectedResponseException;
 }
