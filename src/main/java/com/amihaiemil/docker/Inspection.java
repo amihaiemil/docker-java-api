@@ -35,7 +35,6 @@ import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -63,17 +62,12 @@ final class Inspection implements JsonObject {
         throws UnexpectedResponseException, IOException {
         final HttpGet inspect = new HttpGet(url);
         try {
-            final HttpResponse response = client.execute(inspect);
-            final int status = response.getStatusLine().getStatusCode();
-            if (status == HttpStatus.SC_OK) {
-                this.json = Json
-                    .createReader(response.getEntity().getContent())
-                    .readObject();
-            } else {
-                throw new UnexpectedResponseException(
-                    url, status, HttpStatus.SC_OK
-                );
-            }
+            this.json = Json.createReader(
+                client.execute(
+                    inspect,
+                    new MatchStatus(inspect.getURI(), HttpStatus.SC_OK)
+                ).getEntity().getContent()
+            ).readObject();
         } finally {
             inspect.releaseConnection();
         }

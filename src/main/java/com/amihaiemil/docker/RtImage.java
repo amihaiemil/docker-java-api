@@ -76,14 +76,10 @@ final class RtImage implements Image {
     public void delete() throws IOException, UnexpectedResponseException {
         final HttpDelete delete = new HttpDelete(this.baseUri);
         try {
-            final int status = this.client.execute(delete)
-                .getStatusLine()
-                .getStatusCode();
-            if (status != HttpStatus.SC_OK) {
-                throw new UnexpectedResponseException(
-                    delete.getRequestLine().getUri(), status, HttpStatus.SC_OK
-                );
-            }
+            this.client.execute(
+                delete,
+                new MatchStatus(delete.getURI(), HttpStatus.SC_OK)
+            );
         } finally {
             delete.releaseConnection();
         }

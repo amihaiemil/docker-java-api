@@ -70,14 +70,10 @@ final class RtImages implements Images {
             this.baseUri.toString().concat("/json")
         );
         try {
-            final HttpResponse response = this.client.execute(get);
-            if (HttpStatus.SC_OK != response.getStatusLine().getStatusCode()) {
-                throw new UnexpectedResponseException(
-                    get.getRequestLine().getUri(),
-                    response.getStatusLine().getStatusCode(),
-                    HttpStatus.SC_OK
-                );
-            }
+            final HttpResponse response = this.client.execute(
+                get,
+                new MatchStatus(get.getURI(), HttpStatus.SC_OK)
+            );
             return Json.createReader(response.getEntity().getContent())
                 .readArray()
                 .stream()
@@ -112,14 +108,10 @@ final class RtImages implements Images {
                 .build()
         );
         try {
-            final int status = this.client.execute(create)
-                .getStatusLine()
-                .getStatusCode();
-            if (HttpStatus.SC_OK != status) {
-                throw new UnexpectedResponseException(
-                    create.getURI().toString(), status, HttpStatus.SC_OK
-                );
-            }
+            this.client.execute(
+                create,
+                new MatchStatus(create.getURI(), HttpStatus.SC_OK)
+            );
             return this;
         } finally {
             create.releaseConnection();
