@@ -85,6 +85,6 @@ public final class RemoteDocker extends RtDocker {
     public RemoteDocker(
         final HttpClient client, final URI uri, final String version
     ) {
-        super(client, URI.create(uri.toString() + "/" + version), version);
+        super(client, URI.create(uri.toString() + "/" + version));
     }
 }

@@ -49,27 +49,15 @@ abstract class RtDocker implements Docker {
      * Base URI.
      */
     private final URI baseUri;
-
-    /**
-     * API version.
-     */
-    private final String version;
     
     /**
      * Ctor.
      * @param client Given HTTP Client.
      * @param baseUri Base URI.
-     * @param version Version of the API.
      */
-    RtDocker(final HttpClient client, final URI baseUri, final String version) {
+    RtDocker(final HttpClient client, final URI baseUri) {
         this.client = client;
         this.baseUri = baseUri;
-        this.version = version;
-    }
-
-    @Override
-    public String version() {
-        return this.version;
     }
     
     @Override

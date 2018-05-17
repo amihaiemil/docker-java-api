@@ -55,27 +55,6 @@ public final class LocalDockerTestCase {
     }
 
     /**
-     * LocalDocker can return its version.
-     */
-    @Test
-    public void returnsVersion() {
-        MatcherAssert.assertThat(
-            new LocalDocker(
-                new File("/var/run/docker.sock")
-            ).version(),
-            Matchers.equalTo("v1.35")
-        );
-
-        MatcherAssert.assertThat(
-            new LocalDocker(
-                new File("/var/run/docker.sock"),
-                "v1.37"
-            ).version(),
-            Matchers.equalTo("v1.37")
-        );
-    }
-    
-    /**
      * Ping must be TRUE if response is OK.
      * @throws Exception If an error occurs.
      */

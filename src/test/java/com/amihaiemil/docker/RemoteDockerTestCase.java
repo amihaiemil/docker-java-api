@@ -44,31 +44,7 @@ import org.mockito.Mockito;
  */
 
 public final class RemoteDockerTestCase {
-    
-    
-    /**
-     * RemoteDocker can return its version.
-     */
-    @Test
-    public void returnsVersion() {
-        MatcherAssert.assertThat(
-            new RemoteDocker(
-                Mockito.mock(HttpClient.class),
-                URI.create("http://localhost")
-            ).version(),
-            Matchers.equalTo("v1.35")
-        );
-        
-        MatcherAssert.assertThat(
-            new RemoteDocker(
-                Mockito.mock(HttpClient.class),
-                URI.create("http://localhost"),
-                "v1.37"
-            ).version(),
-            Matchers.equalTo("v1.37")
-        );
-    }
-    
+
     /**
      * Ping must be TRUE if response is OK.
      * @throws Exception If an error occurs.

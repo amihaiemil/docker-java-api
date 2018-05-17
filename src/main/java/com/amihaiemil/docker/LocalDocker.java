@@ -75,7 +75,7 @@ public final class LocalDocker extends RtDocker {
      * @param version API version (e.g. v1.30).
      */
     public LocalDocker(final HttpClient client, final String version) {
-        super(client, URI.create("unix://localhost:80/" + version), version);
+        super(client, URI.create("unix://localhost:80/" + version));
     }
 
 }
