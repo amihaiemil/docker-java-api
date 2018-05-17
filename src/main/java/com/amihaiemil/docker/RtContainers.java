@@ -111,6 +111,7 @@ final class RtContainers implements Containers {
                 .createReader(response.getEntity().getContent()).readObject();
             post.releaseConnection();
             return new RtContainer(
+                json,
                 this.client,
                 URI.create(
                     this.baseUri.toString() + "/" + json.getString("Id")
