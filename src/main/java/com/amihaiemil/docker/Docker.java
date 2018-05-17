@@ -45,6 +45,12 @@ public interface Docker {
     boolean ping() throws IOException;
 
     /**
+     * Version of the Docker API.
+     * @return String version, for instance "v1.30".
+     */
+    String version();
+    
+    /**
      * Entry point for the Containers API.
      * @return Containers.
      */

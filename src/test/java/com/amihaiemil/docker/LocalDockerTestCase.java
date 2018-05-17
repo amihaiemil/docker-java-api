@@ -25,11 +25,13 @@
  */
 package com.amihaiemil.docker;
 
+import com.amihaiemil.docker.mock.AssertRequest;
+import com.amihaiemil.docker.mock.Response;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
-
 import java.io.File;
+import org.apache.http.HttpStatus;
 
 /**
  * Unit tests for LocalDocker.
@@ -52,6 +54,61 @@ public final class LocalDockerTestCase {
         );
     }
 
+    /**
+     * LocalDocker can return its version.
+     */
+    @Test
+    public void returnsVersion() {
+        MatcherAssert.assertThat(
+            new LocalDocker(
+                new File("/var/run/docker.sock")
+            ).version(),
+            Matchers.equalTo("v1.35")
+        );
+
+        MatcherAssert.assertThat(
+            new LocalDocker(
+                new File("/var/run/docker.sock"),
+                "v1.37"
+            ).version(),
+            Matchers.equalTo("v1.37")
+        );
+    }
+    
+    /**
+     * Ping must be TRUE if response is OK.
+     * @throws Exception If an error occurs.
+     */
+    @Test
+    public void pingTrueIfResponseIsOk() throws Exception {
+        MatcherAssert.assertThat(
+            new LocalDocker(
+                new AssertRequest(
+                    new Response(HttpStatus.SC_OK, "")
+                ),
+                "v1.35"
+            ).ping(),
+            Matchers.is(true)
+        );
+    }
+
+    /**
+     * Ping must be False if response is not OK.
+     * @throws Exception If an error occurs.
+     */
+    @Test
+    public void pingFalseIfResponseIsNotOk() throws Exception {
+        MatcherAssert.assertThat(
+            new LocalDocker(
+                new AssertRequest(
+                    new Response(HttpStatus.SC_NOT_FOUND, "")
+                ),
+                "v1.35"
+            ).ping(),
+            Matchers.is(false)
+        );
+    }
+    
     /**
      * LocalDocker can return the Containers.
      */
