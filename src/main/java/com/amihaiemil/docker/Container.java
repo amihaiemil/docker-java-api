@@ -99,5 +99,27 @@ public interface Container {
     void rename(final String name)
         throws IOException, UnexpectedResponseException;
     
+    /**
+     * Remove this container.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ContainerDelete">Delete Container</a>
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (204 NO CONTENT).
+     */
+    void remove() throws IOException, UnexpectedResponseException;
+    
+    
+    /**
+     * Remove this container.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ContainerDelete">Delete Container</a>
+     * @param volumes Remove the volumes associated with the container.
+     * @param force If the container is running, kill it before removing it.
+     * @param link Remove the specified link associated with the container.
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (204 NO CONTENT).
+     */
+    void remove(final boolean volumes, final boolean force, final boolean link)
+        throws IOException, UnexpectedResponseException;
     
 }

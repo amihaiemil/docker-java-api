@@ -33,6 +33,7 @@ import org.apache.http.client.methods.HttpPost;
 import javax.json.JsonObject;
 import java.io.IOException;
 import java.net.URI;
+import org.apache.http.client.methods.HttpDelete;
 
 /**
  * Restful Container.
@@ -170,6 +171,32 @@ final class RtContainer implements Container {
             }
         } finally {
             rename.releaseConnection();
+        }
+    }
+
+    @Override
+    public void remove() throws IOException, UnexpectedResponseException {
+        this.remove(false, false, false);
+    }
+
+    @Override
+    public void remove(
+        final boolean volumes, final boolean force, final boolean link
+    ) throws IOException, UnexpectedResponseException {
+        final HttpDelete remove  = new HttpDelete(
+            new UncheckedUriBuilder(this.baseUri.toString())
+                .addParameter("v", String.valueOf(volumes))
+                .addParameter("force", String.valueOf(force))
+                .addParameter("link", String.valueOf(link))
+                .build()
+        );
+        try {
+            this.client.execute(
+                remove,
+                new MatchStatus(remove.getURI(), HttpStatus.SC_NO_CONTENT)
+            );
+        } finally {
+            remove.releaseConnection();
         }
     }
 }
