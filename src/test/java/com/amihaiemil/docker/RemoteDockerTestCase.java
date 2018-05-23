@@ -41,10 +41,10 @@ import org.mockito.Mockito;
  * @version $Id$
  * @since 0.0.1
  * @checkstyle MethodName (500 lines)
- * @todo #23:30min RemoteDocker: implement the rest of the test cases
- *  (including integration tests) for RemoteDocker.
  */
+
 public final class RemoteDockerTestCase {
+
     /**
      * Ping must be TRUE if response is OK.
      * @throws Exception If an error occurs.
@@ -79,6 +79,35 @@ public final class RemoteDockerTestCase {
         );
     }
 
+    /**
+     * RemoteDocker can return the Containers.
+     */
+    @Test
+    public void getsContainers() {
+        MatcherAssert.assertThat(
+            new RemoteDocker(
+                Mockito.mock(HttpClient.class),
+                URI.create("http://localhost")
+            ).containers(),
+            Matchers.notNullValue()
+        );
+    }
+
+    /**
+     * RemoteDocker can return the Swarm.
+     */
+    @Test
+    public void returnsSwarm() {
+        MatcherAssert.assertThat(
+            new RemoteDocker(
+                Mockito.mock(HttpClient.class),
+                URI.create("http://localhost")
+            ).swarm(),
+            Matchers.notNullValue()
+        );
+    }
+    
+    
     /**
      * RemoteDocker can return Images.
      */

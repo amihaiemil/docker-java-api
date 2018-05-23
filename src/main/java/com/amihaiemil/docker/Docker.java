@@ -43,7 +43,7 @@ public interface Docker {
      * @throws IOException If there's network problem.
      */
     boolean ping() throws IOException;
-
+    
     /**
      * Entry point for the Containers API.
      * @return Containers.
