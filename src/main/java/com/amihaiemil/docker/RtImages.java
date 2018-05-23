@@ -28,6 +28,7 @@ package com.amihaiemil.docker;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.stream.Collectors;
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -132,4 +133,15 @@ final class RtImages implements Images {
             prune.releaseConnection();
         }
     }
+
+    
+    // @todo #84:30min Should return an Iterator<? extends JsonResource>
+    //  which would take a Request, a HttpClient and a Mapper in its ctor,
+    //  to know how to map each JsonObject to its resource type
+    //  (Image, Containter etc) 
+    @Override
+    public Iterator<Image> iterator() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

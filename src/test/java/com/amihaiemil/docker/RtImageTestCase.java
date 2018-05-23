@@ -180,4 +180,90 @@ public final class RtImageTestCase {
             URI.create("http://localhost/images/test")
         ).delete();
     }
+
+    /**
+     * RtImage.tag() must send a POST request to the image's URL.
+     * 
+     * Note the escaped forward slash in the query parameters.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void tagsOk() throws Exception {
+        new RtImage(
+            new AssertRequest(
+                new Response(HttpStatus.SC_CREATED),
+                new Condition(
+                    "RtImage.tag() must send a POST request",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "RtImage.tag() not building the URL correctly",
+                    req -> req.getRequestLine().getUri().endsWith(
+                        "/images/123/tag?repo=myrepo%2Fmyimage&tag=mytag"
+                    )
+                )
+            ),
+            URI.create("http://localhost/images/123")
+        ).tag("myrepo/myimage", "mytag");
+    }
+
+    /**
+     * RtImage.tag() must throw UnexpectedResponseException if docker responds
+     * with 400.
+     * @throws Exception The UnexpectedResponseException.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void tagErrorIfResponseIs400() throws Exception {
+        new RtImage(
+            new AssertRequest(
+                new Response(HttpStatus.SC_BAD_REQUEST)
+            ),
+            URI.create("https://localhost")
+        ).tag("myrepo/myimage", "mytag");
+    }
+
+    /**
+     * RtImage.tag() must throw UnexpectedResponseException if docker responds
+     * with 404.
+     * @throws Exception The UnexpectedResponseException.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void tagErrorIfResponseIs404() throws Exception {
+        new RtImage(
+            new AssertRequest(
+                new Response(HttpStatus.SC_NOT_FOUND)
+            ),
+            URI.create("https://localhost")
+        ).tag("myrepo/myimage", "mytag");
+    }
+
+    /**
+     * RtImage.tag() must throw UnexpectedResponseException if docker responds
+     * with 409.
+     * @throws Exception The UnexpectedResponseException.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void tagErrorIfResponseIs409() throws Exception {
+        new RtImage(
+            new AssertRequest(
+                new Response(HttpStatus.SC_CONFLICT)
+            ),
+            URI.create("https://localhost")
+        ).tag("myrepo/myimage", "mytag");
+    }
+
+    /**
+     * RtImage.tag() must throw UnexpectedResponseException if docker responds
+     * with 500.
+     * @throws Exception The UnexpectedResponseException.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void tagErrorIfResponseIs500() throws Exception {
+        new RtImage(
+            new AssertRequest(
+                new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+            ),
+            URI.create("https://localhost")
+        ).tag("myrepo/myimage", "mytag");
+    }
 }

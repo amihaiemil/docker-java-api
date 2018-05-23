@@ -45,7 +45,7 @@ import java.net.URI;
  *  a Docker instance, continue integration tests for RtContainer(s) and other
  *  parts of the API.
  */
-final class RtContainer implements Container {
+final class RtContainer extends JsonResource implements Container {
 
     /**
      * Apache HttpClient which sends the requests.
@@ -59,10 +59,14 @@ final class RtContainer implements Container {
 
     /**
      * Ctor.
+     * @param rep JsonObject representation of this Container.
      * @param client Given HTTP Client.
      * @param baseUri Base URI, ending with /{containerId}.
      */
-    RtContainer(final HttpClient client, final URI baseUri) {
+    RtContainer(
+        final JsonObject rep, final HttpClient client, final URI baseUri
+    ) {
+        super(rep);
         this.client = client;
         this.baseUri = baseUri;
     }
@@ -89,9 +93,7 @@ final class RtContainer implements Container {
 
     @Override
     public String containerId() {
-        return this.baseUri.toString().substring(
-            this.baseUri.toString().lastIndexOf("/") + 1
-        );
+        return this.getString("Id");
     }
 
     @Override
