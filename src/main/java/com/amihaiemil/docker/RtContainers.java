@@ -95,11 +95,16 @@ final class RtContainers implements Containers {
     public Container create(
         final String name, final JsonObject container
     ) throws IOException {
-        final String uri;
+        final URI uri;
         if(!name.isEmpty()) {
-            uri = this.baseUri.toString() + "/create?name=" + name;
+            uri = new UncheckedUriBuilder(
+                this.baseUri.toString().concat("/create")
+            ).addParameter("name", name)
+                .build();
         } else {
-            uri = this.baseUri.toString() + "/create";
+            uri = new UncheckedUriBuilder(
+                this.baseUri.toString().concat("/create")
+            ).build();
         }
         final HttpPost post = new HttpPost(uri);
         post.setEntity(new StringEntity(container.toString()));
@@ -119,7 +124,7 @@ final class RtContainers implements Containers {
             );
         }
         throw new UnexpectedResponseException(
-            uri, status, HttpStatus.SC_CREATED
+            uri.toString(), status, HttpStatus.SC_CREATED
         );
     }
 
