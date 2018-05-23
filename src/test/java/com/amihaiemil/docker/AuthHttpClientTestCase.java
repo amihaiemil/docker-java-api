@@ -25,23 +25,16 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
 import org.apache.http.Header;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HttpContext;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * Unit tests for {@link AuthHttpClient}.
@@ -51,6 +44,22 @@ import org.junit.Test;
  */
 public final class AuthHttpClientTestCase {
     /**
+     * Mock HttpClient that does nothing.
+     */
+    private static HttpClient noOpClient;
+
+    /**
+     * Setup the mock http client.
+     * @throws Exception If something does wrong.
+     */
+    @BeforeClass
+    public static void setup() throws Exception {
+        noOpClient = Mockito.mock(HttpClient.class);
+        Mockito.when(noOpClient.execute(Mockito.any(HttpUriRequest.class)))
+            .thenReturn(null);
+    }
+
+    /**
      * Must inject the X-Registry-Auth header if absent and set it to the
      * auth's value.
      * @throws Exception If something goes wrong.
@@ -58,7 +67,7 @@ public final class AuthHttpClientTestCase {
     @Test
     public void injectsHeaderIfAbsent() throws Exception {
         final HttpUriRequest request = new HttpGet();
-        new AuthHttpClient(new NoOpHttpClient(), () -> "123").execute(request);
+        new AuthHttpClient(noOpClient, () -> "123").execute(request);
         MatcherAssert.assertThat(
             request.getFirstHeader("X-Registry-Auth").getValue(),
             Matchers.is("123")
@@ -74,89 +83,10 @@ public final class AuthHttpClientTestCase {
         final Header auth = new BasicHeader("X-Registry-Auth", "12356");
         final HttpUriRequest request = new HttpGet();
         request.setHeader(auth);
-        new AuthHttpClient(new NoOpHttpClient(), () -> "abc").execute(request);
+        new AuthHttpClient(noOpClient, () -> "abc").execute(request);
         MatcherAssert.assertThat(
             request.getFirstHeader("X-Registry-Auth"),
             Matchers.is(auth)
         );
-    }
-
-    /**
-     * An http client that does nothing.
-     */
-    private static class NoOpHttpClient implements HttpClient {
-        @Override
-        public HttpParams getParams() {
-            throw new UnsupportedOperationException();
-        }
-    
-        @Override
-        public ClientConnectionManager getConnectionManager() {
-            throw new UnsupportedOperationException();
-        }
-    
-        @Override
-        public HttpResponse execute(final HttpUriRequest request)
-            throws IOException, ClientProtocolException {
-            //no op
-            return null;
-        }
-    
-        @Override
-        public HttpResponse execute(
-            final HttpUriRequest request, final HttpContext context
-        ) throws IOException, ClientProtocolException {
-            throw new UnsupportedOperationException();
-        }
-    
-        @Override
-        public HttpResponse execute(
-            final HttpHost target, final HttpRequest request
-        ) throws IOException, ClientProtocolException {
-            throw new UnsupportedOperationException();
-        }
-    
-        @Override
-        public HttpResponse execute(
-            final HttpHost target, final HttpRequest request,
-            final HttpContext context
-        ) throws IOException, ClientProtocolException {
-            throw new UnsupportedOperationException();
-        }
-    
-        @Override
-        public <T> T execute(
-            final HttpUriRequest request,
-            final ResponseHandler<? extends T> responseHandler
-        ) throws IOException, ClientProtocolException {
-            throw new UnsupportedOperationException();
-        }
-    
-        @Override
-        public <T> T execute(
-            final HttpUriRequest request,
-            final ResponseHandler<? extends T> responseHandler,
-            final HttpContext context
-        ) throws IOException, ClientProtocolException {
-            throw new UnsupportedOperationException();
-        }
-    
-        @Override
-        public <T> T execute(
-            final HttpHost target, final HttpRequest request,
-            final ResponseHandler<? extends T> responseHandler
-        ) throws IOException, ClientProtocolException {
-            throw new UnsupportedOperationException();
-        }
-    
-        // @checkstyle ParameterNumber (5 lines)
-        @Override
-        public <T> T execute(
-            final HttpHost target, final HttpRequest request,
-            final ResponseHandler<? extends T> responseHandler,
-            final HttpContext context
-        ) throws IOException, ClientProtocolException {
-            throw new UnsupportedOperationException();
-        }
     }
 }
