@@ -36,6 +36,7 @@ import org.apache.http.client.HttpClient;
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @checkstyle ParameterNumber (150 lines)
  * @todo #68:30min Implement integration tests for RemoteDocker. We have to
  *  figure out how to create a remote Docker host and connect to it from Travis.
  *  Also, it will probably have to be paid (some machine on AWS or DO?).
@@ -45,24 +46,34 @@ public final class RemoteDocker extends RtDocker {
     /**
      * Remote Docker engine. API version is 1.35 by default.
      * @param uri Remote Docker URI.
-     * @param certs Path to the folder containing these 3:
-     *  CA certificate (ca.pem), client certificate (cert.pem)
-     *  and client key (key.pem).
+     * @param keys Path to the keystore.
+     * @param trust Path to the truststore.
+     * @param storePwd Password for the keystore.
+     * @param keyPwd Passphrase for the key.
      */
-    public RemoteDocker(final URI uri, final Path certs) {
-        this(uri, "v1.35", certs);
+    public RemoteDocker(
+        final URI uri, final Path keys, final Path trust,
+        final char[] storePwd, final char[] keyPwd) {
+        this(uri, "v1.35", keys, trust, storePwd, keyPwd);
     }
 
     /**
      * Remote Docker engine.
      * @param uri Remote Docker URI.
      * @param version API version (eg. v1.35).
-     * @param certs Path to the folder containing these 3:
-     *  CA certificate (ca.pem), client certificate (cert.pem)
-     *  and client key (key.pem).
+     * @param keys Path to the keystore.
+     * @param trust Path to the truststore.
+     * @param storePwd Password for the keystore.
+     * @param keyPwd Passphrase for the key.
      */
-    public RemoteDocker(final URI uri, final String version, final Path certs) {
-        this(new SslHttpClient(certs), uri, version);
+    public RemoteDocker(
+        final URI uri, final String version,
+        final Path keys, final Path trust,
+        final char[] storePwd, final char[] keyPwd) {
+        this(
+            new SslHttpClient(keys, trust, storePwd, keyPwd),
+            uri, version
+        );
     }
 
     /**
