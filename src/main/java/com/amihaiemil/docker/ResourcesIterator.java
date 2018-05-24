@@ -25,23 +25,70 @@
  */
 package com.amihaiemil.docker;
 
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
+import java.io.IOException;
 import java.util.Iterator;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Iterator over Docker resources (Containers, Images etc).
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @param <T> The Json resoure (Image, Container etc) returned by the API.
  */
-public class ResourcesIterator<T extends JsonObject> implements Iterator<T> {
+final class ResourcesIterator<T extends JsonObject> implements Iterator<T> {
+
+    /**
+     * Iterated resources.
+     */
+    private final Iterator<T> resources;
+
+    /**
+     * Ctor.
+     * @param client Used HTTP Client.
+     * @param request HTTP Request.
+     * @param mapper Function which should map the received JsonObject
+     *  to the specified resource.
+     */
+    ResourcesIterator(
+        final HttpClient client, final HttpGet request,
+        final Function<JsonObject, T> mapper
+    ) {
+        try {
+            final JsonArray array = client.execute(
+                request,
+                new ReadJsonArray(
+                    new MatchStatus(request.getURI(), HttpStatus.SC_OK)
+                )
+            );
+            this.resources = array.stream()
+                .map(json -> (JsonObject) json)
+                .map(
+                    json -> mapper.apply(json)
+                ).collect(Collectors.toList())
+                .iterator();
+        } catch (final IOException ex) {
+            throw new IllegalStateException(
+                "IOException when calling " + request.getURI().toString(), ex
+            );
+        } finally {
+            request.releaseConnection();
+        }
+    }
+
     @Override
     public boolean hasNext() {
-        return false;
+        return this.resources.hasNext();
     }
 
     @Override
     public T next() {
-        return null;
+        return this.resources.next();
     }
 }

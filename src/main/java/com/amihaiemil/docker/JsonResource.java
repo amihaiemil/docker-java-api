@@ -89,7 +89,6 @@ abstract class JsonResource implements JsonObject {
 
     @Override
     public String getString(final String name, final String defaultValue) {
-//        new ResourcesIterator<Container>().
         return this.resource.getString(name, defaultValue);
     }
 

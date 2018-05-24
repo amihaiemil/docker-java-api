@@ -52,6 +52,7 @@ public final class RtImageTestCase {
     @Test
     public void inspectsItself() throws Exception {
         final Image image = new RtImage(
+            Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_OK,
@@ -97,6 +98,7 @@ public final class RtImageTestCase {
     public void returnsHistory() {
         MatcherAssert.assertThat(
             new RtImage(
+                Json.createObjectBuilder().build(),
                 new AssertRequest(
                     new Response(
                         HttpStatus.SC_OK,
@@ -119,6 +121,7 @@ public final class RtImageTestCase {
     @Test
     public void deleteSendsCorrectRequest() throws Exception {
         new RtImage(
+            Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(HttpStatus.SC_OK),
                 new Condition(
@@ -144,6 +147,7 @@ public final class RtImageTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void deleteErrorOn404() throws Exception {
         new RtImage(
+            Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(HttpStatus.SC_NOT_FOUND)
             ),
@@ -159,6 +163,7 @@ public final class RtImageTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void deleteErrorOn409() throws Exception {
         new RtImage(
+            Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(HttpStatus.SC_CONFLICT)
             ),
@@ -174,6 +179,7 @@ public final class RtImageTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void deleteErrorOn500() throws Exception {
         new RtImage(
+            Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
             ),
@@ -190,6 +196,7 @@ public final class RtImageTestCase {
     @Test
     public void tagsOk() throws Exception {
         new RtImage(
+            Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(HttpStatus.SC_CREATED),
                 new Condition(
@@ -215,6 +222,7 @@ public final class RtImageTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void tagErrorIfResponseIs400() throws Exception {
         new RtImage(
+            Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(HttpStatus.SC_BAD_REQUEST)
             ),
@@ -230,6 +238,7 @@ public final class RtImageTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void tagErrorIfResponseIs404() throws Exception {
         new RtImage(
+            Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(HttpStatus.SC_NOT_FOUND)
             ),
@@ -245,6 +254,7 @@ public final class RtImageTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void tagErrorIfResponseIs409() throws Exception {
         new RtImage(
+            Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(HttpStatus.SC_CONFLICT)
             ),
@@ -260,6 +270,7 @@ public final class RtImageTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void tagErrorIfResponseIs500() throws Exception {
         new RtImage(
+            Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
             ),

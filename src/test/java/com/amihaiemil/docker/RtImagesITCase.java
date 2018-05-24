@@ -25,48 +25,37 @@
  */
 package com.amihaiemil.docker;
 
-import java.net.URI;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ResponseHandler;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
+import java.io.File;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * An Apache ResponseHandler that tries to match the Response's status code
- * with the expected one.
+ * Integration tests for {@link RtImages}.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
  */
-final class MatchStatus implements ResponseHandler<HttpResponse> {
+public final class RtImagesITCase {
 
     /**
-     * Called URI.
+     * {@link RtImages} can iterate over the Images, with the default filters.
+     * @throws Exception If an error occurs.
      */
-    private final URI called;
-    
-    /**
-     * Expected status.
-     */
-    private final int expected;
-    
-    /**
-     * Ctor.
-     * @param called Called URI.
-     * @param expected Expected Http status code.
-     */
-    MatchStatus(final URI called, final int expected) {
-        this.called = called;
-        this.expected = expected;
-    }
-    
-    @Override
-    public HttpResponse handleResponse(final HttpResponse response) {
-        final int actual = response.getStatusLine().getStatusCode();
-        if(actual != this.expected) {
-            throw new UnexpectedResponseException(
-                this.called.toString(), actual, this.expected
+    @Test
+    public void iteratesImages() throws Exception {
+        final AtomicInteger count = new AtomicInteger();
+        final Images images = new LocalDocker(
+            new File("/var/run/docker.sock")
+        ).images();
+        for(final Image img : images) {
+            MatcherAssert.assertThat(
+                img.getInt("Created"), Matchers.notNullValue()
+            );
+            MatcherAssert.assertThat(
+                img.getString("Id"), Matchers.startsWith("sha256:")
             );
         }
-        return response;
     }
-    
 }
