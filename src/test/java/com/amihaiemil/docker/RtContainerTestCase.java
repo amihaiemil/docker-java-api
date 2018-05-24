@@ -477,6 +477,7 @@ public final class RtContainerTestCase {
     @Test
     public void removeOk() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NO_CONTENT, ""
@@ -503,6 +504,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void removeWithBadParameter() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_BAD_REQUEST, ""
@@ -519,6 +521,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void removeWithNotFound() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NOT_FOUND, ""
@@ -535,6 +538,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void removeWithConflict() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_CONFLICT, ""
@@ -551,6 +555,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void removeWithServerError() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
