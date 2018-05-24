@@ -61,5 +61,6 @@ public final class RtContainerITCase {
             container.inspect().getString("Name"),
             Matchers.equalTo("/Fury")
         );
+        container.remove();
     }
 }
