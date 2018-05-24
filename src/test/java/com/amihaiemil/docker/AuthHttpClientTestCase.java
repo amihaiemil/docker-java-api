@@ -25,42 +25,68 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.File;
+import org.apache.http.Header;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.message.BasicHeader;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
- * Integration tests for {@link RtContainer}.
- * @author Mihai Andronache (amihaiemil@gmail.com)
+ * Unit tests for {@link AuthHttpClient}.
+ * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
  */
-public final class RtContainerITCase {
-    
+public final class AuthHttpClientTestCase {
     /**
-     * {@link RtContainer} can rename the Docker container it represents.
-     * @throws Exception If something goes wrong.
-     * @todo #105:30min This test is now failing with an IOException. Un-ignore
-     *  it and fix it. There error can be found here:
-     *  https://travis-ci.org/amihaiemil/docker-java-api/jobs/382740284#L1972
+     * Mock HttpClient that does nothing.
      */
-    @Ignore
+    private static HttpClient noOpClient;
+
+    /**
+     * Setup the mock http client.
+     * @throws Exception If something does wrong.
+     */
+    @BeforeClass
+    public static void setup() throws Exception {
+        noOpClient = Mockito.mock(HttpClient.class);
+        Mockito.when(noOpClient.execute(Mockito.any(HttpUriRequest.class)))
+            .thenReturn(null);
+    }
+
+    /**
+     * Must inject the X-Registry-Auth header if absent and set it to the
+     * auth's value.
+     * @throws Exception If something goes wrong.
+     */
     @Test
-    public void renamesContainer() throws Exception {
-        final Container container = new LocalDocker(
-            new File("/var/run/docker.sock")
-        ).containers().create("Toomes", "hello-world");
+    public void injectsHeaderIfAbsent() throws Exception {
+        final HttpUriRequest request = new HttpGet();
+        new AuthHttpClient(noOpClient, () -> "123").execute(request);
         MatcherAssert.assertThat(
-            container.inspect().getString("Name"),
-            Matchers.equalTo("/Toomes")
+            request.getFirstHeader("X-Registry-Auth").getValue(),
+            Matchers.is("123")
         );
-        container.rename("Fury");
+    }
+
+    /**
+     * Leaves the request's header instact if it exists.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void leavesExistingHeaderAlone() throws Exception {
+        final Header auth = new BasicHeader("X-Registry-Auth", "12356");
+        final HttpUriRequest request = new HttpGet();
+        request.setHeader(auth);
+        new AuthHttpClient(noOpClient, () -> "abc").execute(request);
         MatcherAssert.assertThat(
-            container.inspect().getString("Name"),
-            Matchers.equalTo("/Fury")
+            request.getFirstHeader("X-Registry-Auth"),
+            Matchers.is(auth)
         );
-        container.remove();
     }
 }

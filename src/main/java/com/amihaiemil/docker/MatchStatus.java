@@ -37,9 +37,6 @@ import org.apache.http.client.ResponseHandler;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #93:30min Use this ResponseHandler to get rid of the status code
- *  checking logic which is duplicated in many places like RtContainer
- *  and RtImages.
  */
 final class MatchStatus implements ResponseHandler<HttpResponse> {
 

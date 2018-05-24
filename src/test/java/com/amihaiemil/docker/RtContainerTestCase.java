@@ -52,6 +52,7 @@ public final class RtContainerTestCase {
     @Test
     public void returnsId() {
         final Container container = new RtContainer(
+            Json.createObjectBuilder().add("Id", "123id456").build(),
             Mockito.mock(HttpClient.class),
             URI.create("unix://localhost:80/1.30/containers/123id456")
         );
@@ -68,6 +69,7 @@ public final class RtContainerTestCase {
     @Test
     public void inspectsItself() throws Exception {
         final Container container = new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_OK,
@@ -109,6 +111,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void inspectsNotFound() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(HttpStatus.SC_NOT_FOUND, "")
             ),
@@ -123,6 +126,7 @@ public final class RtContainerTestCase {
     @Test
     public void startsOk() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NO_CONTENT, ""
@@ -147,6 +151,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void startsWithServerError() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
@@ -163,6 +168,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void startsWithNotFound() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NOT_FOUND, ""
@@ -179,6 +185,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void startsWithNotModified() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NOT_MODIFIED, ""
@@ -195,6 +202,7 @@ public final class RtContainerTestCase {
     @Test
     public void stopsOk() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NO_CONTENT, ""
@@ -219,6 +227,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void stopsWithServerError() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
@@ -235,6 +244,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void stopsWithNotFound() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NOT_FOUND, ""
@@ -251,6 +261,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void stopsWithNotModified() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NOT_MODIFIED, ""
@@ -267,6 +278,7 @@ public final class RtContainerTestCase {
     @Test
     public void restartsOk() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "9403").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NO_CONTENT, ""
@@ -293,6 +305,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void restartWithServerError() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
@@ -310,6 +323,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void restartsWithNotFound() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NOT_FOUND, ""
@@ -326,6 +340,7 @@ public final class RtContainerTestCase {
     @Test
     public void killedOk() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NO_CONTENT, ""
@@ -350,6 +365,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void killedWithServerError() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
@@ -366,6 +382,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void killedWithNotFound() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NOT_FOUND, ""
@@ -382,6 +399,7 @@ public final class RtContainerTestCase {
     @Test
     public void renamedOk() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NO_CONTENT, ""
@@ -408,6 +426,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void renameWithNotFound() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NOT_FOUND, ""
@@ -424,6 +443,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void renameWithServerError() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
@@ -440,6 +460,7 @@ public final class RtContainerTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void renameWithConflict() throws Exception {
         new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_CONFLICT, ""

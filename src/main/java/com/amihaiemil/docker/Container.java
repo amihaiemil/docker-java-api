@@ -34,7 +34,7 @@ import java.io.IOException;
  * @version $Id$
  * @since 0.0.1
  */
-public interface Container {
+public interface Container extends JsonObject {
 
     /**
      * Inspect this container, return low-level information

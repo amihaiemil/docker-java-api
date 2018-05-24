@@ -25,58 +25,40 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import javax.json.Json;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 /**
- * Docker API entry point.
- * @author Mihai Andronache (amihaiemil@gmail.com)
+ * Unit tests for {@link Credentials}.
+ * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #71:30min Continue implementing the rest of the Docker API (except
- *  for Swarm and Images, which are being handled in another ticket).
  */
-public interface Docker {
-
+public final class CredentialsTestCase {
     /**
-     * Ping the Docker Engine.
-     * @return True if it responds with 200 OK, false otherwise.
-     * @throws IOException If there's network problem.
+     * Correctly encodes to base64 all attributes as a JSON object.
      */
-    boolean ping() throws IOException;
-    
-    /**
-     * Entry point for the Containers API.
-     * @return Containers.
-     */
-    Containers containers();
-
-    /**
-     * Entry point for the Images API.
-     * @return Images.
-     */
-    Images images();
-
-    /**
-     * Entry point for the Networks API.
-     * @return Networks.
-     */
-    Networks networks();
-
-    /**
-     * Entry point for the Volumes API.
-     * @return Volumes.
-     */
-    Volumes volumes();
-
-    /**
-     * Entry point for the Exec API.
-     * @return Exec.
-     */
-    Exec exec();
-
-    /**
-     * Entry point for the Swarm API.
-     * @return Swarm.
-     */
-    Swarm swarm();
+    @Test
+    public void correctEncoding() {
+        MatcherAssert.assertThat(
+            new Credentials(
+                "user", "pass", "john@doe.com", "server"
+            ).encoded(),
+            Matchers.is(
+                Base64.getEncoder().encodeToString(
+                    Json.createObjectBuilder()
+                        .add("username", "user")
+                        .add("password", "pass")
+                        .add("email", "john@doe.com")
+                        .add("serveraddress", "server")
+                        .build().toString()
+                        .getBytes(StandardCharsets.UTF_8)
+                )
+            )
+        );
+    }
 }

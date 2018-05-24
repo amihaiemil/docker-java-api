@@ -25,7 +25,6 @@
  */
 package com.amihaiemil.docker;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -47,7 +46,7 @@ import org.apache.http.client.methods.HttpDelete;
  *  a Docker instance, continue integration tests for RtContainer(s) and other
  *  parts of the API.
  */
-final class RtContainer implements Container {
+final class RtContainer extends JsonResource implements Container {
 
     /**
      * Apache HttpClient which sends the requests.
@@ -61,10 +60,14 @@ final class RtContainer implements Container {
 
     /**
      * Ctor.
+     * @param rep JsonObject representation of this Container.
      * @param client Given HTTP Client.
      * @param baseUri Base URI, ending with /{containerId}.
      */
-    RtContainer(final HttpClient client, final URI baseUri) {
+    RtContainer(
+        final JsonObject rep, final HttpClient client, final URI baseUri
+    ) {
+        super(rep);
         this.client = client;
         this.baseUri = baseUri;
     }
@@ -79,21 +82,19 @@ final class RtContainer implements Container {
         final HttpPost start = new HttpPost(
             this.baseUri.toString() + "/start"
         );
-        final HttpResponse response = this.client.execute(start);
-        final int status = response.getStatusLine().getStatusCode();
-        if(status != HttpStatus.SC_NO_CONTENT) {
-            throw new UnexpectedResponseException(
-                start.getURI().toString(), status, HttpStatus.SC_NO_CONTENT
+        try {
+            this.client.execute(
+                start,
+                new MatchStatus(start.getURI(), HttpStatus.SC_NO_CONTENT)
             );
+        } finally {
+            start.releaseConnection();
         }
-        start.releaseConnection();
     }
 
     @Override
     public String containerId() {
-        return this.baseUri.toString().substring(
-            this.baseUri.toString().lastIndexOf("/") + 1
-        );
+        return this.getString("Id");
     }
 
     @Override
@@ -102,14 +103,10 @@ final class RtContainer implements Container {
             this.baseUri.toString() + "/stop"
         );
         try {
-            final int status = this.client.execute(stop)
-                .getStatusLine()
-                .getStatusCode();
-            if (status != HttpStatus.SC_NO_CONTENT) {
-                throw new UnexpectedResponseException(
-                    stop.getURI().toString(), status, HttpStatus.SC_NO_CONTENT
-                );
-            }
+            this.client.execute(
+                stop,
+                new MatchStatus(stop.getURI(), HttpStatus.SC_NO_CONTENT)
+            );
         } finally {
             stop.releaseConnection();
         }
@@ -121,14 +118,10 @@ final class RtContainer implements Container {
             this.baseUri.toString() + "/kill"
         );
         try {
-            final int status = this.client.execute(kill)
-                .getStatusLine()
-                .getStatusCode();
-            if (status != HttpStatus.SC_NO_CONTENT) {
-                throw new UnexpectedResponseException(
-                    kill.getURI().toString(), status, HttpStatus.SC_NO_CONTENT
-                );
-            }
+            this.client.execute(
+                kill,
+                new MatchStatus(kill.getURI(), HttpStatus.SC_NO_CONTENT)
+            );
         } finally {
             kill.releaseConnection();
         }
@@ -140,15 +133,10 @@ final class RtContainer implements Container {
             this.baseUri.toString() + "/restart"
         );
         try {
-            final int status = this.client.execute(restart)
-                .getStatusLine()
-                .getStatusCode();
-            if (status != HttpStatus.SC_NO_CONTENT) {
-                throw new UnexpectedResponseException(
-                    restart.getURI().toString(),
-                    status, HttpStatus.SC_NO_CONTENT
-                );
-            }
+            this.client.execute(
+                restart,
+                new MatchStatus(restart.getURI(), HttpStatus.SC_NO_CONTENT)
+            );
         } finally {
             restart.releaseConnection();
         }
@@ -161,14 +149,10 @@ final class RtContainer implements Container {
             this.baseUri.toString() + "/rename?name=" + name
         );
         try {
-            final int status = this.client.execute(rename)
-                .getStatusLine()
-                .getStatusCode();
-            if (status != HttpStatus.SC_NO_CONTENT) {
-                throw new UnexpectedResponseException(
-                    rename.getURI().toString(), status, HttpStatus.SC_NO_CONTENT
-                );
-            }
+            this.client.execute(
+                rename,
+                new MatchStatus(rename.getURI(), HttpStatus.SC_NO_CONTENT)
+            );
         } finally {
             rename.releaseConnection();
         }
