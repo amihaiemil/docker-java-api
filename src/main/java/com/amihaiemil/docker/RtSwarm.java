@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.net.URI;
 import javax.json.Json;
 import javax.json.JsonObject;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -88,13 +87,11 @@ final class RtSwarm implements Swarm {
                     spec.toString(), ContentType.APPLICATION_JSON
                 )
             );
-            final HttpResponse response = this.client.execute(init);
-            final int status = response.getStatusLine().getStatusCode();
-            if (status == HttpStatus.SC_OK) {
-                return EntityUtils.toString(response.getEntity());
-            }
-            throw new UnexpectedResponseException(
-                init.getRequestLine().getUri(), status, HttpStatus.SC_OK
+            return EntityUtils.toString(
+                this.client.execute(
+                    init,
+                    new MatchStatus(init.getURI(), HttpStatus.SC_OK)
+                ).getEntity()
             );
         } finally {
             init.releaseConnection();
@@ -107,13 +104,10 @@ final class RtSwarm implements Swarm {
             this.baseUri.toString() + "/leave?force=" + String.valueOf(force)
         );
         try {
-            final HttpResponse response = this.client.execute(leave);
-            final int status = response.getStatusLine().getStatusCode();
-            if (status != HttpStatus.SC_OK) {
-                throw new UnexpectedResponseException(
-                    leave.getRequestLine().getUri(), status, HttpStatus.SC_OK
-                );
-            }
+            this.client.execute(
+                leave,
+                new MatchStatus(leave.getURI(), HttpStatus.SC_OK)
+            );
         } finally {
             leave.releaseConnection();
         }

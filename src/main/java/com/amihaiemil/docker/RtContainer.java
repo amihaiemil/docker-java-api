@@ -25,7 +25,6 @@
  */
 package com.amihaiemil.docker;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -33,6 +32,7 @@ import org.apache.http.client.methods.HttpPost;
 import javax.json.JsonObject;
 import java.io.IOException;
 import java.net.URI;
+import org.apache.http.client.methods.HttpDelete;
 
 /**
  * Restful Container.
@@ -82,14 +82,14 @@ final class RtContainer extends JsonResource implements Container {
         final HttpPost start = new HttpPost(
             this.baseUri.toString() + "/start"
         );
-        final HttpResponse response = this.client.execute(start);
-        final int status = response.getStatusLine().getStatusCode();
-        if(status != HttpStatus.SC_NO_CONTENT) {
-            throw new UnexpectedResponseException(
-                start.getURI().toString(), status, HttpStatus.SC_NO_CONTENT
+        try {
+            this.client.execute(
+                start,
+                new MatchStatus(start.getURI(), HttpStatus.SC_NO_CONTENT)
             );
+        } finally {
+            start.releaseConnection();
         }
-        start.releaseConnection();
     }
 
     @Override
@@ -103,14 +103,10 @@ final class RtContainer extends JsonResource implements Container {
             this.baseUri.toString() + "/stop"
         );
         try {
-            final int status = this.client.execute(stop)
-                .getStatusLine()
-                .getStatusCode();
-            if (status != HttpStatus.SC_NO_CONTENT) {
-                throw new UnexpectedResponseException(
-                    stop.getURI().toString(), status, HttpStatus.SC_NO_CONTENT
-                );
-            }
+            this.client.execute(
+                stop,
+                new MatchStatus(stop.getURI(), HttpStatus.SC_NO_CONTENT)
+            );
         } finally {
             stop.releaseConnection();
         }
@@ -122,14 +118,10 @@ final class RtContainer extends JsonResource implements Container {
             this.baseUri.toString() + "/kill"
         );
         try {
-            final int status = this.client.execute(kill)
-                .getStatusLine()
-                .getStatusCode();
-            if (status != HttpStatus.SC_NO_CONTENT) {
-                throw new UnexpectedResponseException(
-                    kill.getURI().toString(), status, HttpStatus.SC_NO_CONTENT
-                );
-            }
+            this.client.execute(
+                kill,
+                new MatchStatus(kill.getURI(), HttpStatus.SC_NO_CONTENT)
+            );
         } finally {
             kill.releaseConnection();
         }
@@ -141,15 +133,10 @@ final class RtContainer extends JsonResource implements Container {
             this.baseUri.toString() + "/restart"
         );
         try {
-            final int status = this.client.execute(restart)
-                .getStatusLine()
-                .getStatusCode();
-            if (status != HttpStatus.SC_NO_CONTENT) {
-                throw new UnexpectedResponseException(
-                    restart.getURI().toString(),
-                    status, HttpStatus.SC_NO_CONTENT
-                );
-            }
+            this.client.execute(
+                restart,
+                new MatchStatus(restart.getURI(), HttpStatus.SC_NO_CONTENT)
+            );
         } finally {
             restart.releaseConnection();
         }
@@ -162,16 +149,38 @@ final class RtContainer extends JsonResource implements Container {
             this.baseUri.toString() + "/rename?name=" + name
         );
         try {
-            final int status = this.client.execute(rename)
-                .getStatusLine()
-                .getStatusCode();
-            if (status != HttpStatus.SC_NO_CONTENT) {
-                throw new UnexpectedResponseException(
-                    rename.getURI().toString(), status, HttpStatus.SC_NO_CONTENT
-                );
-            }
+            this.client.execute(
+                rename,
+                new MatchStatus(rename.getURI(), HttpStatus.SC_NO_CONTENT)
+            );
         } finally {
             rename.releaseConnection();
+        }
+    }
+
+    @Override
+    public void remove() throws IOException, UnexpectedResponseException {
+        this.remove(false, false, false);
+    }
+
+    @Override
+    public void remove(
+        final boolean volumes, final boolean force, final boolean link
+    ) throws IOException, UnexpectedResponseException {
+        final HttpDelete remove  = new HttpDelete(
+            new UncheckedUriBuilder(this.baseUri.toString())
+                .addParameter("v", String.valueOf(volumes))
+                .addParameter("force", String.valueOf(force))
+                .addParameter("link", String.valueOf(link))
+                .build()
+        );
+        try {
+            this.client.execute(
+                remove,
+                new MatchStatus(remove.getURI(), HttpStatus.SC_NO_CONTENT)
+            );
+        } finally {
+            remove.releaseConnection();
         }
     }
 }

@@ -25,58 +25,49 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.function.Supplier;
+import javax.json.Json;
 
 /**
- * Docker API entry point.
- * @author Mihai Andronache (amihaiemil@gmail.com)
+ * An {@link Auth} supporting bare user credentials.
+ * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
+ * @see <a href="https://docs.docker.com/engine/api/v1.35/#section/Authentication">Authentication</a>
  * @since 0.0.1
- * @todo #71:30min Continue implementing the rest of the Docker API (except
- *  for Swarm and Images, which are being handled in another ticket).
  */
-public interface Docker {
+public final class Credentials implements Auth {
+    /**
+     * The base64-encoded JSON structure holding the credentials.
+     */
+    private final Supplier<String> encoded;
 
     /**
-     * Ping the Docker Engine.
-     * @return True if it responds with 200 OK, false otherwise.
-     * @throws IOException If there's network problem.
+     * Ctor.
+     * @param user The username.
+     * @param pwd The user's password.
+     * @param email The user's email address.
+     * @param server Domain/IP without a protocol.
+     * @checkstyle ParameterNumber (4 lines)
      */
-    boolean ping() throws IOException;
-    
-    /**
-     * Entry point for the Containers API.
-     * @return Containers.
-     */
-    Containers containers();
-
-    /**
-     * Entry point for the Images API.
-     * @return Images.
-     */
-    Images images();
-
-    /**
-     * Entry point for the Networks API.
-     * @return Networks.
-     */
-    Networks networks();
-
-    /**
-     * Entry point for the Volumes API.
-     * @return Volumes.
-     */
-    Volumes volumes();
-
-    /**
-     * Entry point for the Exec API.
-     * @return Exec.
-     */
-    Exec exec();
-
-    /**
-     * Entry point for the Swarm API.
-     * @return Swarm.
-     */
-    Swarm swarm();
+    public Credentials(
+        final String user, final String pwd,
+        final String email, final String server
+    ) {
+        this.encoded = () -> Base64.getEncoder().encodeToString(
+            Json.createObjectBuilder()
+                .add("username", user)
+                .add("password", pwd)
+                .add("email", email)
+                .add("serveraddress", server)
+                .build().toString()
+                .getBytes(StandardCharsets.UTF_8)
+        );
+    }
+  
+    @Override
+    public String encoded() {
+        return this.encoded.get();
+    }
 }

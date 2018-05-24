@@ -25,7 +25,6 @@
  */
 package com.amihaiemil.docker;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -102,14 +101,15 @@ final class RtContainers implements Containers {
             uri = this.baseUri.toString() + "/create";
         }
         final HttpPost post = new HttpPost(uri);
-        post.setEntity(new StringEntity(container.toString()));
-        post.setHeader(new BasicHeader("Content-Type", "application/json"));
-        final HttpResponse response = this.client.execute(post);
-        final int status = response.getStatusLine().getStatusCode();
-        if(status == HttpStatus.SC_CREATED) {
-            final JsonObject json = Json
-                .createReader(response.getEntity().getContent()).readObject();
-            post.releaseConnection();
+        try {
+            post.setEntity(new StringEntity(container.toString()));
+            post.setHeader(new BasicHeader("Content-Type", "application/json"));
+            final JsonObject json = Json.createReader(
+                this.client.execute(
+                    post,
+                    new MatchStatus(post.getURI(), HttpStatus.SC_CREATED)
+                ).getEntity().getContent()
+            ).readObject();
             return new RtContainer(
                 json,
                 this.client,
@@ -117,10 +117,9 @@ final class RtContainers implements Containers {
                     this.baseUri.toString() + "/" + json.getString("Id")
                 )
             );
+        } finally {
+            post.releaseConnection();
         }
-        throw new UnexpectedResponseException(
-            uri, status, HttpStatus.SC_CREATED
-        );
     }
 
 }
