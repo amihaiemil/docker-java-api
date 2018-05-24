@@ -25,58 +25,20 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
-
 /**
- * Docker API entry point.
- * @author Mihai Andronache (amihaiemil@gmail.com)
+ * Authentication for Docker API.
+ * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
+ * @see <a href="https://docs.docker.com/engine/api/v1.35/#section/Authentication">Authentication</a>
  * @since 0.0.1
- * @todo #71:30min Continue implementing the rest of the Docker API (except
- *  for Swarm and Images, which are being handled in another ticket).
+ * @todo #99:30min Implement a new auth named 'Token' that will hold the user's
+ *  identity token from the auth endpoint. Implement some operation that would
+ *  call the /auth endpoint and obtain a token.
  */
-public interface Docker {
-
+public interface Auth {
     /**
-     * Ping the Docker Engine.
-     * @return True if it responds with 200 OK, false otherwise.
-     * @throws IOException If there's network problem.
+     * This {@link Auth} as a Base-64 encoded string.
+     * @return This auth as a base64-encoded string.
      */
-    boolean ping() throws IOException;
-    
-    /**
-     * Entry point for the Containers API.
-     * @return Containers.
-     */
-    Containers containers();
-
-    /**
-     * Entry point for the Images API.
-     * @return Images.
-     */
-    Images images();
-
-    /**
-     * Entry point for the Networks API.
-     * @return Networks.
-     */
-    Networks networks();
-
-    /**
-     * Entry point for the Volumes API.
-     * @return Volumes.
-     */
-    Volumes volumes();
-
-    /**
-     * Entry point for the Exec API.
-     * @return Exec.
-     */
-    Exec exec();
-
-    /**
-     * Entry point for the Swarm API.
-     * @return Swarm.
-     */
-    Swarm swarm();
+    String encoded();
 }

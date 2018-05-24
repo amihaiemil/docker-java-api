@@ -49,7 +49,7 @@ abstract class RtDocker implements Docker {
      * Base URI.
      */
     private final URI baseUri;
-
+    
     /**
      * Ctor.
      * @param client Given HTTP Client.
@@ -59,7 +59,7 @@ abstract class RtDocker implements Docker {
         this.client = client;
         this.baseUri = baseUri;
     }
-
+    
     @Override
     public final boolean ping() throws IOException {
         final HttpGet ping = new HttpGet(this.baseUri.toString() + "/_ping");
@@ -84,17 +84,26 @@ abstract class RtDocker implements Docker {
 
     @Override
     public final Networks networks() {
-        return null;
+        throw new UnsupportedOperationException(
+            "Networks API is not yet implemented. If you can contribute please,"
+            + " do it here: https://www.github.com/amihaiemil/docker-java-api"
+        );
     }
 
     @Override
     public final Volumes volumes() {
-        return null;
+        throw new UnsupportedOperationException(
+            "Volumes API is not yet implemented. If you can contribute please,"
+            + " do it here: https://www.github.com/amihaiemil/docker-java-api"
+        );
     }
 
     @Override
     public final Exec exec() {
-        return null;
+        throw new UnsupportedOperationException(
+            "Exec API is not yet implemented. If you can contribute please,"
+            + " do it here: https://www.github.com/amihaiemil/docker-java-api"
+        );
     }
 
     @Override

@@ -31,6 +31,7 @@ import javax.json.JsonObject;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpPost;
 
 /**
  * Runtime {@link Image}.
@@ -86,6 +87,27 @@ final class RtImage implements Image {
             }
         } finally {
             delete.releaseConnection();
+        }
+    }
+
+    @Override
+    public void tag(
+        final String repo, final String name
+    ) throws IOException, UnexpectedResponseException {
+        final HttpPost tag = new HttpPost(
+            new UncheckedUriBuilder(
+                this.baseUri.toString() + "/tag"
+            ).addParameter("repo", repo)
+            .addParameter("tag", name)
+            .build()
+        );
+        try {
+            this.client.execute(
+                tag,
+                new MatchStatus(tag.getURI(), HttpStatus.SC_CREATED)
+            );
+        } finally {
+            tag.releaseConnection();
         }
     }
 }

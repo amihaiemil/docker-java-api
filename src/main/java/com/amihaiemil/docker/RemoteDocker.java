@@ -36,6 +36,9 @@ import org.apache.http.client.HttpClient;
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @todo #68:30min Implement integration tests for RemoteDocker. We have to
+ *  figure out how to create a remote Docker host and connect to it from Travis.
+ *  Also, it will probably have to be paid (some machine on AWS or DO?).
  */
 public final class RemoteDocker extends RtDocker {
 

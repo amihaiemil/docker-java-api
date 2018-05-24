@@ -25,59 +25,68 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
-import javax.json.Json;
-import javax.json.JsonObject;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
+import org.apache.http.Header;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.message.BasicHeader;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
- * An inpsection upon any of the Docker resources.
+ * Unit tests for {@link AuthHttpClient}.
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
  */
-final class Inspection extends JsonResource {
+public final class AuthHttpClientTestCase {
+    /**
+     * Mock HttpClient that does nothing.
+     */
+    private static HttpClient noOpClient;
 
     /**
-     * Ctor.
-     * @param client The Http client.
-     * @param url The request URL.
-     * @throws UnexpectedResponseException If Docker's response code is not 200.
-     * @throws IOException If an I/O error occurs.
+     * Setup the mock http client.
+     * @throws Exception If something does wrong.
      */
-    Inspection(final HttpClient client, final String url)
-        throws UnexpectedResponseException, IOException {
-        super(fetch(client, url));
+    @BeforeClass
+    public static void setup() throws Exception {
+        noOpClient = Mockito.mock(HttpClient.class);
+        Mockito.when(noOpClient.execute(Mockito.any(HttpUriRequest.class)))
+            .thenReturn(null);
     }
-    
+
     /**
-     * Fetch the JsonObject resource.
-     * @param client The Http client.
-     * @param url The request URL.
-     * @return The fetched JsonObject.
-     * @throws UnexpectedResponseException If Docker's response code is not 200.
-     * @throws IOException If an I/O error occurs.
+     * Must inject the X-Registry-Auth header if absent and set it to the
+     * auth's value.
+     * @throws Exception If something goes wrong.
      */
-    private static JsonObject fetch(final HttpClient client, final String url)
-        throws UnexpectedResponseException, IOException {
-        final HttpGet inspect = new HttpGet(url);
-        try {
-            final HttpResponse response = client.execute(inspect);
-            final int status = response.getStatusLine().getStatusCode();
-            if (status == HttpStatus.SC_OK) {
-                return Json
-                    .createReader(response.getEntity().getContent())
-                    .readObject();
-            } else {
-                throw new UnexpectedResponseException(
-                    url, status, HttpStatus.SC_OK
-                );
-            }
-        } finally {
-            inspect.releaseConnection();
-        }
+    @Test
+    public void injectsHeaderIfAbsent() throws Exception {
+        final HttpUriRequest request = new HttpGet();
+        new AuthHttpClient(noOpClient, () -> "123").execute(request);
+        MatcherAssert.assertThat(
+            request.getFirstHeader("X-Registry-Auth").getValue(),
+            Matchers.is("123")
+        );
+    }
+
+    /**
+     * Leaves the request's header instact if it exists.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void leavesExistingHeaderAlone() throws Exception {
+        final Header auth = new BasicHeader("X-Registry-Auth", "12356");
+        final HttpUriRequest request = new HttpGet();
+        request.setHeader(auth);
+        new AuthHttpClient(noOpClient, () -> "abc").execute(request);
+        MatcherAssert.assertThat(
+            request.getFirstHeader("X-Registry-Auth"),
+            Matchers.is(auth)
+        );
     }
 }
