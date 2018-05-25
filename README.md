@@ -13,9 +13,7 @@ A Java library for the Docker Engine API. It is the equivalent of the ``docker``
 
 Unlike other docker clients for Java, this one aims to be as lightweight as possible, with as few transitive dependencies as possible and it should cause absolutely no runtime conflicts with other frameworks or platforms like Java EE. 
 
-One other target is to be as intuitive as possbile, with the minimum usage of builder pattern and maximum usage of Interfaces and best OOP practices. 
-
-Read [this](http://www.amihaiemil.com/2018/03/10/java-api-for-docker.html) blog post and [the wiki](https://github.com/amihaiemil/docker-java-api/wiki) for more details.
+One other target is that this library should be a true API, not an SDK. Read [this](http://www.amihaiemil.com/2018/03/10/java-api-for-docker.html) blog post and [the wiki](https://github.com/amihaiemil/docker-java-api/wiki) for more details.
 
 ### Contributing 
 
