@@ -29,10 +29,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Iterator;
-import java.util.stream.Collectors;
-import javax.json.Json;
-import javax.json.JsonObject;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -63,31 +59,6 @@ final class RtImages implements Images {
     RtImages(final HttpClient client, final URI uri) {
         this.client = client;
         this.baseUri = uri;
-    }
-
-    @Override
-    public Iterable<Image> iterate() throws IOException {
-        final HttpGet get = new HttpGet(
-            this.baseUri.toString().concat("/json")
-        );
-        try {
-            final HttpResponse response = this.client.execute(
-                get,
-                new MatchStatus(get.getURI(), HttpStatus.SC_OK)
-            );
-            return Json.createReader(response.getEntity().getContent())
-                .readArray()
-                .stream()
-                .map(json -> (JsonObject) json)
-                .map(json -> new RtImage(
-                    this.client,
-                    URI.create(
-                        this.baseUri.toString() + "/" + json.getString("Id")
-                    )
-                )).collect(Collectors.toList());
-        } finally {
-            get.releaseConnection();
-        }
     }
 
     // @checkstyle ParameterNumber (4 lines)
@@ -129,14 +100,19 @@ final class RtImages implements Images {
         }
     }
 
-    
-    // @todo #84:30min Should return an Iterator<? extends JsonResource>
-    //  which would take a Request, a HttpClient and a Mapper in its ctor,
-    //  to know how to map each JsonObject to its resource type
-    //  (Image, Containter etc) 
     @Override
     public Iterator<Image> iterator() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new ResourcesIterator<Image>(
+            this.client,
+            new HttpGet(this.baseUri.toString().concat("/json")),
+            json-> new RtImage(
+                json,
+                this.client,
+                URI.create(
+                    this.baseUri.toString() + "/" + json.getString("Id")
+                )
+            )
+        );
     }
 
 }

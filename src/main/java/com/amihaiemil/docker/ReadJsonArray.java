@@ -25,48 +25,41 @@
  */
 package com.amihaiemil.docker;
 
-import java.net.URI;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
+import javax.json.Json;
+import javax.json.JsonArray;
+import java.io.IOException;
 
 /**
- * An Apache ResponseHandler that tries to match the Response's status code
- * with the expected one.
+ * Handler that reads a JsonArray from the response.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 0.0.1
+ * @since 0.0.
+ * @todo #84:30min Write some unit tests for this class, it is
+ *  currently only tested by RtImagesITCase#iteratesImages.
  */
-final class MatchStatus implements ResponseHandler<HttpResponse> {
+final class ReadJsonArray implements ResponseHandler<JsonArray> {
 
     /**
-     * Called URI.
+     * Handlers to be executed before actually reading the array.
      */
-    private final URI called;
-    
-    /**
-     * Expected status.
-     */
-    private final int expected;
-    
+    private final ResponseHandler<HttpResponse> other;
+
     /**
      * Ctor.
-     * @param called Called URI.
-     * @param expected Expected Http status code.
+     * @param other Handlers to be executed before actually reading the array.
      */
-    MatchStatus(final URI called, final int expected) {
-        this.called = called;
-        this.expected = expected;
+    ReadJsonArray(final ResponseHandler<HttpResponse> other) {
+        this.other = other;
     }
-    
+
     @Override
-    public HttpResponse handleResponse(final HttpResponse response) {
-        final int actual = response.getStatusLine().getStatusCode();
-        if(actual != this.expected) {
-            throw new UnexpectedResponseException(
-                this.called.toString(), actual, this.expected
-            );
-        }
-        return response;
+    public JsonArray handleResponse(final HttpResponse httpResponse)
+        throws IOException {
+        final HttpResponse resp = this.other.handleResponse(httpResponse);
+        return Json.createReader(
+            resp.getEntity().getContent()
+        ).readArray();
     }
-    
 }

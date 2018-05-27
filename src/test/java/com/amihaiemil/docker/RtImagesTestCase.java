@@ -51,7 +51,7 @@ public final class RtImagesTestCase {
      * @throws Exception If an error occurs.
      */
     @Test
-    public void iterateReturnsImages() throws Exception {
+    public void iteratesImages() throws Exception {
         final AtomicInteger count = new AtomicInteger();
         new RtImages(
             new AssertRequest(
@@ -67,7 +67,7 @@ public final class RtImagesTestCase {
                         ).build().toString()
                 )
             ), URI.create("http://localhost")
-        ).iterate().forEach(image -> count.incrementAndGet());
+        ).forEach(image -> count.incrementAndGet());
         MatcherAssert.assertThat(
             count.get(),
             Matchers.is(2)
@@ -85,7 +85,7 @@ public final class RtImagesTestCase {
                 new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR, "")
             ),
             URI.create("http://localhost")
-        ).iterate();
+        ).iterator();
     }
 
     /**

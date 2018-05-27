@@ -39,7 +39,7 @@ import org.apache.http.client.methods.HttpPost;
  * @version $Id$
  * @since 0.0.1
  */
-final class RtImage implements Image {
+final class RtImage extends JsonResource implements Image {
     /**
      * Apache HttpClient which sends the requests.
      */
@@ -52,10 +52,12 @@ final class RtImage implements Image {
 
     /**
      * Ctor.
+     * @param rep JsonObject representation of this Image.
      * @param client The http client.
      * @param uri The URI for this image.
      */
-    RtImage(final HttpClient client, final URI uri) {
+    RtImage(final JsonObject rep, final HttpClient client, final URI uri) {
+        super(rep);
         this.client = client;
         this.baseUri = uri;
     }
