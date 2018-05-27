@@ -34,7 +34,7 @@ import java.io.IOException;
  * @version $Id$
  * @since 0.0.1
  */
-public interface Containers {
+public interface Containers extends Iterable<Container> {
 
     /**
      * Create a container with a random name.

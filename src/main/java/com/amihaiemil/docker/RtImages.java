@@ -102,7 +102,7 @@ final class RtImages implements Images {
 
     @Override
     public Iterator<Image> iterator() {
-        return new ResourcesIterator<Image>(
+        return new ResourcesIterator<>(
             this.client,
             new HttpGet(this.baseUri.toString().concat("/json")),
             json-> new RtImage(
