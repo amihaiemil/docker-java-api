@@ -276,7 +276,7 @@ public final class RtContainerTestCase {
      * @throws Exception If something goes wrong.
      */
     @Test
-    public void wellformedRestartRequest() throws Exception {
+    public void restartsOk() throws Exception {
         new RtContainer(
             Json.createObjectBuilder().add("Id", "9403").build(),
             new AssertRequest(
@@ -468,5 +468,100 @@ public final class RtContainerTestCase {
             ),
             URI.create("http://localhost:80/1.30/containers/123")
         ).rename("duplicate");
+    }
+    
+    /**
+     * RtContainer can be removed with no problem.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void removeOk() throws Exception {
+        new RtContainer(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NO_CONTENT, ""
+                ),
+                new Condition(
+                    "Method should be a DELETE",
+                    req -> req.getRequestLine().getMethod().equals("DELETE")
+                ),
+                new Condition(
+                    "Resource path must be /123?v=false&force=false&link=false",
+                    req -> req.getRequestLine().getUri().endsWith(
+                        "/123?v=false&force=false&link=false"
+                    )
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).remove();
+    }
+    
+    /**
+     * RtContainer throws URE if it receives BAD REQUEST on remove.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void removeWithBadParameter() throws Exception {
+        new RtContainer(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_BAD_REQUEST, ""
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).remove();
+    }
+    
+    /**
+     * RtContainer throws URE if it receives NOT FOUND on remove.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void removeWithNotFound() throws Exception {
+        new RtContainer(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NOT_FOUND, ""
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).remove();
+    }
+    
+    /**
+     * RtContainer throws URE if it receives a conflict on remove.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void removeWithConflict() throws Exception {
+        new RtContainer(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_CONFLICT, ""
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).remove();
+    }
+    
+    /**
+     * RtContainer throws URE if it receives a server error on remove.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void removeWithServerError() throws Exception {
+        new RtContainer(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123")
+        ).remove();
     }
 }

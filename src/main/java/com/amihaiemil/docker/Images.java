@@ -38,14 +38,6 @@ import java.net.URL;
  *  Images interface. See the docs referenced above for more details.
  */
 public interface Images extends Iterable<Image> {
-    /**
-     * All images on the docker server.
-     * @return The images.
-     * @throws IOException If an I/O error occurs.
-     * @throws UnexpectedResponseException If the API responds with an 
-     *  unexpected status.
-     */
-    Iterable<Image> iterate() throws IOException, UnexpectedResponseException;
 
     /**
      * Creates an image by pulling it from a registry.
