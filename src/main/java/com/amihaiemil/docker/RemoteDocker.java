@@ -41,7 +41,7 @@ import org.apache.http.client.HttpClient;
  *  figure out how to create a remote Docker host and connect to it from Travis.
  *  Also, it will probably have to be paid (some machine on AWS or DO?).
  */
-public final class RemoteDocker extends RtDocker {
+final class RemoteDocker extends RtDocker {
 
     /**
      * Remote Docker engine. API version is 1.35 by default.
@@ -51,7 +51,7 @@ public final class RemoteDocker extends RtDocker {
      * @param storePwd Password for the keystore.
      * @param keyPwd Passphrase for the key.
      */
-    public RemoteDocker(
+    RemoteDocker(
         final URI uri, final Path keys, final Path trust,
         final char[] storePwd, final char[] keyPwd) {
         this(uri, "v1.35", keys, trust, storePwd, keyPwd);
@@ -66,7 +66,7 @@ public final class RemoteDocker extends RtDocker {
      * @param storePwd Password for the keystore.
      * @param keyPwd Passphrase for the key.
      */
-    public RemoteDocker(
+    RemoteDocker(
         final URI uri, final String version,
         final Path keys, final Path trust,
         final char[] storePwd, final char[] keyPwd) {
@@ -84,7 +84,7 @@ public final class RemoteDocker extends RtDocker {
      * @param client The http client to use.
      * @param uri Remote Docker URI.
      */
-    public RemoteDocker(final HttpClient client, final URI uri) {
+    RemoteDocker(final HttpClient client, final URI uri) {
         this(client, uri, "v1.35");
     }
 
@@ -96,7 +96,7 @@ public final class RemoteDocker extends RtDocker {
      * @param uri Remote Docker URI.
      * @param version API version (eg. v1.35).
      */
-    public RemoteDocker(
+    RemoteDocker(
         final HttpClient client, final URI uri, final String version
     ) {
         super(client, URI.create(uri.toString() + "/" + version));
