@@ -35,7 +35,7 @@ import javax.json.JsonObject;
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Image">Docker Images API</a>
  * @since 0.0.1
  */
-public interface Image {
+public interface Image extends JsonObject {
 
     /**
      * Return low-level information about this image. 

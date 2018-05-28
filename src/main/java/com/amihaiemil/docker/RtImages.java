@@ -29,10 +29,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Iterator;
-import java.util.stream.Collectors;
-import javax.json.Json;
-import javax.json.JsonObject;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -65,35 +61,6 @@ final class RtImages implements Images {
         this.baseUri = uri;
     }
 
-    @Override
-    public Iterable<Image> iterate() throws IOException {
-        final HttpGet get = new HttpGet(
-            this.baseUri.toString().concat("/json")
-        );
-        try {
-            final HttpResponse response = this.client.execute(get);
-            if (HttpStatus.SC_OK != response.getStatusLine().getStatusCode()) {
-                throw new UnexpectedResponseException(
-                    get.getRequestLine().getUri(),
-                    response.getStatusLine().getStatusCode(),
-                    HttpStatus.SC_OK
-                );
-            }
-            return Json.createReader(response.getEntity().getContent())
-                .readArray()
-                .stream()
-                .map(json -> (JsonObject) json)
-                .map(json -> new RtImage(
-                    this.client,
-                    URI.create(
-                        this.baseUri.toString() + "/" + json.getString("Id")
-                    )
-                )).collect(Collectors.toList());
-        } finally {
-            get.releaseConnection();
-        }
-    }
-
     // @checkstyle ParameterNumber (4 lines)
     @Override
     public Images create(
@@ -108,14 +75,10 @@ final class RtImages implements Images {
                 .build()
         );
         try {
-            final int status = this.client.execute(create)
-                .getStatusLine()
-                .getStatusCode();
-            if (HttpStatus.SC_OK != status) {
-                throw new UnexpectedResponseException(
-                    create.getURI().toString(), status, HttpStatus.SC_OK
-                );
-            }
+            this.client.execute(
+                create,
+                new MatchStatus(create.getURI(), HttpStatus.SC_OK)
+            );
             return this;
         } finally {
             create.releaseConnection();
@@ -137,14 +100,19 @@ final class RtImages implements Images {
         }
     }
 
-    
-    // @todo #84:30min Should return an Iterator<? extends JsonResource>
-    //  which would take a Request, a HttpClient and a Mapper in its ctor,
-    //  to know how to map each JsonObject to its resource type
-    //  (Image, Containter etc) 
     @Override
     public Iterator<Image> iterator() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new ResourcesIterator<Image>(
+            this.client,
+            new HttpGet(this.baseUri.toString().concat("/json")),
+            json-> new RtImage(
+                json,
+                this.client,
+                URI.create(
+                    this.baseUri.toString() + "/" + json.getString("Id")
+                )
+            )
+        );
     }
 
 }

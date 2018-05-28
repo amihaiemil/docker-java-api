@@ -25,53 +25,70 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
-import javax.json.Json;
-import javax.json.JsonObject;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
- * An inpsection upon any of the Docker resources.
- * @author George Aristy (george.aristy@gmail.com)
+ * Iterator over Docker resources (Containers, Images etc).
+ * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @param <T> The Json resoure (Image, Container etc) returned by the API.
  */
-final class Inspection extends JsonResource {
+final class ResourcesIterator<T extends JsonObject> implements Iterator<T> {
+
+    /**
+     * Iterated resources.
+     */
+    private final Iterator<T> resources;
 
     /**
      * Ctor.
-     * @param client The Http client.
-     * @param url The request URL.
-     * @throws UnexpectedResponseException If Docker's response code is not 200.
-     * @throws IOException If an I/O error occurs.
+     * @param client Used HTTP Client.
+     * @param request HTTP Request.
+     * @param mapper Function which should map the received JsonObject
+     *  to the specified resource.
      */
-    Inspection(final HttpClient client, final String url)
-        throws UnexpectedResponseException, IOException {
-        super(fetch(client, url));
-    }
-    
-    /**
-     * Fetch the JsonObject resource.
-     * @param client The Http client.
-     * @param url The request URL.
-     * @return The fetched JsonObject.
-     * @throws UnexpectedResponseException If Docker's response code is not 200.
-     * @throws IOException If an I/O error occurs.
-     */
-    private static JsonObject fetch(final HttpClient client, final String url)
-        throws UnexpectedResponseException, IOException {
-        final HttpGet inspect = new HttpGet(url);
+    ResourcesIterator(
+        final HttpClient client, final HttpGet request,
+        final Function<JsonObject, T> mapper
+    ) {
         try {
-            return Json.createReader(
-                client.execute(
-                    inspect,
-                    new MatchStatus(inspect.getURI(), HttpStatus.SC_OK)
-                ).getEntity().getContent()
-            ).readObject();
+            final JsonArray array = client.execute(
+                request,
+                new ReadJsonArray(
+                    new MatchStatus(request.getURI(), HttpStatus.SC_OK)
+                )
+            );
+            this.resources = array.stream()
+                .map(json -> (JsonObject) json)
+                .map(
+                    json -> mapper.apply(json)
+                ).collect(Collectors.toList())
+                .iterator();
+        } catch (final IOException ex) {
+            throw new IllegalStateException(
+                "IOException when calling " + request.getURI().toString(), ex
+            );
         } finally {
-            inspect.releaseConnection();
+            request.releaseConnection();
         }
+    }
+
+    @Override
+    public boolean hasNext() {
+        return this.resources.hasNext();
+    }
+
+    @Override
+    public T next() {
+        return this.resources.next();
     }
 }
