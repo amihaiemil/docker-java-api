@@ -16,5 +16,5 @@ decrypt:
   secring.gpg: "repo/rcfg/secring.gpg.asc"
 release:
   script: |-
-    chmod +x ./rrv.sh
-    ./rrv.sh
+    chmod +x ./rcfg.sh
+    ./rcfg.sh
