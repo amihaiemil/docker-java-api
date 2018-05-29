@@ -27,17 +27,7 @@ The library comes as a maven dependency:
 </dependency>
 ```
 
-In order for it to work, you need to have an implementation of [JSON-P (JSR 374)](https://javaee.github.io/jsonp/index.html) in your classpath (it doesn't come transitively). If you have no idea what this means, just specify this dependency along the one above:
-
-```
-<dependency>
-    <groupId>org.glassfish</groupId>
-    <artifactId>javax.json</artifactId>
-    <version>1.0.4</version>
-</dependency>
-```
-
-But make sure to ask someone who understands maven dependencies to review your ``pom.xml``!
+**In order for it to work, you need to have an implementation of [JSON-P (JSR 374)](https://javaee.github.io/jsonp/index.html) in your classpath (it doesn't come transitively).**
 
 If you are not using Maven, you can also download the <a href="https://oss.sonatype.org/service/local/repositories/releases/content/com/amihaiemil/web/docker-java-api/???/docker-java-api-?.?.?-jar-with-dependencies.jar">fat</a> jar.
 
