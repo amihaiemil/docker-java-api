@@ -49,10 +49,10 @@ public interface Image extends JsonObject {
     
     /**
      * Return parent layers of this Image.
-     * @return Images parent Images.
+     * @return An Iterable containing the parents of this Image.
      * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ImageHistory">Image History</a>
      */
-    Images history();
+    Iterable<Image> history();
 
     /**
      * Remove an image, along with any untagged parent images that were

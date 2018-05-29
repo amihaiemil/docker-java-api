@@ -109,7 +109,7 @@ public final class RtImageTestCase {
             ).history(),
             Matchers.allOf(
                 Matchers.notNullValue(),
-                Matchers.instanceOf(Images.class)
+                Matchers.instanceOf(Iterable.class)
             )
         );
     }

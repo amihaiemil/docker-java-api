@@ -31,6 +31,7 @@ import javax.json.JsonObject;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 
 /**
@@ -69,9 +70,17 @@ final class RtImage extends JsonResource implements Image {
     }
 
     @Override
-    public Images history() {
-        return new RtImages(
-            this.client, URI.create(this.baseUri.toString() + "/history")
+    public Iterable<Image> history() {
+        return () -> new ResourcesIterator<>(
+            this.client,
+            new HttpGet(this.baseUri.toString().concat("/history")),
+            json -> new RtImage(
+                json,
+                 this.client,
+                URI.create(
+                    this.baseUri.toString() + "/" + json.getString("Id")
+                )
+            )
         );
     }
 

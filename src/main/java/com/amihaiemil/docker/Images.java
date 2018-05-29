@@ -40,19 +40,31 @@ import java.net.URL;
 public interface Images extends Iterable<Image> {
 
     /**
-     * Creates an image by pulling it from a registry.
+     * Pull an Image from the Docker registry.
      * @param name Name of the image to pull.
-     * @param source The URL from which the image can be retrieved.
-     * @param repo Repository name for the image when it is pulled.
      * @param tag Tag or digest for the image.
-     * @return This {@link Images}.
+     * @return The created {@link Image}.
      * @throws IOException If an I/O error occurs.
      * @throws UnexpectedResponseException If the API responds with an 
      *  unexpected status.
      * @checkstyle ParameterNumber (4 lines)
      */
-    Images create(
-        final String name, final URL source, final String repo, final String tag
+    Image pull(
+        final String name, final String tag
+    ) throws IOException, UnexpectedResponseException;
+
+    /**
+     * Import an Image.
+     * @param source The URL from which the image can be retrieved.
+     * @param repo Repository name given to an image when it is imported.
+     *   The repo may include a tag.
+     * @return The imported Image.
+     * @throws IOException If an I/O error occurs.
+     * @throws UnexpectedResponseException If the API responds with an
+     *  undexpected status.
+     */
+    Image importImage(
+        final URL source, final String repo
     ) throws IOException, UnexpectedResponseException;
 
     /**

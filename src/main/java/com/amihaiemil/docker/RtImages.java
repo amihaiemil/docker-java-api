@@ -34,6 +34,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 
+import javax.json.Json;
+
 /**
  * Runtime {@link Images}.
  * @author George Aristy (george.aristy@gmail.com)
@@ -61,16 +63,13 @@ final class RtImages implements Images {
         this.baseUri = uri;
     }
 
-    // @checkstyle ParameterNumber (4 lines)
     @Override
-    public Images create(
-        final String name, final URL source, final String repo, final String tag
+    public Image pull(
+        final String name, final String tag
     ) throws IOException, UnexpectedResponseException {
         final HttpPost create  = new HttpPost(
             new UncheckedUriBuilder(this.baseUri.toString().concat("/create"))
                 .addParameter("fromImage", name)
-                .addParameter("fromSrc", source.toString())
-                .addParameter("repo", repo)
                 .addParameter("tag", tag)
                 .build()
         );
@@ -79,10 +78,26 @@ final class RtImages implements Images {
                 create,
                 new MatchStatus(create.getURI(), HttpStatus.SC_OK)
             );
-            return this;
+            return new RtImage(
+                Json.createObjectBuilder().add("Name", name).build(),
+                this.client,
+                URI.create(
+                    this.baseUri.toString() + "/" + name
+                )
+            );
         } finally {
             create.releaseConnection();
         }
+    }
+
+    @Override
+    public Image importImage(
+        final URL source, final String repo
+    ) throws IOException, UnexpectedResponseException {
+        throw new UnsupportedOperationException(
+            "Not yet implemented. If you can contribute please,"
+            + " do it here: https://www.github.com/amihaiemil/docker-java-api"
+        );
     }
 
     @Override

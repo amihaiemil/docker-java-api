@@ -29,7 +29,6 @@ import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
 import java.net.URI;
-import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.json.Json;
 import org.apache.http.HttpStatus;
@@ -48,10 +47,9 @@ public final class RtImagesTestCase {
     /**
      * Must return the same number of images as there are elements in the
      * json array returned by the service.
-     * @throws Exception If an error occurs.
      */
     @Test
-    public void iteratesImages() throws Exception {
+    public void iteratesImages() {
         final AtomicInteger count = new AtomicInteger();
         new RtImages(
             new AssertRequest(
@@ -110,7 +108,7 @@ public final class RtImagesTestCase {
     }
 
     /**
-     * {@link RtImages#create(String, URL, String, String)} must construct the
+     * {@link RtImages#pull(String, String)} must construct the
      * URL with parameters correctly.
      * <p>
      * Notice the escaped characters for the 'fromSrc' parameter's value.
@@ -128,17 +126,13 @@ public final class RtImagesTestCase {
                         System.out.println(req.getRequestLine().getUri());
                         return req.getRequestLine().getUri().endsWith(
                             // @checkstyle LineLength (1 line)
-                            "/create?fromImage=testImage&fromSrc=http%3A%2F%2Fdocker.registry.com&repo=testRepo&tag=1.23"
+                            "/create?fromImage=testImage&tag=1.23"
                         );
                     }
                 )
             ),
             URI.create("http://localhost")
-        )
-            .create(
-                "testImage", new URL("http://docker.registry.com"),
-                "testRepo", "1.23"
-        );
+        ).pull("testImage", "1.23");
     }
 
     /**
@@ -153,7 +147,7 @@ public final class RtImagesTestCase {
                 new Response(HttpStatus.SC_NOT_FOUND)
             ),
             URI.create("http://localhost")
-        ).create("", new URL("http://registry.docker.com"), "", "");
+        ).pull("", "");
     }
 
     /**
@@ -168,7 +162,7 @@ public final class RtImagesTestCase {
                 new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
             ),
             URI.create("http://localhost")
-        ).create("", new URL("http://registry.docker.com"), "", "");
+        ).pull("", "");
     }
 
     /**
