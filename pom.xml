@@ -6,6 +6,7 @@
 	<version>0.0.1-SNAPSHOT</version><!--rrv-sed-flag-->
 	<name>Docker Java API</name>
 	<description>Elegant OOP wrapper over Docker's API</description>
+	<url>https://www.github.com/amihaiemil/docker-java-api</url>
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
