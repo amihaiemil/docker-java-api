@@ -28,32 +28,34 @@ package com.amihaiemil.docker;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+
 import java.io.File;
 
 /**
- * Integration tests for {@link RtImages}.
+ * Integration tests for {@link RtImage}.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
  */
-public final class RtImagesITCase {
+public final class RtImageITCase {
 
     /**
-     * {@link RtImages} can iterate over the Images, with the default filters.
-     * @throws Exception If an error occurs.
+     * An {@link RtImage} knows its history.
+     * @throws Exception If something goes wrong.
      */
     @Test
-    public void iteratesImages() throws Exception {
-        final Images images = new LocalDocker(
+    public void returnsHistory() throws Exception {
+        final Image img =  new LocalDocker(
             new File("/var/run/docker.sock")
-        ).images();
-        for(final Image img : images) {
+        ).images().pull("hello-world", "latest");
+        for(final Image parent:img.history()) {
             MatcherAssert.assertThat(
-                img.getInt("Created"), Matchers.notNullValue()
+                parent.getInt("Created"), Matchers.notNullValue()
             );
             MatcherAssert.assertThat(
-                img.getString("Id"), Matchers.startsWith("sha256:")
+                parent.getString("Id"), Matchers.notNullValue()
             );
         }
     }
+
 }

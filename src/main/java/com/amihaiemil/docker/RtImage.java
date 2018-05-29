@@ -76,10 +76,8 @@ final class RtImage extends JsonResource implements Image {
             new HttpGet(this.baseUri.toString().concat("/history")),
             json -> new RtImage(
                 json,
-                 this.client,
-                URI.create(
-                    this.baseUri.toString() + "/" + json.getString("Id")
-                )
+                this.client,
+                this.baseUri
             )
         );
     }
