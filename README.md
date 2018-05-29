@@ -32,8 +32,8 @@ In order for it to work, you need to have an implementation of [JSON-P (JSR 374)
 ```
 <dependency>
     <groupId>org.glassfish</groupId>
-		<artifactId>javax.json</artifactId>
-		<version>1.0.4</version>
+    <artifactId>javax.json</artifactId>
+    <version>1.0.4</version>
 </dependency>
 ```
 
