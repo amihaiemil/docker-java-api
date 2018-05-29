@@ -25,50 +25,39 @@
  */
 package com.amihaiemil.docker;
 
-import javax.json.JsonObject;
 import java.io.IOException;
+import javax.json.Json;
+import javax.json.JsonObject;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ResponseHandler;
 
 /**
- * Containers API.
+ * Handler that reads a JsonObject from the response.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 0.0.1
+ * @since 0.0.
  */
-public interface Containers extends Iterable<Container> {
+final class ReadJsonObject implements ResponseHandler<JsonObject> {
 
     /**
-     * Create a container with a random name.
-     * @param image The image to use.
-     * @return Created Container.
-     * @throws IOException If something goes wrong.
+     * Handlers to be executed before actually reading the array.
      */
-    Container create(final String image) throws IOException;
+    private final ResponseHandler<HttpResponse> other;
 
     /**
-     * Create a container.
-     * @param name The container's name.
-     * @param image The image to use.
-     * @return Created Container.
-     * @throws IOException If something goes wrong.
+     * Ctor.
+     * @param other Handlers to be executed before actually reading the array.
      */
-    Container create(final String name, final String image) throws IOException;
+    ReadJsonObject(final ResponseHandler<HttpResponse> other) {
+        this.other = other;
+    }
 
-    /**
-     * Create a container.
-     * @param name Container's name.
-     * @param container Json config as specified in the API's docs.
-     * @return Created Container.
-     * @throws IOException If something goes wrong.
-     */
-    Container create(
-        final String name, final JsonObject container
-    ) throws IOException;
-
-    /**
-     * Create a container with a random name.
-     * @param container Json config as specified in the API's docs.
-     * @return Created Container.
-     * @throws IOException If something goes wrong.
-     */
-    Container create(final JsonObject container) throws IOException;
+    @Override
+    public JsonObject handleResponse(final HttpResponse httpResponse)
+        throws IOException {
+        final HttpResponse resp = this.other.handleResponse(httpResponse);
+        return Json.createReader(
+            resp.getEntity().getContent()
+        ).readObject();
+    }
 }

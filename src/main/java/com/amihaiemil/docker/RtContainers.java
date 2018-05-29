@@ -27,6 +27,7 @@ package com.amihaiemil.docker;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
@@ -34,6 +35,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Iterator;
 
 /**
  * Containers API.
@@ -109,12 +111,12 @@ final class RtContainers implements Containers {
         try {
             post.setEntity(new StringEntity(container.toString()));
             post.setHeader(new BasicHeader("Content-Type", "application/json"));
-            final JsonObject json = Json.createReader(
-                this.client.execute(
-                    post,
+            final JsonObject json = this.client.execute(
+                post,
+                new ReadJsonObject(
                     new MatchStatus(post.getURI(), HttpStatus.SC_CREATED)
-                ).getEntity().getContent()
-            ).readObject();
+                )
+            );
             return new RtContainer(
                 json,
                 this.client,
@@ -127,4 +129,18 @@ final class RtContainers implements Containers {
         }
     }
 
+    @Override
+    public Iterator<Container> iterator() {
+        return new ResourcesIterator<>(
+            this.client,
+            new HttpGet(this.baseUri.toString().concat("/json")),
+            json-> new RtContainer(
+                json,
+                this.client,
+                URI.create(
+                    this.baseUri.toString() + "/" + json.getString("Id")
+                )
+            )
+        );
+    }
 }

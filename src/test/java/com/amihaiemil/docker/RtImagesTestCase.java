@@ -75,6 +75,27 @@ public final class RtImagesTestCase {
     }
 
     /**
+     * The iterator works when there are no containers.
+     * @throws Exception If an error occurs.
+     */
+    @Test
+    public void iteratesZeroImages() throws Exception {
+        final AtomicInteger count = new AtomicInteger();
+        new RtImages(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    Json.createArrayBuilder().build().toString()
+                )
+            ), URI.create("http://localhost")
+        ).forEach(image -> count.incrementAndGet());
+        MatcherAssert.assertThat(
+            count.get(),
+            Matchers.is(0)
+        );
+    }
+    
+    /**
      * Must throw {@link UnexpectedResponseException} if response code is 500.
      * @throws Exception The UnexpectedException.
      */

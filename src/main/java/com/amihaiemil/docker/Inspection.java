@@ -26,7 +26,6 @@
 package com.amihaiemil.docker;
 
 import java.io.IOException;
-import javax.json.Json;
 import javax.json.JsonObject;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -64,12 +63,12 @@ final class Inspection extends JsonResource {
         throws UnexpectedResponseException, IOException {
         final HttpGet inspect = new HttpGet(url);
         try {
-            return Json.createReader(
-                client.execute(
-                    inspect,
+            return client.execute(
+                inspect,
+                new ReadJsonObject(
                     new MatchStatus(inspect.getURI(), HttpStatus.SC_OK)
-                ).getEntity().getContent()
-            ).readObject();
+                )
+            );
         } finally {
             inspect.releaseConnection();
         }

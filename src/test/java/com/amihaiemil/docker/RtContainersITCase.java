@@ -25,50 +25,36 @@
  */
 package com.amihaiemil.docker;
 
-import javax.json.JsonObject;
-import java.io.IOException;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
+import java.io.File;
 
 /**
- * Containers API.
+ * Integration tests for {@link RtContainers}.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
  */
-public interface Containers extends Iterable<Container> {
+public final class RtContainersITCase {
 
     /**
-     * Create a container with a random name.
-     * @param image The image to use.
-     * @return Created Container.
-     * @throws IOException If something goes wrong.
+     * {@link RtContainers} can iterate over the containers
+     * with the default filter.
      */
-    Container create(final String image) throws IOException;
+    @Test
+    public void iteratesContainers() {
+        final Containers containers = new LocalDocker(
+            new File("/var/run/docker.sock")
+        ).containers();
+        for(final Container container : containers) {
+            MatcherAssert.assertThat(
+                container.getString("Id").isEmpty(), Matchers.is(Boolean.FALSE)
+            );
+            MatcherAssert.assertThat(
+                container.getString("ImageID"), Matchers.startsWith("sha256")
+            );
+        }
+    }
 
-    /**
-     * Create a container.
-     * @param name The container's name.
-     * @param image The image to use.
-     * @return Created Container.
-     * @throws IOException If something goes wrong.
-     */
-    Container create(final String name, final String image) throws IOException;
-
-    /**
-     * Create a container.
-     * @param name Container's name.
-     * @param container Json config as specified in the API's docs.
-     * @return Created Container.
-     * @throws IOException If something goes wrong.
-     */
-    Container create(
-        final String name, final JsonObject container
-    ) throws IOException;
-
-    /**
-     * Create a container with a random name.
-     * @param container Json config as specified in the API's docs.
-     * @return Created Container.
-     * @throws IOException If something goes wrong.
-     */
-    Container create(final JsonObject container) throws IOException;
 }
