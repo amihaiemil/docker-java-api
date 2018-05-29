@@ -23,6 +23,12 @@
 			<url>https://github.com/amihaiemil</url>
 			<id>amihaiemil</id>
 		</developer>
+		<developer>
+			<name>George Aristy</name>
+			<email>george.aristy@gmail.com</email>
+			<url>https://github.com/llorllale</url>
+			<id>llorllale</id>
+		</developer>
 	</developers>
 	<scm>
 		<url>https://github.com/amihaiemil/docker-java-api</url>
@@ -44,7 +50,7 @@
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.json</artifactId>
 			<version>1.0.4</version>
-        <scope>provided</scope>
+                        <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
