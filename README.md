@@ -37,7 +37,7 @@ In order for it to work, you need to have an implementation of [JSON-P (JSR 374)
 </dependency>
 ```
 
-But make sure to ask someone, who understands maven dependencies, to review your ``pom.xml``!
+But make sure to ask someone who understands maven dependencies to review your ``pom.xml``!
 
 If you are not using Maven, you can also download the <a href="https://oss.sonatype.org/service/local/repositories/releases/content/com/amihaiemil/web/docker-java-api/???/docker-java-api-?.?.?-jar-with-dependencies.jar">fat</a> jar.
 
