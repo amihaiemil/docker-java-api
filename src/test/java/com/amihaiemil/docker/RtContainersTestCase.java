@@ -31,6 +31,7 @@ import com.amihaiemil.docker.mock.PayloadOf;
 import com.amihaiemil.docker.mock.Response;
 import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.json.Json;
 import javax.json.JsonObject;
 import org.apache.http.HttpStatus;
@@ -47,12 +48,91 @@ import org.junit.Test;
  * @checkstyle MethodName (500 lines)
  */
 public final class RtContainersTestCase {
+    
+    /**
+     * Must return the same number of containers as there are elements in the
+     * json array returned by the service.
+     * @throws Exception If an error occurs.
+     */
+    @Test
+    public void iteratesContainers() throws Exception {
+        final AtomicInteger count = new AtomicInteger();
+        new RtContainers(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    Json.createArrayBuilder()
+                        .add(
+                            Json.createObjectBuilder()
+                                .add("Id", "sha256:e216a057b1cb1efc1")
+                        ).add(
+                            Json.createObjectBuilder()
+                                .add("Id", "sha256:3e314f95dcace0f5e")
+                        ).build().toString()
+                )
+            ), URI.create("http://localhost")
+        ).forEach(container -> count.incrementAndGet());
+        MatcherAssert.assertThat(
+            count.get(),
+            Matchers.is(2)
+        );
+    }
+    
+    /**
+     * The iterator works when there are no containers.
+     * @throws Exception If an error occurs.
+     */
+    @Test
+    public void iteratesZeroContainers() throws Exception {
+        final AtomicInteger count = new AtomicInteger();
+        new RtContainers(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    Json.createArrayBuilder().build().toString()
+                )
+            ), URI.create("http://localhost")
+        ).forEach(container -> count.incrementAndGet());
+        MatcherAssert.assertThat(
+            count.get(),
+            Matchers.is(0)
+        );
+    }
+    
+    /**
+     * Must throw {@link UnexpectedResponseException} if response code is 500.
+     * @throws Exception The UnexpectedException.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void iterateFailsIfResponseIs500() throws Exception {
+        new RtContainers(
+            new AssertRequest(
+                new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR, "")
+            ),
+            URI.create("http://localhost")
+        ).iterator();
+    }
+    
+    /**
+     * Must throw {@link UnexpectedResponseException} if response code is 400.
+     * @throws Exception The UnexpectedException.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void iterateFailsIfResponseIs400() throws Exception {
+        new RtContainers(
+            new AssertRequest(
+                new Response(HttpStatus.SC_BAD_REQUEST, "")
+            ),
+            URI.create("http://localhost")
+        ).iterator();
+    }
+    
     /**
      * The request should be well-formed.
      * @throws Exception If something goes wrong.
      */
     @Test
-    public void wellformedRequestForCreateContainerFromImage()
+    public void createsContainerOk()
         throws Exception {
         new RtContainers(
             new AssertRequest(
@@ -87,7 +167,7 @@ public final class RtContainersTestCase {
      * @throws Exception If something goes wrong.
      */
     @Test
-    public void returnsContainerIfCallIsSuccessful() throws Exception {
+    public void returnsCreatedContainer() throws Exception {
         MatcherAssert.assertThat(
             new RtContainers(
                 new AssertRequest(
@@ -106,7 +186,7 @@ public final class RtContainersTestCase {
      * @throws IOException due to code 400
      */
     @Test(expected = UnexpectedResponseException.class)
-    public void unexpectedResponseErrorIfResponseIs400() throws IOException {
+    public void createsWith400() throws IOException {
         new RtContainers(
             new AssertRequest(
                 new Response(
@@ -122,7 +202,7 @@ public final class RtContainersTestCase {
      * @throws IOException due to code 404
      */
     @Test(expected = UnexpectedResponseException.class)
-    public void unexpectedResponseErrorIfResponseIs404() throws IOException {
+    public void createsWith404() throws IOException {
         new RtContainers(
             new AssertRequest(
                 new Response(
@@ -138,7 +218,7 @@ public final class RtContainersTestCase {
      * @throws IOException due to code 406
      */
     @Test(expected = UnexpectedResponseException.class)
-    public void unexpectedResponseErrorIfResponseIs406() throws IOException {
+    public void createsWith406() throws IOException {
         new RtContainers(
             new AssertRequest(
                 new Response(
@@ -154,7 +234,7 @@ public final class RtContainersTestCase {
      * @throws IOException due to code 409
      */
     @Test(expected = UnexpectedResponseException.class)
-    public void unexpectedResponseErrorIfResponseIs409() throws IOException {
+    public void createsWithConflict() throws IOException {
         new RtContainers(
             new AssertRequest(
                 new Response(
@@ -170,7 +250,7 @@ public final class RtContainersTestCase {
      * @throws IOException due to code 500
      */
     @Test(expected = UnexpectedResponseException.class)
-    public void unexpectedResponseErrorIfResponseIs500() throws IOException {
+    public void createsWithServerErrpr() throws IOException {
         new RtContainers(
             new AssertRequest(
                 new Response(
@@ -188,7 +268,7 @@ public final class RtContainersTestCase {
      * @throws Exception If something goes wrong.
      */
     @Test
-    public void wellformedUriForCreateNameImage() throws Exception {
+    public void createsWithImageName() throws Exception {
         new RtContainers(
             new AssertRequest(
                 new Response(
@@ -209,7 +289,7 @@ public final class RtContainersTestCase {
      * @throws Exception If something goes wrong.
      */
     @Test
-    public void wellformedUriAndPayloadForCreateJson() throws Exception {
+    public void createsWithPayloadForCreateJson() throws Exception {
         final JsonObject json = Json.createObjectBuilder()
             .add("Image", "ubuntu")
             .add("Entrypoint", "script.sh")
@@ -244,7 +324,7 @@ public final class RtContainersTestCase {
      * @throws Exception If something goes wrong.
      */
     @Test
-    public void wellformedUriAndPayloadForCreateNameAndJson() throws Exception {
+    public void createsWithPayloadForCreateNameAndJson() throws Exception {
         final JsonObject json = Json.createObjectBuilder()
             .add("Image", "ubuntu")
             .add("Entrypoint", "script.sh")

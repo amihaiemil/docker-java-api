@@ -111,12 +111,12 @@ final class RtContainers implements Containers {
         try {
             post.setEntity(new StringEntity(container.toString()));
             post.setHeader(new BasicHeader("Content-Type", "application/json"));
-            final JsonObject json = Json.createReader(
-                this.client.execute(
-                    post,
+            final JsonObject json = this.client.execute(
+                post,
+                new ReadJsonObject(
                     new MatchStatus(post.getURI(), HttpStatus.SC_CREATED)
-                ).getEntity().getContent()
-            ).readObject();
+                )
+            );
             return new RtContainer(
                 json,
                 this.client,

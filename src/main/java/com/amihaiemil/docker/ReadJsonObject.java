@@ -26,51 +26,38 @@
 package com.amihaiemil.docker;
 
 import java.io.IOException;
+import javax.json.Json;
 import javax.json.JsonObject;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ResponseHandler;
 
 /**
- * An inpsection upon any of the Docker resources.
- * @author George Aristy (george.aristy@gmail.com)
+ * Handler that reads a JsonObject from the response.
+ * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 0.0.1
+ * @since 0.0.
  */
-final class Inspection extends JsonResource {
+final class ReadJsonObject implements ResponseHandler<JsonObject> {
+
+    /**
+     * Handlers to be executed before actually reading the array.
+     */
+    private final ResponseHandler<HttpResponse> other;
 
     /**
      * Ctor.
-     * @param client The Http client.
-     * @param url The request URL.
-     * @throws UnexpectedResponseException If Docker's response code is not 200.
-     * @throws IOException If an I/O error occurs.
+     * @param other Handlers to be executed before actually reading the array.
      */
-    Inspection(final HttpClient client, final String url)
-        throws UnexpectedResponseException, IOException {
-        super(fetch(client, url));
+    ReadJsonObject(final ResponseHandler<HttpResponse> other) {
+        this.other = other;
     }
-    
-    /**
-     * Fetch the JsonObject resource.
-     * @param client The Http client.
-     * @param url The request URL.
-     * @return The fetched JsonObject.
-     * @throws UnexpectedResponseException If Docker's response code is not 200.
-     * @throws IOException If an I/O error occurs.
-     */
-    private static JsonObject fetch(final HttpClient client, final String url)
-        throws UnexpectedResponseException, IOException {
-        final HttpGet inspect = new HttpGet(url);
-        try {
-            return client.execute(
-                inspect,
-                new ReadJsonObject(
-                    new MatchStatus(inspect.getURI(), HttpStatus.SC_OK)
-                )
-            );
-        } finally {
-            inspect.releaseConnection();
-        }
+
+    @Override
+    public JsonObject handleResponse(final HttpResponse httpResponse)
+        throws IOException {
+        final HttpResponse resp = this.other.handleResponse(httpResponse);
+        return Json.createReader(
+            resp.getEntity().getContent()
+        ).readObject();
     }
 }
