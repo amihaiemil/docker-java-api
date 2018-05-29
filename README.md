@@ -23,13 +23,13 @@ The library comes as a maven dependency:
 <dependency>
     <groupId>com.amihaiemil.web</groupId>
     <artifactId>docker-java-api</artifactId>
-    <version>???</version>
+    <version>0.0.1</version>
 </dependency>
 ```
 
 **In order for it to work, you need to have an implementation of [JSON-P (JSR 374)](https://javaee.github.io/jsonp/index.html) in your classpath (it doesn't come transitively since most people are using Java EE APIs so, chances are it is already provided!).**
 
-If you are not using Maven, you can also download the <a href="https://oss.sonatype.org/service/local/repositories/releases/content/com/amihaiemil/web/docker-java-api/???/docker-java-api-?.?.?-jar-with-dependencies.jar">fat</a> jar.
+If you are not using Maven, you can also download the <a href="https://oss.sonatype.org/service/local/repositories/releases/content/com/amihaiemil/web/docker-java-api/0.0.1/docker-java-api-0.0.1-jar-with-dependencies.jar">fat</a> jar.
 
 ### Contributing 
 
