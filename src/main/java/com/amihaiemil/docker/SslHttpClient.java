@@ -27,6 +27,8 @@ package com.amihaiemil.docker;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.security.GeneralSecurityException;
+import java.util.function.Supplier;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -39,6 +41,7 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.ssl.SSLContexts;
 
 /**
  * An HttpClient that works over a normal network socket.
@@ -47,9 +50,9 @@ import org.apache.http.protocol.HttpContext;
  * @version $Id$
  * @since 0.0.1
  * @checkstyle ParameterNumber (150 lines)
- * @todo #67:30min Using the provided certificates,
- *  register the http/https protocols, similar to how "unix" is
- *  registered in UnixHttpClient.
+ * @todo #100:30min Add a plain HTTP client for use. It is possible
+ *  for users to disable TLS on docker's API. See
+ *  https://docs.docker.com/registry/insecure/.
  */
 final class SslHttpClient implements HttpClient {
     /**
@@ -59,16 +62,37 @@ final class SslHttpClient implements HttpClient {
 
     /**
      * Ctor.
-     * @param certs Path to the folder containing the following certificates:
-     *  ca.pem, cert.pem and key.pem.
+     * @param keys Path to the keystore.
+     * @param trust Path to the truststore.
+     * @param storePwd Password for the keystore.
+     * @param keyPwd Passphrase for the key.
      */
-    SslHttpClient(final Path certs) {
-        this(
-            HttpClients.custom()
-                .setMaxConnPerRoute(10)
-                .setMaxConnTotal(10)
-                .build()
-        );
+    SslHttpClient(
+        final Path keys, final Path trust,
+        final char[] storePwd, final char[] keyPwd) {
+        this(() -> {
+            try {
+                return HttpClients.custom()
+                    .setMaxConnPerRoute(10)
+                    .setMaxConnTotal(10)
+                    .setSSLContext(
+                        SSLContexts.custom()
+                            .loadTrustMaterial(trust.toFile())
+                            .loadKeyMaterial(keys.toFile(), storePwd, keyPwd)
+                            .build()
+                    ).build();
+            } catch (final IOException | GeneralSecurityException ex) {
+                throw new IllegalStateException(ex);
+            }
+        });
+    }
+
+    /**
+     * Ctor.
+     * @param client Decorated HttpClient.
+     */
+    SslHttpClient(final Supplier<HttpClient> client) {
+        this(client.get());
     }
 
     /**

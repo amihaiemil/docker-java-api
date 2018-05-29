@@ -39,6 +39,8 @@ import org.junit.Test;
  * @version $Id$
  * @since 0.0.1
  * @checkstyle MethodName (500 lines)
+ * @todo #100:30min Add more tests for the SslHttpClient, especially
+ *  integration tests.
  */
 public final class SslHttpClientTestCase {
     /**
