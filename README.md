@@ -15,6 +15,33 @@ Unlike other docker clients for Java, this one aims to be as lightweight as poss
 
 One other target is that this library should be a true API, not an SDK. Read [this](http://www.amihaiemil.com/2018/03/10/java-api-for-docker.html) blog post and [the wiki](https://github.com/amihaiemil/docker-java-api/wiki) for more details.
 
+### Maven dependency
+
+The library comes as a maven dependency:
+
+```
+<dependency>
+    <groupId>com.amihaiemil.web</groupId>
+    <artifactId>docker-java-api</artifactId>
+    <version>???</version>
+</dependency>
+```
+
+In order for it to work, you need to have an implementation of [JSON-P (JSR 374)](https://javaee.github.io/jsonp/index.html) in your classpath (it doesn't come transitively). If you have no idea what this means, just specify this dependency along the one above:
+
+```
+<dependency>
+    <groupId>org.glassfish</groupId>
+		<artifactId>javax.json</artifactId>
+		<version>1.0.4</version>
+</dependency>
+```
+
+But make sure to ask someone, who understands maven dependencies, to review your ``pom.xml``!
+
+
+or take the <a href="https://oss.sonatype.org/service/local/repositories/releases/content/com/amihaiemil/web/docker-java-api/???/docker-java-api-?.?.?-jar-with-dependencies.jar">fat</a> jar.
+
 ### Contributing 
 
 If you would like to contribute, just open an issue or a PR.
