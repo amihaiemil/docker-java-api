@@ -23,12 +23,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.docker.mock;
+package com.amihaiemil.docker;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonNumber;
@@ -37,6 +38,7 @@ import javax.json.JsonString;
 import javax.json.JsonValue;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
 
 /**
  * JSON payload of an HttpRequest.
@@ -44,8 +46,9 @@ import org.apache.http.HttpRequest;
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @todo #108:30min Add tests for PayloadOf.
  */
-public final class PayloadOf implements JsonObject {
+final class PayloadOf implements JsonObject {
     /**
      * The request's payload.
      */
@@ -57,19 +60,53 @@ public final class PayloadOf implements JsonObject {
      * @param request The http request
      * @throws IllegalStateException if the request's payload cannot be read
      */
-    public PayloadOf(final HttpRequest request) {
-        try {
-            if (request instanceof HttpEntityEnclosingRequest) {
-                this.json = Json.createReader(
-                    ((HttpEntityEnclosingRequest) request).getEntity()
-                        .getContent()
-                ).readObject();
-            } else {
-                this.json = Json.createObjectBuilder().build();
+    PayloadOf(final HttpRequest request) {
+        this(() -> {
+            try {
+                final JsonObject body;
+                if (request instanceof HttpEntityEnclosingRequest) {
+                    body = Json.createReader(
+                        ((HttpEntityEnclosingRequest) request).getEntity()
+                            .getContent()
+                    ).readObject();
+                } else {
+                    body =  Json.createObjectBuilder().build();
+                }
+                return body;
+            } catch (final IOException ex) {
+                throw new IllegalStateException(
+                    "Cannot read request payload", ex
+                );
             }
-        } catch (final IOException ex) {
-            throw new IllegalStateException("Cannot read request payload", ex);
-        }
+        });
+    }
+
+    /**
+     * Ctor.
+     * @param response The http response.
+     * @throws IllegalStateException if the response's payload cannot be read
+     */
+    PayloadOf(final HttpResponse response) {
+        this(() -> {
+            try {
+                return Json.createReader(
+                    response.getEntity().getContent()
+                ).readObject();
+            } catch (final IOException ex) {
+                throw new IllegalStateException(
+                    "Cannot read response payload", ex
+                );
+            }
+        });
+    }
+
+    /**
+     * Ctor.
+     * @param json The json.
+     * @throws IllegalStateException if the payload cannot be read
+     */
+    private PayloadOf(final Supplier<JsonObject> json) {
+        this.json = json.get();
     }
 
     @Override

@@ -25,6 +25,8 @@
  */
 package com.amihaiemil.docker;
 
+import javax.json.Json;
+import javax.json.JsonObject;
 import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -45,7 +47,8 @@ public final class UnexpectedResponseExceptionTestCase {
     public void returnsActualStatus() {
         MatcherAssert.assertThat(
             new UnexpectedResponseException(
-                "/uri", HttpStatus.SC_NOT_FOUND, HttpStatus.SC_OK
+                "/uri", HttpStatus.SC_NOT_FOUND,
+                HttpStatus.SC_OK, Json.createObjectBuilder().build()
             ).actualStatus(),
             Matchers.equalTo(HttpStatus.SC_NOT_FOUND)
         );
@@ -58,7 +61,8 @@ public final class UnexpectedResponseExceptionTestCase {
     public void returnsExpectedStatus() {
         MatcherAssert.assertThat(
             new UnexpectedResponseException(
-                "/uri", HttpStatus.SC_NOT_FOUND, HttpStatus.SC_OK
+                "/uri", HttpStatus.SC_NOT_FOUND,
+                HttpStatus.SC_OK, Json.createObjectBuilder().build()
             ).expectedStatus(),
             Matchers.equalTo(HttpStatus.SC_OK)
         );
@@ -71,7 +75,8 @@ public final class UnexpectedResponseExceptionTestCase {
     public void returnsEndpoint() {
         MatcherAssert.assertThat(
             new UnexpectedResponseException(
-                "/uri", HttpStatus.SC_NOT_FOUND, HttpStatus.SC_OK
+                "/uri", HttpStatus.SC_NOT_FOUND,
+                HttpStatus.SC_OK, Json.createObjectBuilder().build()
             ).endpoint(),
             Matchers.equalTo("/uri")
         );
@@ -84,11 +89,27 @@ public final class UnexpectedResponseExceptionTestCase {
     public void returnsMessage() {
         MatcherAssert.assertThat(
             new UnexpectedResponseException(
-                "/uri", HttpStatus.SC_NOT_FOUND, HttpStatus.SC_OK
+                "/uri", HttpStatus.SC_NOT_FOUND,
+                HttpStatus.SC_OK, Json.createObjectBuilder().build()
             ).getMessage(),
             Matchers.equalTo(
                 "Expected status 200 but got 404 when calling /uri"
             )
+        );
+    }
+
+    /**
+     * UnexpectedResponseException returns the payload.
+     */
+    @Test
+    public void returnsPayload() {
+        final JsonObject payload = Json.createObjectBuilder().build();
+        MatcherAssert.assertThat(
+            new UnexpectedResponseException(
+                "/uri", HttpStatus.SC_OK,
+                HttpStatus.SC_OK, payload
+            ).payload(),
+            Matchers.is(payload)
         );
     }
 }

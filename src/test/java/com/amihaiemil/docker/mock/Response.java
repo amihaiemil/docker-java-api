@@ -72,7 +72,7 @@ public final class Response implements HttpResponse {
      * @param status The {@link HttpStatus http status code}
      */
     public Response(final int status) {
-        this(status, "");
+        this(status, "{}");
     }
 
     /**

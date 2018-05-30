@@ -27,7 +27,6 @@ package com.amihaiemil.docker;
 
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Condition;
-import com.amihaiemil.docker.mock.PayloadOf;
 import com.amihaiemil.docker.mock.Response;
 import java.io.IOException;
 import java.net.URI;
@@ -107,7 +106,7 @@ public final class RtContainersTestCase {
     public void iterateFailsIfResponseIs500() throws Exception {
         new RtContainers(
             new AssertRequest(
-                new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR, "")
+                new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
             ),
             URI.create("http://localhost")
         ).iterator();
@@ -121,7 +120,7 @@ public final class RtContainersTestCase {
     public void iterateFailsIfResponseIs400() throws Exception {
         new RtContainers(
             new AssertRequest(
-                new Response(HttpStatus.SC_BAD_REQUEST, "")
+                new Response(HttpStatus.SC_BAD_REQUEST)
             ),
             URI.create("http://localhost")
         ).iterator();
@@ -190,8 +189,7 @@ public final class RtContainersTestCase {
         new RtContainers(
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_BAD_REQUEST,
-                    ""
+                    HttpStatus.SC_BAD_REQUEST
                 )
             ), URI.create("http://localhost/test")
         ).create("some_image");
@@ -206,8 +204,7 @@ public final class RtContainersTestCase {
         new RtContainers(
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_NOT_FOUND,
-                    ""
+                    HttpStatus.SC_NOT_FOUND
                 )
             ), URI.create("http://localhost/test")
         ).create("some_image");
@@ -222,8 +219,7 @@ public final class RtContainersTestCase {
         new RtContainers(
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_NOT_ACCEPTABLE,
-                    ""
+                    HttpStatus.SC_NOT_ACCEPTABLE
                 )
             ), URI.create("http://localhost/test")
         ).create("some_image");
@@ -238,8 +234,7 @@ public final class RtContainersTestCase {
         new RtContainers(
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_CONFLICT,
-                    ""
+                    HttpStatus.SC_CONFLICT
                 )
             ), URI.create("http://localhost/test")
         ).create("some_image");
@@ -254,8 +249,7 @@ public final class RtContainersTestCase {
         new RtContainers(
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_INTERNAL_SERVER_ERROR,
-                    ""
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR
                 )
             ), URI.create("http://localhost/test")
         ).create("some_image");

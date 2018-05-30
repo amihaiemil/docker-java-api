@@ -49,7 +49,7 @@ public final class MatchStatusTestCase {
     @Test(expected = UnexpectedResponseException.class)
     public void complainsOnDifferentStatus() throws Exception {
         new MatchStatus(URI.create("/test/ur"), HttpStatus.SC_OK)
-            .handleResponse(new Response(HttpStatus.SC_NOT_FOUND, ""));
+            .handleResponse(new Response(HttpStatus.SC_NOT_FOUND));
     }
     
     /**
@@ -59,7 +59,7 @@ public final class MatchStatusTestCase {
      */
     @Test
     public void returnsResponseOnMatch() throws Exception {
-        final HttpResponse resp = new Response(HttpStatus.SC_OK, "");
+        final HttpResponse resp = new Response(HttpStatus.SC_OK);
         MatcherAssert.assertThat(
             new MatchStatus(URI.create("/test/ur"), HttpStatus.SC_OK)
                 .handleResponse(resp),

@@ -113,7 +113,7 @@ public final class RtContainerTestCase {
         new RtContainer(
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
-                new Response(HttpStatus.SC_NOT_FOUND, "")
+                new Response(HttpStatus.SC_NOT_FOUND)
             ),
             URI.create("http://localhost:80/1.30/containers/123")
         ).inspect();
@@ -129,7 +129,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_NO_CONTENT, ""
+                    HttpStatus.SC_NO_CONTENT
                 ),
                 new Condition(
                     "Method should be a POST",
@@ -154,7 +154,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -171,7 +171,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_NOT_FOUND, ""
+                    HttpStatus.SC_NOT_FOUND
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -188,7 +188,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_NOT_MODIFIED, ""
+                    HttpStatus.SC_NOT_MODIFIED
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -205,7 +205,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_NO_CONTENT, ""
+                    HttpStatus.SC_NO_CONTENT
                 ),
                 new Condition(
                     "Method should be a POST",
@@ -230,7 +230,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -247,7 +247,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_NOT_FOUND, ""
+                    HttpStatus.SC_NOT_FOUND
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -264,7 +264,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_NOT_MODIFIED, ""
+                    HttpStatus.SC_NOT_MODIFIED
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -281,7 +281,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "9403").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_NO_CONTENT, ""
+                    HttpStatus.SC_NO_CONTENT
                 ),
                 new Condition(
                     "Method should be a POST",
@@ -308,7 +308,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -326,7 +326,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_NOT_FOUND, ""
+                    HttpStatus.SC_NOT_FOUND
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -343,7 +343,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_NO_CONTENT, ""
+                    HttpStatus.SC_NO_CONTENT
                 ),
                 new Condition(
                     "Method should be a POST",
@@ -368,7 +368,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -385,7 +385,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_NOT_FOUND, ""
+                    HttpStatus.SC_NOT_FOUND
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -402,7 +402,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_NO_CONTENT, ""
+                    HttpStatus.SC_NO_CONTENT
                 ),
                 new Condition(
                     "Method should be a POST",
@@ -429,7 +429,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_NOT_FOUND, ""
+                    HttpStatus.SC_NOT_FOUND
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -446,7 +446,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -463,7 +463,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().add("Id", "123").build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_CONFLICT, ""
+                    HttpStatus.SC_CONFLICT
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -480,7 +480,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_NO_CONTENT, ""
+                    HttpStatus.SC_NO_CONTENT
                 ),
                 new Condition(
                     "Method should be a DELETE",
@@ -507,7 +507,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_BAD_REQUEST, ""
+                    HttpStatus.SC_BAD_REQUEST
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -524,7 +524,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_NOT_FOUND, ""
+                    HttpStatus.SC_NOT_FOUND
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -541,7 +541,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_CONFLICT, ""
+                    HttpStatus.SC_CONFLICT
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")
@@ -558,7 +558,7 @@ public final class RtContainerTestCase {
             Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_INTERNAL_SERVER_ERROR, ""
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR
                 )
             ),
             URI.create("http://localhost:80/1.30/containers/123")

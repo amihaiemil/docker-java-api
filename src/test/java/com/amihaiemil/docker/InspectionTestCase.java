@@ -48,7 +48,7 @@ public final class InspectionTestCase {
         final String url = "http://localhost/docker";
         new Inspection(
             new AssertRequest(
-                new Response(HttpStatus.SC_OK, "{}"),
+                new Response(HttpStatus.SC_OK),
                 new Condition(
                     "Request method must be GET.",
                     req -> "GET".equals(req.getRequestLine().getMethod())
@@ -71,7 +71,7 @@ public final class InspectionTestCase {
     public void unexpectedResponseErrorIfResponseNot200() throws Exception {
         new Inspection(
             new AssertRequest(
-                new Response(HttpStatus.SC_NOT_FOUND, "")
+                new Response(HttpStatus.SC_NOT_FOUND)
             ),
             "http://localhost"
         );

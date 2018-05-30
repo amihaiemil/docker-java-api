@@ -63,7 +63,8 @@ final class MatchStatus implements ResponseHandler<HttpResponse> {
         final int actual = response.getStatusLine().getStatusCode();
         if(actual != this.expected) {
             throw new UnexpectedResponseException(
-                this.called.toString(), actual, this.expected
+                this.called.toString(), actual,
+                this.expected, new PayloadOf(response)
             );
         }
         return response;

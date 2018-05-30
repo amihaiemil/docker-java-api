@@ -25,6 +25,8 @@
  */
 package com.amihaiemil.docker;
 
+import javax.json.JsonObject;
+
 /**
  * Signals that the response received from the docker API was not expected.
  * For instance, it is thrown when Container#inspect() gets a different
@@ -51,19 +53,28 @@ public final class UnexpectedResponseException extends RuntimeException {
     private final int expectedStatus;
 
     /**
+     * The response's body.
+     */
+    private final JsonObject payload;
+
+    /**
      * Ctor.
      * @param endpoint Endpoint that was called.
      * @param actualStatus Received status.
      * @param expectedStatus Expected status.
+     * @param body The response's body.
      */
+    // @checkstyle ParameterNumber (3 lines)
     public UnexpectedResponseException(
-        final String endpoint, final int actualStatus, final int expectedStatus
+        final String endpoint, final int actualStatus,
+        final int expectedStatus, final JsonObject body
     ) {
         // @checkstyle LineLength (1 line)
         super("Expected status " + expectedStatus + " but got " + actualStatus + " when calling " + endpoint);
         this.endpoint = endpoint;
         this.actualStatus = actualStatus;
         this.expectedStatus = expectedStatus;
+        this.payload = body;
     }
 
     /**
@@ -90,4 +101,11 @@ public final class UnexpectedResponseException extends RuntimeException {
         return this.expectedStatus;
     }
 
+    /**
+     * Payload received in the response from the Docker API.
+     * @return The body of the response.
+     */
+    public JsonObject payload() {
+        return this.payload;
+    }
 }

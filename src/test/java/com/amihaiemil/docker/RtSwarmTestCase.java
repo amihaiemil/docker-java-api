@@ -27,7 +27,6 @@ package com.amihaiemil.docker;
 
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Condition;
-import com.amihaiemil.docker.mock.PayloadOf;
 import com.amihaiemil.docker.mock.Response;
 import java.net.URI;
 import org.apache.http.HttpStatus;
@@ -54,8 +53,7 @@ public final class RtSwarmTestCase {
         new RtSwarm(
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_OK,
-                    "{}"
+                    HttpStatus.SC_OK
                 ),
                 new Condition(
                     "Request method should be POST",
@@ -81,8 +79,7 @@ public final class RtSwarmTestCase {
         new RtSwarm(
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_OK,
-                    "{}"
+                    HttpStatus.SC_OK
                 ),
                 new Condition(
                     "Request method should be POST",
@@ -108,8 +105,7 @@ public final class RtSwarmTestCase {
         new RtSwarm(
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_INTERNAL_SERVER_ERROR,
-                    "Internal Error"
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR
                 )
             ),
             URI.create("http://localhost/swarm")
@@ -125,8 +121,7 @@ public final class RtSwarmTestCase {
         new RtSwarm(
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_SERVICE_UNAVAILABLE,
-                    "Internal Error"
+                    HttpStatus.SC_SERVICE_UNAVAILABLE
                 )
             ),
             URI.create("http://localhost/swarm")
@@ -189,7 +184,7 @@ public final class RtSwarmTestCase {
     public void inspectThrowsErrorIfResponseIs404() throws Exception {
         new RtSwarm(
             new AssertRequest(
-                new Response(HttpStatus.SC_NOT_FOUND, "")
+                new Response(HttpStatus.SC_NOT_FOUND)
             ), URI.create("http://localhost")
         ).inspect();
     }
@@ -203,7 +198,7 @@ public final class RtSwarmTestCase {
     public void inspectThrowsErrorIfResponseIs500() throws Exception {
         new RtSwarm(
             new AssertRequest(
-                new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR, "")
+                new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
             ), URI.create("http://localhost")
         ).inspect();
     }
@@ -217,7 +212,7 @@ public final class RtSwarmTestCase {
     public void inspectThrowsErrorIfResponseIs503() throws Exception {
         new RtSwarm(
             new AssertRequest(
-                new Response(HttpStatus.SC_SERVICE_UNAVAILABLE, "")
+                new Response(HttpStatus.SC_SERVICE_UNAVAILABLE)
             ), URI.create("http://localhost")
         ).inspect();
     }
@@ -233,7 +228,7 @@ public final class RtSwarmTestCase {
         final String listenAddress = "172.27.9.10";
         new RtSwarm(
             new AssertRequest(
-                new Response(HttpStatus.SC_OK, "sometoken123"),
+                new Response(HttpStatus.SC_OK),
                 new Condition(
                     "Request method must be POST.",
                     req -> "POST".equals(req.getRequestLine().getMethod())
@@ -288,7 +283,7 @@ public final class RtSwarmTestCase {
     public void initUnexpectedErrorIfResponseIsNot200() throws Exception {
         new RtSwarm(
             new AssertRequest(
-                new Response(HttpStatus.SC_BAD_REQUEST, "")
+                new Response(HttpStatus.SC_BAD_REQUEST)
             ),
             URI.create("http://docker")
         ).init("123");

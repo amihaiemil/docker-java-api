@@ -101,7 +101,7 @@ public final class RtImagesTestCase {
     public void iterateFailsIfResponseIs500() throws Exception {
         new RtImages(
             new AssertRequest(
-                new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR, "")
+                new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
             ),
             URI.create("http://localhost")
         ).iterator();
