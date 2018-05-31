@@ -28,6 +28,7 @@ package com.amihaiemil.docker;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.json.JsonArray;
 import javax.json.JsonNumber;
 import javax.json.JsonObject;
@@ -53,6 +54,14 @@ abstract class JsonResource implements JsonObject {
      * The JsonObject resource in question.
      */
     private final JsonObject resource;
+
+    /**
+     * Ctor.
+     * @param resource Supply the JsonObject.
+     */
+    JsonResource(final Supplier<JsonObject> resource) {
+        this(resource.get());
+    }
     
     /**
      * Ctor.

@@ -69,8 +69,11 @@ public final class UnexpectedResponseException extends RuntimeException {
         final String endpoint, final int actualStatus,
         final int expectedStatus, final JsonObject body
     ) {
-        // @checkstyle LineLength (1 line)
-        super("Expected status " + expectedStatus + " but got " + actualStatus + " when calling " + endpoint);
+        super(String.format(
+            // @checkstyle LineLength (1 line)
+            "Expected status %s but got %s when calling %s. Response body was %s",
+            expectedStatus, actualStatus, endpoint, body.toString()
+        ));
         this.endpoint = endpoint;
         this.actualStatus = actualStatus;
         this.expectedStatus = expectedStatus;
