@@ -564,4 +564,23 @@ public final class RtContainerTestCase {
             URI.create("http://localhost:80/1.30/containers/123")
         ).remove();
     }
+    
+    /**
+     * RtContainer can return its logs.
+     */
+    @Test
+    public void getsLogs() {
+        MatcherAssert.assertThat(
+            new RtContainer(
+                Json.createObjectBuilder().build(),
+                new AssertRequest(
+                    new Response(
+                        HttpStatus.SC_OK
+                    )
+                ),
+                URI.create("http://localhost:80/1.30/containers/123")
+            ).logs(),
+            Matchers.notNullValue()
+        );
+    }
 }

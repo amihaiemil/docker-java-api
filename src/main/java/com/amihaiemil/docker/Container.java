@@ -122,4 +122,12 @@ public interface Container extends JsonObject {
     void remove(final boolean volumes, final boolean force, final boolean link)
         throws IOException, UnexpectedResponseException;
     
+    /**
+     * The Logs of this container.<br><br>
+     * Note that this operation works only for containers with the json-file
+     * or journald logging driver.
+     * @return Logs of this container.
+     */
+    Logs logs();
+    
 }
