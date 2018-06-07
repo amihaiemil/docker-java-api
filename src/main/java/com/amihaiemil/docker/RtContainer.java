@@ -186,6 +186,8 @@ final class RtContainer extends JsonResource implements Container {
     
     @Override
     public Logs logs() {
-        return new RtLogs(this, URI.create(this.baseUri.toString() + "/logs"));
+        return new RtLogs(
+            this, this.client, URI.create(this.baseUri.toString() + "/logs")
+        );
     }
 }

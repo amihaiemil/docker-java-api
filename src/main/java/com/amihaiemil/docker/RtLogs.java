@@ -26,8 +26,9 @@
 package com.amihaiemil.docker;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
 import java.net.URI;
+import org.apache.http.client.HttpClient;
 
 /**
  * Restful container logs.
@@ -46,6 +47,11 @@ final class RtLogs implements Logs {
     private final Container owner;
     
     /**
+     * Apache HttpClient which sends the requests.
+     */
+    private final HttpClient client;
+    
+    /**
      * Base URI.
      */
     private final URI baseUri;
@@ -53,10 +59,12 @@ final class RtLogs implements Logs {
     /**
      * Ctor.
      * @param owner Container which has these logs.
+     * @param client Given HTTP Client.
      * @param baseUri Base URI of these logs.
      */
-    RtLogs(final Container owner, final URI baseUri) {
+    RtLogs(final Container owner, final HttpClient client, final URI baseUri) {
         this.owner = owner;
+        this.client = client;
         this.baseUri = baseUri;
     }
 
@@ -69,7 +77,7 @@ final class RtLogs implements Logs {
     }
 
     @Override
-    public InputStream follow()
+    public Reader follow()
         throws IOException, UnexpectedResponseException {
         throw new UnsupportedOperationException(
             "Operation not yet implemented. If you can contribute please,"

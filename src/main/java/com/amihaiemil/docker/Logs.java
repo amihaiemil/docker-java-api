@@ -26,7 +26,7 @@
 package com.amihaiemil.docker;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
 
 /**
  * Logs of a Container.
@@ -47,12 +47,12 @@ public interface Logs {
     
     /**
      * Return the logs as a stream.
-     * @return InputStream containing the logs.
+     * @return Reader logs' reader.
      * @throws IOException If something goes wrong.
      * @throws UnexpectedResponseException If the status response is not
      *  the expected one.
      */
-    InputStream follow() throws IOException, UnexpectedResponseException;
+    Reader follow() throws IOException, UnexpectedResponseException;
     
     /**
      * The Container to which these Logs belong.

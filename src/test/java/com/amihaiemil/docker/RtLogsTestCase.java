@@ -26,6 +26,7 @@
 package com.amihaiemil.docker;
 
 import java.net.URI;
+import org.apache.http.client.HttpClient;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -47,6 +48,7 @@ public final class RtLogsTestCase {
         final Container owner = Mockito.mock(Container.class);
         final Logs logs = new RtLogs(
             owner,
+            Mockito.mock(HttpClient.class),
             URI.create("http://localhost:8080/containers/123/logs")
         );
         MatcherAssert.assertThat(
