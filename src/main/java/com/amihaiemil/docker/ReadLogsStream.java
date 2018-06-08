@@ -26,18 +26,18 @@
 package com.amihaiemil.docker;
 
 import java.io.IOException;
-import javax.json.Json;
-import javax.json.JsonObject;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
 
 /**
- * Handler that reads a JsonObject from the response.
+ * Handler that returns the stream response as a Reader.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 0.0.1
+ * @since 0.0.2
  */
-final class ReadJsonObject implements ResponseHandler<JsonObject> {
+final class ReadLogsStream implements ResponseHandler<Reader> {
 
     /**
      * Handlers to be executed before actually reading the array.
@@ -48,16 +48,14 @@ final class ReadJsonObject implements ResponseHandler<JsonObject> {
      * Ctor.
      * @param other Handlers to be executed before actually reading the array.
      */
-    ReadJsonObject(final ResponseHandler<HttpResponse> other) {
+    ReadLogsStream(final ResponseHandler<HttpResponse> other) {
         this.other = other;
     }
 
     @Override
-    public JsonObject handleResponse(final HttpResponse httpResponse)
+    public Reader handleResponse(final HttpResponse httpResponse)
         throws IOException {
         final HttpResponse resp = this.other.handleResponse(httpResponse);
-        return Json.createReader(
-            resp.getEntity().getContent()
-        ).readObject();
+        return new InputStreamReader(resp.getEntity().getContent());
     }
 }

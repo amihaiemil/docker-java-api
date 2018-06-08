@@ -25,7 +25,14 @@
  */
 package com.amihaiemil.docker;
 
+import com.amihaiemil.docker.mock.AssertRequest;
+import com.amihaiemil.docker.mock.Condition;
+import com.amihaiemil.docker.mock.Response;
+import java.io.BufferedReader;
 import java.net.URI;
+import java.util.stream.Collectors;
+import javax.json.Json;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -55,6 +62,42 @@ public final class RtLogsTestCase {
             logs.container() == owner,
             Matchers.is(Boolean.TRUE)
         );
+    }
+    
+    /**
+     * RtLogs can follow the Container's logs (return a Reader of the stream).
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void followsLogs() throws Exception {
+        final Logs logs = new RtLogs(
+            Mockito.mock(Container.class),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_SWITCHING_PROTOCOLS,
+                    Json.createObjectBuilder()
+                        .add("logs", "...some logs...")
+                        .build().toString()
+                ),
+                new Condition(
+                    "Method should be a GET",
+                    req -> req.getRequestLine().getMethod().equals("GET")
+                ),
+                new Condition(
+                    "Resource path must be /123/logs?follow=true",
+                    req -> req.getRequestLine().getUri().endsWith(
+                        "/123/logs?follow=true"
+                    )
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123/logs")
+        );
+        try (final BufferedReader bfr = new BufferedReader(logs.follow());) {
+            MatcherAssert.assertThat(
+                bfr.lines().collect(Collectors.joining("\n")),
+                Matchers.equalTo("{\"logs\":\"...some logs...\"}")
+            );
+        }
     }
     
 }

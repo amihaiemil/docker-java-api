@@ -28,16 +28,22 @@ package com.amihaiemil.docker;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URI;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 
 /**
  * Restful container logs.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.2
- * @todo #128:30min Continue implementing this class (fetch and follow) and also
+ * @todo #130:30min Continue implementing this class (method fetch) and also
  *  take into consideration the query parameters as described here:
  *  https://docs.docker.com/engine/api/v1.35/#operation/ContainerLogs
+ * @todo #130:30min Write some ITCase for the fetch() method. We might have to
+ *  implement the stream decoding (in case TTY is disabled when the Container
+ *  is created), as explained here, in "Stream format" paragraph:
+ *  https://docs.docker.com/engine/api/v1.37/#operation/ContainerAttach
  */
 final class RtLogs implements Logs {
     
@@ -79,9 +85,19 @@ final class RtLogs implements Logs {
     @Override
     public Reader follow()
         throws IOException, UnexpectedResponseException {
-        throw new UnsupportedOperationException(
-            "Operation not yet implemented. If you can contribute please,"
-            + " do it here: https://www.github.com/amihaiemil/docker-java-api"
+        final HttpGet follow = new HttpGet(
+            new UncheckedUriBuilder(this.baseUri.toString())
+                .addParameter("follow", "true")
+                .build()
+        );
+        return this.client.execute(
+            follow,
+            new ReadLogsStream(
+                new MatchStatus(
+                    follow.getURI(),
+                    HttpStatus.SC_SWITCHING_PROTOCOLS
+                )
+            )
         );
     }
 

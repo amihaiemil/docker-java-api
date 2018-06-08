@@ -35,7 +35,7 @@ import java.io.IOException;
  * Handler that reads a JsonArray from the response.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 0.0.
+ * @since 0.0.1
  * @todo #84:30min Write some unit tests for this class, it is
  *  currently only tested by RtImagesITCase#iteratesImages.
  */
