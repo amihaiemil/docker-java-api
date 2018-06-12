@@ -36,6 +36,7 @@ import javax.json.JsonObject;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Iterator;
+import javax.json.JsonObjectBuilder;
 
 /**
  * Containers API.
@@ -117,8 +118,11 @@ final class RtContainers implements Containers {
                     new MatchStatus(post.getURI(), HttpStatus.SC_CREATED)
                 )
             );
+            final JsonObjectBuilder contr = Json.createObjectBuilder();
+            container.forEach(contr::add);
+            json.forEach(contr::add);
             return new RtContainer(
-                json,
+                contr.build(),
                 this.client,
                 URI.create(
                     this.baseUri.toString() + "/" + json.getString("Id")
