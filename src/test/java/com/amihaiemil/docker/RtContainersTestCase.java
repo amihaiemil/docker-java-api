@@ -136,7 +136,8 @@ public final class RtContainersTestCase {
         new RtContainers(
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_CREATED, "{ \"Id\": \"df2419f4\" }"
+                    HttpStatus.SC_CREATED,
+                    "{ \"Id\": \"df2419f4\", \"Warnings\": [ ]}"
                 ),
                 new Condition(
                     "The 'Content-Type' header must be set.",
@@ -172,7 +173,7 @@ public final class RtContainersTestCase {
                 new AssertRequest(
                     new Response(
                         HttpStatus.SC_CREATED,
-                        "{ \"Id\": \"df2419f4\" }"
+                        "{ \"Id\": \"df2419f4\", \"Warnings\": [ ]}"
                     )
                 ), URI.create("http://localhost/test")
             ).create("some_image"),
@@ -266,7 +267,8 @@ public final class RtContainersTestCase {
         new RtContainers(
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_CREATED, "{ \"Id\": \"df2419f4\" }"
+                    HttpStatus.SC_CREATED,
+                    "{ \"Id\": \"df2419f4\", \"Warnings\": [ ]}"
                 ),
                 new Condition(
                     "Resource path must be /create?name=some_name",
@@ -292,7 +294,8 @@ public final class RtContainersTestCase {
         new RtContainers(
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_CREATED, "{ \"Id\": \"df2419f4\" }"
+                    HttpStatus.SC_CREATED,
+                    "{ \"Id\": \"df2419f4\", \"Warnings\": [ ]}"
                 ),
                 new Condition(
                     "Resource path must be /create",
@@ -327,7 +330,8 @@ public final class RtContainersTestCase {
         new RtContainers(
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_CREATED, "{ \"Id\": \"df2419f4\" }"
+                    HttpStatus.SC_CREATED,
+                    "{ \"Id\": \"df2419f4\", \"Warnings\": [ ]}"
                 ),
                 new Condition(
                     "Resource path must be /create?name=image_name",
@@ -356,7 +360,10 @@ public final class RtContainersTestCase {
     public void createEscapesNameParameter() throws Exception {
         new RtContainers(
             new AssertRequest(
-                new Response(HttpStatus.SC_CREATED, "{ \"Id\": \"df2419f4\" }"),
+                new Response(
+                    HttpStatus.SC_CREATED,
+                    "{ \"Id\": \"df2419f4\", \"Warnings\": [ ]}"
+                ),
                 new Condition(
                     "RtContainers.create() must encode URL parameter",
                     req -> req.getRequestLine()
@@ -365,5 +372,49 @@ public final class RtContainersTestCase {
             ),
             URI.create("http://localhost/docker")
         ).create("Adrian Toomes", "some/image");
+    }
+
+    /**
+     * RtContainers.create() returns an RtContainer with the given parameter.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void createsContainerWithGivenParameters() throws Exception {
+        MatcherAssert.assertThat(
+            new RtContainers(
+                new AssertRequest(
+                    new Response(
+                        HttpStatus.SC_CREATED,
+                        "{ \"Id\": \"df2419f4\", \"Warnings\": [ ]}"
+                    )
+                ), URI.create("http://localhost/test")
+            ).create(
+                Json.createObjectBuilder()
+                    .add("Image", "ubuntu").build()
+            ).getString("Image"),
+            Matchers.is("ubuntu")
+        );
+    }
+
+    /**
+     * RtContainers.create() returns an RtContainer with the docker id.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void createsContainerWithId() throws Exception {
+        MatcherAssert.assertThat(
+            new RtContainers(
+                new AssertRequest(
+                    new Response(
+                        HttpStatus.SC_CREATED,
+                        "{ \"Id\": \"df2419f4\", \"Warnings\": [ ] }"
+                    )
+                ), URI.create("http://localhost/test")
+            ).create(
+                Json.createObjectBuilder()
+                    .add("Image", "ubuntu").build()
+            ).getString("Id"),
+            Matchers.is("df2419f4")
+        );
     }
 }
