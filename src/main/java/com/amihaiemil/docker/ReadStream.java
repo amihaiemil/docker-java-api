@@ -37,7 +37,7 @@ import org.apache.http.client.ResponseHandler;
  * @version $Id$
  * @since 0.0.2
  */
-final class ReadLogsStream implements ResponseHandler<Reader> {
+final class ReadStream implements ResponseHandler<Reader> {
 
     /**
      * Handlers to be executed before actually reading the array.
@@ -48,7 +48,7 @@ final class ReadLogsStream implements ResponseHandler<Reader> {
      * Ctor.
      * @param other Handlers to be executed before actually reading the array.
      */
-    ReadLogsStream(final ResponseHandler<HttpResponse> other) {
+    ReadStream(final ResponseHandler<HttpResponse> other) {
         this.other = other;
     }
 

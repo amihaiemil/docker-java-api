@@ -40,7 +40,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 /**
- * Unit tests for RtLogs.
+ * Unit tests for {@link RtLogs}.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.2
@@ -98,6 +98,73 @@ public final class RtLogsTestCase {
                 Matchers.equalTo("{\"logs\":\"...some logs...\"}")
             );
         }
+    }
+    
+    /**
+     * RtLogs can fetch the Container's logs (return them as a String).
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void fetchesLogs() throws Exception {
+        final Logs logs = new RtLogs(
+            Mockito.mock(Container.class),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    Json.createObjectBuilder()
+                        .add("logs", "...fetched logs...")
+                        .build().toString()
+                ),
+                new Condition(
+                    "Method should be a GET",
+                    req -> req.getRequestLine().getMethod().equals("GET")
+                ),
+                new Condition(
+                    "Resource path must be /123/logs",
+                    req -> req.getRequestLine().getUri().endsWith(
+                        "/123/logs"
+                    )
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123/logs")
+        );
+        MatcherAssert.assertThat(
+            logs.fetch(),
+            Matchers.equalTo("{\"logs\":\"...fetched logs...\"}")
+        );
+    }
+    
+    /**
+     * RtLogs.toString() fetches the logs as String.
+     */
+    @Test
+    public void toStringFetch() {
+        final Logs logs = new RtLogs(
+            Mockito.mock(Container.class),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    Json.createObjectBuilder()
+                        .add("logs", "toString logs")
+                        .build().toString()
+                ),
+                new Condition(
+                    "Method should be a GET",
+                    req -> req.getRequestLine().getMethod().equals("GET")
+                ),
+                new Condition(
+                    "Resource path must be /123/logs",
+                    req -> req.getRequestLine().getUri().endsWith(
+                        "/123/logs"
+                    )
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123/logs")
+        );
+        MatcherAssert.assertThat(
+            logs.toString(),
+            Matchers.equalTo("{\"logs\":\"toString logs\"}")
+        );
     }
     
 }

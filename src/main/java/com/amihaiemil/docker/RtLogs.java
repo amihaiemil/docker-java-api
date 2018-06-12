@@ -37,9 +37,12 @@ import org.apache.http.client.methods.HttpGet;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.2
- * @todo #130:30min Continue implementing this class (method fetch) and also
- *  take into consideration the query parameters as described here:
+ * @todo #135:30min Continue implementing this class, take into consideration
+ *  the query parameters as described here:
  *  https://docs.docker.com/engine/api/v1.35/#operation/ContainerLogs
+ *  Since the class should be immutable, the parameters should come in the ctor
+ *  and appended to the requests when they are performed. Let's leave this part
+ *  for v0.0.3 or later, it's not urgent now.
  * @todo #130:30min Write some ITCase for the fetch() method. We might have to
  *  implement the stream decoding (in case TTY is disabled when the Container
  *  is created), as explained here, in "Stream format" paragraph:
@@ -76,10 +79,20 @@ final class RtLogs implements Logs {
 
     @Override
     public String fetch() throws IOException, UnexpectedResponseException {
-        throw new UnsupportedOperationException(
-            "Operation not yet implemented. If you can contribute please,"
-            + " do it here: https://www.github.com/amihaiemil/docker-java-api"
-        );
+        final HttpGet fetch = new HttpGet(this.baseUri.toString());
+        try {
+            return this.client.execute(
+                fetch,
+                new ReadString(
+                    new MatchStatus(
+                        fetch.getURI(),
+                        HttpStatus.SC_OK
+                    )
+                )
+            );
+        } finally {
+            fetch.releaseConnection();
+        }
     }
 
     @Override
@@ -92,7 +105,7 @@ final class RtLogs implements Logs {
         );
         return this.client.execute(
             follow,
-            new ReadLogsStream(
+            new ReadStream(
                 new MatchStatus(
                     follow.getURI(),
                     HttpStatus.SC_SWITCHING_PROTOCOLS
@@ -106,4 +119,17 @@ final class RtLogs implements Logs {
         return this.owner;
     }
 
+    @Override
+    public String toString() {
+        try {
+            return this.fetch();
+        } catch (final IOException ex) {
+            throw new IllegalStateException(
+                "IOException when fetching the logs of Container "
+                + this.owner.containerId(),
+                ex
+            );
+        }
+    }
+    
 }
