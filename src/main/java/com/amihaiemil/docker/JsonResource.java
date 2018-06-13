@@ -27,6 +27,7 @@ package com.amihaiemil.docker;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.json.JsonArray;
@@ -194,5 +195,17 @@ abstract class JsonResource implements JsonObject {
     @Override
     public String toString() {
         return this.resource.toString();
+    }
+    
+    @Override
+    public boolean equals(final Object other) {
+        return this.resource.equals(other);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 89 * hash + Objects.hashCode(this.resource);
+        return hash;
     }
 }
