@@ -32,18 +32,18 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
- * Unit tests for {@link Combined}.
+ * Unit tests for {@link Merged}.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.2
  */
-public final class CombinedTestCase {
+public final class MergedTestCase {
     
     /**
-     * {@link Combined} can combine some JsonObjects.
+     * {@link Merged} can combine some JsonObjects.
      */
     @Test
-    public void combinesObjects() {
+    public void mergesObjects() {
         final JsonObject first = Json.createObjectBuilder()
             .add("firstName", "John")
             .add("age", 23)
@@ -60,37 +60,37 @@ public final class CombinedTestCase {
             .add("job", "developer")
             .build();
         MatcherAssert.assertThat(
-            new Combined(first, second),
+            new Merged(first, second),
             Matchers.equalTo(expected)
         );
     }
     
     /**
-     * {@link Combined} can combine one single JsonObject.
+     * {@link Merged} can combine one single JsonObject.
      */
     @Test
-    public void combinesSingleObject() {
+    public void mergesSingleObject() {
         final JsonObject single = Json.createObjectBuilder()
             .add("firstName", "John")
             .add("age", 23)
             .build();
         MatcherAssert.assertThat(
-            new Combined(single),
+            new Merged(single),
             Matchers.equalTo(single)
         );
     }
     
     /**
-     * {@link Combined} can combine one JsonObject and another empty one.
+     * {@link Merged} can combine one JsonObject and another empty one.
      */
     @Test
-    public void combinesWithEmptyObject() {
+    public void mergesWithEmptyObject() {
         final JsonObject single = Json.createObjectBuilder()
             .add("firstName", "John")
             .add("age", 23)
             .build();
         MatcherAssert.assertThat(
-            new Combined(single, Json.createObjectBuilder().build()),
+            new Merged(single, Json.createObjectBuilder().build()),
             Matchers.equalTo(single)
         );
     }

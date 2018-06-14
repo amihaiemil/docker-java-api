@@ -118,7 +118,7 @@ final class RtContainers implements Containers {
                 )
             );
             return new RtContainer(
-                new Combined(json, container),
+                new Merged(json, container),
                 this.client,
                 URI.create(
                     this.baseUri.toString() + "/" + json.getString("Id")

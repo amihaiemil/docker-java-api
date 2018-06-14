@@ -30,18 +30,18 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
 /**
- * Combine more JsonObjects into a single one.
+ * Merge more JsonObjects into a single one.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.2
  */
-final class Combined extends JsonResource {
+final class Merged extends JsonResource {
     
     /**
      * Ctor.
      * @param objects JsonObjects to combine.
      */
-    Combined(final JsonObject... objects) {
+    Merged(final JsonObject... objects) {
         super(() -> {
             final JsonObjectBuilder combined = Json.createObjectBuilder();
             for(final JsonObject json : objects) {
