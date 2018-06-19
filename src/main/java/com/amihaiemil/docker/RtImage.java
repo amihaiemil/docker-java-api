@@ -52,15 +52,26 @@ final class RtImage extends JsonResource implements Image {
     private final URI baseUri;
 
     /**
+     * Docker API.
+     */
+    private final Docker docker;
+
+    /**
      * Ctor.
      * @param rep JsonObject representation of this Image.
      * @param client The http client.
      * @param uri The URI for this image.
+     * @param dkr The docker entry point.
+     * @checkstyle ParameterNumber (5 lines)
      */
-    RtImage(final JsonObject rep, final HttpClient client, final URI uri) {
+    RtImage(
+        final JsonObject rep, final HttpClient client,
+        final URI uri, final Docker dkr
+    ) {
         super(rep);
         this.client = client;
         this.baseUri = uri;
+        this.docker = dkr;
     }
 
     @Override
@@ -77,7 +88,8 @@ final class RtImage extends JsonResource implements Image {
             json -> new RtImage(
                 json,
                 this.client,
-                this.baseUri
+                this.baseUri,
+                this.docker
             )
         );
     }
@@ -114,5 +126,16 @@ final class RtImage extends JsonResource implements Image {
         } finally {
             tag.releaseConnection();
         }
+    }
+
+    @Override
+    public Container run() throws IOException, UnexpectedResponseException {
+        final Container container = this.docker.containers().create(
+            this.baseUri.getPath().substring(
+                this.baseUri.getPath().lastIndexOf('/') + 1
+            )
+        );
+        container.start();
+        return container;
     }
 }

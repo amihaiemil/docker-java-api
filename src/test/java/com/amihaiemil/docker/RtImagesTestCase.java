@@ -35,6 +35,7 @@ import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * Unit tests for {@link RtImages}.
@@ -44,6 +45,11 @@ import org.junit.Test;
  * @checkstyle MethodName (500 lines)
  */
 public final class RtImagesTestCase {
+    /**
+     * Mock docker.
+     */
+    private static final Docker DOCKER = Mockito.mock(Docker.class);
+
     /**
      * Must return the same number of images as there are elements in the
      * json array returned by the service.
@@ -64,7 +70,9 @@ public final class RtImagesTestCase {
                                 .add("Id", "sha256:3e314f95dcace0f5e")
                         ).build().toString()
                 )
-            ), URI.create("http://localhost")
+            ),
+            URI.create("http://localhost"),
+            DOCKER
         ).forEach(image -> count.incrementAndGet());
         MatcherAssert.assertThat(
             count.get(),
@@ -85,7 +93,9 @@ public final class RtImagesTestCase {
                     HttpStatus.SC_OK,
                     Json.createArrayBuilder().build().toString()
                 )
-            ), URI.create("http://localhost")
+            ),
+            URI.create("http://localhost"),
+            DOCKER
         ).forEach(image -> count.incrementAndGet());
         MatcherAssert.assertThat(
             count.get(),
@@ -103,7 +113,8 @@ public final class RtImagesTestCase {
             new AssertRequest(
                 new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
             ),
-            URI.create("http://localhost")
+            URI.create("http://localhost"),
+            DOCKER
         ).iterator();
     }
 
@@ -131,7 +142,8 @@ public final class RtImagesTestCase {
                     }
                 )
             ),
-            URI.create("http://localhost")
+            URI.create("http://localhost"),
+            DOCKER
         ).pull("testImage", "1.23");
     }
 
@@ -146,7 +158,8 @@ public final class RtImagesTestCase {
             new AssertRequest(
                 new Response(HttpStatus.SC_NOT_FOUND)
             ),
-            URI.create("http://localhost")
+            URI.create("http://localhost"),
+            DOCKER
         ).pull("", "");
     }
 
@@ -161,7 +174,8 @@ public final class RtImagesTestCase {
             new AssertRequest(
                 new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
             ),
-            URI.create("http://localhost")
+            URI.create("http://localhost"),
+            DOCKER
         ).pull("", "");
     }
 
@@ -185,7 +199,8 @@ public final class RtImagesTestCase {
                         .getUri().endsWith("/images/prune")
                 )
             ),
-            URI.create("http://localhost/images")
+            URI.create("http://localhost/images"),
+            DOCKER
         ).prune();
     }
 
@@ -200,7 +215,8 @@ public final class RtImagesTestCase {
             new AssertRequest(
                 new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
             ),
-            URI.create("http://localhost/images")
+            URI.create("http://localhost/images"),
+            DOCKER
         ).prune();
     }
 }
