@@ -322,7 +322,7 @@ public final class RtImageTestCase {
                 URI.create("http://localhost/images/image123"),
                 DOCKER
             ).run(),
-            Matchers.notNullValue()
+            Matchers.is(container)
         );
         MatcherAssert.assertThat(
             started.get(),
