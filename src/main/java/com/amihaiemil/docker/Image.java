@@ -76,4 +76,13 @@ public interface Image extends JsonObject {
     void tag(
         String repo, String name
     ) throws IOException, UnexpectedResponseException;
+
+    /**
+     * Run this image.
+     * @return The container for the running image.
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one.
+     */
+    Container run() throws IOException, UnexpectedResponseException;
 }

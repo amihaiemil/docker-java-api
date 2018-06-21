@@ -54,13 +54,20 @@ final class RtImages implements Images {
     private final URI baseUri;
 
     /**
+     * Docker API.
+     */
+    private final Docker docker;
+
+    /**
      * Ctor.
      * @param client The http client.
      * @param uri The URI for this Images API.
+     * @param dkr The docker entry point.
      */
-    RtImages(final HttpClient client, final URI uri) {
+    RtImages(final HttpClient client, final URI uri, final Docker dkr) {
         this.client = client;
         this.baseUri = uri;
+        this.docker = dkr;
     }
 
     @Override
@@ -83,7 +90,8 @@ final class RtImages implements Images {
                 this.client,
                 URI.create(
                     this.baseUri.toString() + "/" + name
-                )
+                ),
+                this.docker
             );
         } finally {
             create.releaseConnection();
@@ -125,7 +133,8 @@ final class RtImages implements Images {
                 this.client,
                 URI.create(
                     this.baseUri.toString() + "/" + json.getString("Id")
-                )
+                ),
+                this.docker
             )
         );
     }

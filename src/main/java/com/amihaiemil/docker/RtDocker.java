@@ -78,7 +78,7 @@ abstract class RtDocker implements Docker {
     @Override
     public final Images images() {
         return new RtImages(
-            this.client, URI.create(this.baseUri.toString() + "/images")
+            this.client, URI.create(this.baseUri.toString() + "/images"), this
         );
     }
 

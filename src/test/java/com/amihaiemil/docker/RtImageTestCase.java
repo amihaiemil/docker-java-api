@@ -29,12 +29,15 @@ import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
 import java.net.URI;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.json.Json;
 import javax.json.JsonObject;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * Unit tests for RtImage.
@@ -44,6 +47,10 @@ import org.junit.Test;
  * @checkstyle MethodName (500 lines)
  */
 public final class RtImageTestCase {
+    /**
+     * Mock docker.
+     */
+    private static final Docker DOCKER = Mockito.mock(Docker.class);
 
     /**
      * RtImage can return info about itself.
@@ -72,7 +79,8 @@ public final class RtImageTestCase {
                     req -> req.getRequestLine().getUri().endsWith("/456/json")
                 )
             ),
-            URI.create("http://localhost:80/1.30/images/456")
+            URI.create("http://localhost:80/1.30/images/456"),
+            DOCKER
         );
         final JsonObject info = image.inspect();
         MatcherAssert.assertThat(info.keySet(), Matchers.hasSize(4));
@@ -105,7 +113,8 @@ public final class RtImageTestCase {
                         Json.createArrayBuilder().build().toString()
                     )
                 ),
-                URI.create("http://localhost:80/1.30/images/456")
+                URI.create("http://localhost:80/1.30/images/456"),
+                DOCKER
             ).history(),
             Matchers.allOf(
                 Matchers.notNullValue(),
@@ -135,7 +144,8 @@ public final class RtImageTestCase {
                     )
                 )
             ),
-            URI.create("http://localhost/images/test")
+            URI.create("http://localhost/images/test"),
+            DOCKER
         ).delete();
     }
 
@@ -151,7 +161,8 @@ public final class RtImageTestCase {
             new AssertRequest(
                 new Response(HttpStatus.SC_NOT_FOUND)
             ),
-            URI.create("http://localhost/images/test")
+            URI.create("http://localhost/images/test"),
+            DOCKER
         ).delete();
     }
 
@@ -167,7 +178,8 @@ public final class RtImageTestCase {
             new AssertRequest(
                 new Response(HttpStatus.SC_CONFLICT)
             ),
-            URI.create("http://localhost/images/test")
+            URI.create("http://localhost/images/test"),
+            DOCKER
         ).delete();
     }
 
@@ -183,7 +195,8 @@ public final class RtImageTestCase {
             new AssertRequest(
                 new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
             ),
-            URI.create("http://localhost/images/test")
+            URI.create("http://localhost/images/test"),
+            DOCKER
         ).delete();
     }
 
@@ -210,7 +223,8 @@ public final class RtImageTestCase {
                     )
                 )
             ),
-            URI.create("http://localhost/images/123")
+            URI.create("http://localhost/images/123"),
+            DOCKER
         ).tag("myrepo/myimage", "mytag");
     }
 
@@ -226,7 +240,8 @@ public final class RtImageTestCase {
             new AssertRequest(
                 new Response(HttpStatus.SC_BAD_REQUEST)
             ),
-            URI.create("https://localhost")
+            URI.create("https://localhost"),
+            DOCKER
         ).tag("myrepo/myimage", "mytag");
     }
 
@@ -242,7 +257,8 @@ public final class RtImageTestCase {
             new AssertRequest(
                 new Response(HttpStatus.SC_NOT_FOUND)
             ),
-            URI.create("https://localhost")
+            URI.create("https://localhost"),
+            DOCKER
         ).tag("myrepo/myimage", "mytag");
     }
 
@@ -258,7 +274,8 @@ public final class RtImageTestCase {
             new AssertRequest(
                 new Response(HttpStatus.SC_CONFLICT)
             ),
-            URI.create("https://localhost")
+            URI.create("https://localhost"),
+            DOCKER
         ).tag("myrepo/myimage", "mytag");
     }
 
@@ -274,7 +291,42 @@ public final class RtImageTestCase {
             new AssertRequest(
                 new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
             ),
-            URI.create("https://localhost")
+            URI.create("https://localhost"),
+            DOCKER
         ).tag("myrepo/myimage", "mytag");
+    }
+
+    /**
+     * RtImage can run itself.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void runsItselfOk() throws Exception {
+        final AtomicBoolean started = new AtomicBoolean(false);
+        final Container container = Mockito.mock(Container.class);
+        Mockito.doAnswer(
+            invocation -> {
+                started.set(true);
+                return null;
+            }
+        ).when(container).start();
+        final Containers containers = Mockito.mock(Containers.class);
+        Mockito.doReturn(container)
+            .when(containers)
+            .create(Mockito.eq("image123"));
+        Mockito.doReturn(containers).when(DOCKER).containers();
+        MatcherAssert.assertThat(
+            new RtImage(
+                Mockito.mock(JsonObject.class),
+                Mockito.mock(HttpClient.class),
+                URI.create("http://localhost/images/image123"),
+                DOCKER
+            ).run(),
+            Matchers.is(container)
+        );
+        MatcherAssert.assertThat(
+            started.get(),
+            Matchers.is(true)
+        );
     }
 }
