@@ -29,8 +29,10 @@ import com.sun.grizzly.util.Charsets;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
-import java.time.Instant;
+import java.util.Date;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.http.Header;
 import org.apache.http.HeaderIterator;
 import org.apache.http.HttpEntity;
@@ -40,9 +42,10 @@ import org.apache.http.ProtocolVersion;
 import org.apache.http.StatusLine;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
 
 /**
  * An {@link HttpResponse} suitable for tests. Can be configured with 
@@ -51,20 +54,14 @@ import org.apache.http.util.EntityUtils;
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #79:30min The 'asString()' method needs a little more work (fix the
- *  formatting on the date header value, etc) and then test the 'printTo()'
- *  method in conjunction with the UnixServer.
  */
 public final class Response implements HttpResponse {
-    /**
-     * This response's status line.
-     */
-    private final StatusLine statusLine;
-    /**
-     * This response's payload.
-     */
-    private final HttpEntity payload;
 
+    /**
+     * Its backbone, holding what we need.
+     */
+    private HttpResponse backbone;
+    
     /**
      * Ctor.
      * <p>
@@ -82,17 +79,26 @@ public final class Response implements HttpResponse {
      * @param jsonPayload The json payload
      */
     public Response(final int status, final String jsonPayload) {
-        this.statusLine = new BasicStatusLine(
-            new ProtocolVersion("HTTP", 1, 1), status, ""
+        this.backbone = new BasicHttpResponse(
+            new BasicStatusLine(
+                new ProtocolVersion("HTTP", 1, 1), status, "REASON"
+            )
         );
-        this.payload = new StringEntity(
-            jsonPayload, ContentType.APPLICATION_JSON
+        this.backbone.setEntity(
+            new StringEntity(
+                jsonPayload, ContentType.APPLICATION_JSON
+            )
         );
+        this.backbone.setHeader("Date", new Date().toString());
+        this.backbone.setHeader(
+            "Content-Length", String.valueOf(jsonPayload.getBytes().length)
+        );
+        this.backbone.setHeader("Content-Type", "application/json");
     }
 
     @Override
     public StatusLine getStatusLine() {
-        return this.statusLine;
+        return this.backbone.getStatusLine();
     }
 
     @Override
@@ -124,7 +130,7 @@ public final class Response implements HttpResponse {
 
     @Override
     public HttpEntity getEntity() {
-        return this.payload;
+        return this.backbone.getEntity();
     }
 
     @Override
@@ -235,7 +241,7 @@ public final class Response implements HttpResponse {
     public void printTo(final WritableByteChannel channel) throws IOException {
         channel.write(
             ByteBuffer.wrap(
-                this.asString().getBytes(Charsets.UTF8_CHARSET)
+                this.toString().getBytes(Charsets.UTF8_CHARSET)
             )
         );
     }
@@ -243,30 +249,31 @@ public final class Response implements HttpResponse {
     /**
      * This response as a string.
      * @return String representation of this {@link Response}.
-     * @throws IOException If an error occurs.
      */
-    private String asString() throws IOException {
+    @Override
+    public String toString() {
         final String CRLF = "" + (char) 0x0D + (char) 0x0A;
-        final StringBuilder builder = new StringBuilder("HTTP/")
-            .append(this.statusLine.getProtocolVersion())
-            .append(" ")
-            .append(this.statusLine.getStatusCode())
-            .append(" ")
-            .append(this.statusLine.getReasonPhrase())
-            .append(CRLF)
-            .append("Date: ")
-            .append(Instant.now())
-            .append(CRLF);
-        if (this.payload.getContentLength() > 0) {
-            builder.append("ContentType: ")
-                .append(this.payload.getContentType().getValue())
-                .append(CRLF)
-                .append("Content-Length: ")
-                .append(this.payload.getContentLength())
-                .append(CRLF)
-                .append(CRLF)
-                .append(EntityUtils.toString(this.payload));
+        try {
+            final StringBuilder builder = new StringBuilder()
+                .append(this.backbone.getStatusLine().toString())
+                .append(CRLF)    
+                .append(
+                   Stream.of(
+                        this.backbone.getAllHeaders()
+                    ).map(header -> header.toString())
+                    .collect(Collectors.joining(CRLF))
+                )
+                .append(CRLF).append(CRLF)
+                .append(
+                    new BasicResponseHandler().handleEntity(
+                        this.backbone.getEntity()
+                    )
+                );
+            return builder.toString();
+        } catch (final IOException ex) {
+            throw new IllegalStateException(
+                "IOException when reading the HTTP response. " + ex
+            );
         }
-        return builder.toString();
     }
 }
