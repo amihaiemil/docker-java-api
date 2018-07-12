@@ -71,4 +71,10 @@ public interface Containers extends Iterable<Container> {
      * @throws IOException If something goes wrong.
      */
     Container create(final JsonObject container) throws IOException;
+    
+    /**
+     * Return the Docker engine where these Containers came from.
+     * @return Docker.
+     */
+    Docker docker();
 }

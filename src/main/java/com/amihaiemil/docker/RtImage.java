@@ -138,4 +138,9 @@ final class RtImage extends JsonResource implements Image {
         container.start();
         return container;
     }
+    
+    @Override
+    public Docker docker() {
+        return this.docker;
+    }
 }

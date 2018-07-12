@@ -71,14 +71,18 @@ abstract class RtDocker implements Docker {
     @Override
     public final Containers containers() {
         return new RtContainers(
-            this.client, URI.create(this.baseUri.toString() + "/containers")
+            this.client,
+            URI.create(this.baseUri.toString() + "/containers"),
+            this
         );
     }
 
     @Override
     public final Images images() {
         return new RtImages(
-            this.client, URI.create(this.baseUri.toString() + "/images"), this
+            this.client,
+            URI.create(this.baseUri.toString() + "/images"),
+            this
         );
     }
 
@@ -110,7 +114,8 @@ abstract class RtDocker implements Docker {
     public final Swarm swarm() {
         return new RtSwarm(
             this.client,
-            URI.create(this.baseUri.toString().concat("/swarm")) 
+            URI.create(this.baseUri.toString().concat("/swarm")), 
+            this
         );
     }
 }

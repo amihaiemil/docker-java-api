@@ -78,4 +78,10 @@ public interface Swarm {
      * @throws IOException If something goes wrong.
      */
     void leave(final boolean force) throws IOException;
+    
+    /**
+     * Docker engine.
+     * @return Docker.
+     */
+    Docker docker();
 }

@@ -85,4 +85,10 @@ public interface Image extends JsonObject {
      *  the expected one.
      */
     Container run() throws IOException, UnexpectedResponseException;
+    
+    /**
+     * Return the Docker engine where this Image came from.
+     * @return Docker.
+     */
+    Docker docker();
 }

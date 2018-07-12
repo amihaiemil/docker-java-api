@@ -74,4 +74,10 @@ public interface Images extends Iterable<Image> {
      *  unexpected status.
      */
     void prune() throws IOException, UnexpectedResponseException;
+    
+    /**
+     * Return the Docker engine where these Images came from.
+     * @return Docker.
+     */
+    Docker docker();
 }

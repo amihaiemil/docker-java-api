@@ -59,17 +59,26 @@ final class RtContainer extends JsonResource implements Container {
     private final URI baseUri;
 
     /**
+     * Docker API.
+     */
+    private final Docker docker;
+    
+    /**
      * Ctor.
      * @param rep JsonObject representation of this Container.
      * @param client Given HTTP Client.
      * @param baseUri Base URI, ending with /{containerId}.
+     * @param dkr Docker where this Container came from.
+     * @checkstyle ParameterNumber (5 lines)
      */
     RtContainer(
-        final JsonObject rep, final HttpClient client, final URI baseUri
+        final JsonObject rep, final HttpClient client,
+        final URI baseUri, final Docker dkr
     ) {
         super(rep);
         this.client = client;
         this.baseUri = baseUri;
+        this.docker = dkr;
     }
 
     @Override
@@ -189,5 +198,10 @@ final class RtContainer extends JsonResource implements Container {
         return new RtLogs(
             this, this.client, URI.create(this.baseUri.toString() + "/logs")
         );
+    }
+    
+    @Override
+    public Docker docker() {
+        return this.docker;
     }
 }

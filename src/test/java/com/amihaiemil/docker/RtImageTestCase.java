@@ -329,4 +329,25 @@ public final class RtImageTestCase {
             Matchers.is(true)
         );
     }
+    
+    /**
+     * RtImage can return its Docker parent.
+     */
+    @Test
+    public void returnsDocker() {
+        MatcherAssert.assertThat(
+            new RtImage(
+                Json.createObjectBuilder().build(),
+                new AssertRequest(
+                    new Response(
+                        HttpStatus.SC_OK,
+                        Json.createArrayBuilder().build().toString()
+                    )
+                ),
+                URI.create("http://localhost:80/1.30/images/456"),
+                DOCKER
+            ).docker(),
+            Matchers.is(DOCKER)
+        );
+    }
 }

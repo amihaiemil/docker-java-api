@@ -33,6 +33,7 @@ import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * Unit tests for {@link RtSwarm}.
@@ -66,7 +67,8 @@ public final class RtSwarmTestCase {
                     )
                 )
             ),
-            URI.create("http://localhost/swarm")
+            URI.create("http://localhost/swarm"),
+            Mockito.mock(Docker.class)
         ).leave(true);
     }
 
@@ -92,7 +94,8 @@ public final class RtSwarmTestCase {
                     )
                 )
             ),
-            URI.create("http://localhost/swarm")
+            URI.create("http://localhost/swarm"),
+            Mockito.mock(Docker.class)
         ).leave(false);
     }
 
@@ -108,7 +111,8 @@ public final class RtSwarmTestCase {
                     HttpStatus.SC_INTERNAL_SERVER_ERROR
                 )
             ),
-            URI.create("http://localhost/swarm")
+            URI.create("http://localhost/swarm"),
+            Mockito.mock(Docker.class)
         ).leave(false);
     }
 
@@ -124,7 +128,8 @@ public final class RtSwarmTestCase {
                     HttpStatus.SC_SERVICE_UNAVAILABLE
                 )
             ),
-            URI.create("http://localhost/swarm")
+            URI.create("http://localhost/swarm"),
+            Mockito.mock(Docker.class)
         ).leave(false);
     }
 
@@ -151,7 +156,8 @@ public final class RtSwarmTestCase {
                     )
                 )
             ),
-            URI.create("http://localhost")
+            URI.create("http://localhost"),
+            Mockito.mock(Docker.class)
         ).inspect();
     }
 
@@ -169,7 +175,8 @@ public final class RtSwarmTestCase {
                     "{ \"ID\": \"abajmipo7b4xz5ip2nrla6b11\" }"
                   )
               ),
-              URI.create("http://localhost")
+              URI.create("http://localhost"),
+              Mockito.mock(Docker.class)
             ).inspect(),
             Matchers.notNullValue()
         );
@@ -185,7 +192,9 @@ public final class RtSwarmTestCase {
         new RtSwarm(
             new AssertRequest(
                 new Response(HttpStatus.SC_NOT_FOUND)
-            ), URI.create("http://localhost")
+            ),
+            URI.create("http://localhost"),
+            Mockito.mock(Docker.class)
         ).inspect();
     }
 
@@ -199,7 +208,9 @@ public final class RtSwarmTestCase {
         new RtSwarm(
             new AssertRequest(
                 new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
-            ), URI.create("http://localhost")
+            ),
+            URI.create("http://localhost"),
+            Mockito.mock(Docker.class)
         ).inspect();
     }
 
@@ -213,7 +224,9 @@ public final class RtSwarmTestCase {
         new RtSwarm(
             new AssertRequest(
                 new Response(HttpStatus.SC_SERVICE_UNAVAILABLE)
-            ), URI.create("http://localhost")
+            ),
+            URI.create("http://localhost"),
+            Mockito.mock(Docker.class)
         ).inspect();
     }
 
@@ -253,7 +266,8 @@ public final class RtSwarmTestCase {
 
                 )
             ),
-            URI.create("http://docker/swarm")
+            URI.create("http://docker/swarm"),
+            Mockito.mock(Docker.class)
         ).init(listenAddress);
     }
 
@@ -268,7 +282,8 @@ public final class RtSwarmTestCase {
                 new AssertRequest(
                     new Response(HttpStatus.SC_OK, "sometoken123")
                 ),
-                URI.create("http://docker")
+                URI.create("http://docker"),
+                Mockito.mock(Docker.class)
             ).init("123"),
             Matchers.is("sometoken123")
         );
@@ -285,7 +300,26 @@ public final class RtSwarmTestCase {
             new AssertRequest(
                 new Response(HttpStatus.SC_BAD_REQUEST)
             ),
-            URI.create("http://docker")
+            URI.create("http://docker"),
+            Mockito.mock(Docker.class)
         ).init("123");
+    }
+    
+    /**
+     * RtSwarm returns its Docker parent.
+     */
+    @Test
+    public void returnsDocker() {
+        final Docker parent = Mockito.mock(Docker.class);
+        MatcherAssert.assertThat(
+            new RtSwarm(
+                new AssertRequest(
+                    new Response(HttpStatus.SC_OK, "token123")
+                ),
+                URI.create("http://docker"),
+                parent
+            ).docker(),
+            Matchers.is(parent)
+        );
     }
 }

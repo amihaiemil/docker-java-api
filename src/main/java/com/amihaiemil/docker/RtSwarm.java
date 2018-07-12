@@ -53,13 +53,20 @@ final class RtSwarm implements Swarm {
     private final URI baseUri;
 
     /**
+     * Docker engine.
+     */
+    private Docker docker;
+    
+    /**
      * Ctor.
      * @param client Given HTTP Client.
      * @param baseUri Base URI, ending with /swarm.
+     * @param dkr The Docker engine.
      */
-    RtSwarm(final HttpClient client, final URI baseUri) {
+    RtSwarm(final HttpClient client, final URI baseUri, final Docker dkr) {
         this.client = client;
         this.baseUri = baseUri;
+        this.docker = dkr;
     }
 
     @Override
@@ -113,5 +120,10 @@ final class RtSwarm implements Swarm {
         } finally {
             leave.releaseConnection();
         }
+    }
+    
+    @Override
+    public Docker docker() {
+        return this.docker;
     }
 }

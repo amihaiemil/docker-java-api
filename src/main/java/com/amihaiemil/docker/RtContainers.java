@@ -56,13 +56,22 @@ final class RtContainers implements Containers {
     private final URI baseUri;
 
     /**
+     * Docker API.
+     */
+    private final Docker docker;
+    
+    /**
      * Ctor.
      * @param client Given HTTP Client.
      * @param baseUri Base URI, ending with /containers.
+     * @param dkr Docker where these Containers are from.
      */
-    RtContainers(final HttpClient client, final URI baseUri) {
+    RtContainers(
+        final HttpClient client, final URI baseUri, final Docker dkr
+    ) {
         this.client = client;
         this.baseUri = baseUri;
+        this.docker = dkr;
     }
 
     @Override
@@ -122,7 +131,8 @@ final class RtContainers implements Containers {
                 this.client,
                 URI.create(
                     this.baseUri.toString() + "/" + json.getString("Id")
-                )
+                ),
+                this.docker
             );
         } finally {
             post.releaseConnection();
@@ -139,8 +149,14 @@ final class RtContainers implements Containers {
                 this.client,
                 URI.create(
                     this.baseUri.toString() + "/" + json.getString("Id")
-                )
+                ),
+                this.docker
             )
         );
+    }
+    
+    @Override
+    public Docker docker() {
+        return this.docker;
     }
 }

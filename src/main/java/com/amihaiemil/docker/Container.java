@@ -130,4 +130,10 @@ public interface Container extends JsonObject {
      */
     Logs logs();
     
+    /**
+     * Return the Docker engine where this Container came from.
+     * @return Docker.
+     */
+    Docker docker();
+    
 }

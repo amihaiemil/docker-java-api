@@ -54,7 +54,8 @@ public final class RtContainerTestCase {
         final Container container = new RtContainer(
             Json.createObjectBuilder().add("Id", "123id456").build(),
             Mockito.mock(HttpClient.class),
-            URI.create("unix://localhost:80/1.30/containers/123id456")
+            URI.create("unix://localhost:80/1.30/containers/123id456"),
+            Mockito.mock(Docker.class)
         );
         MatcherAssert.assertThat(
             container.containerId(),
@@ -62,6 +63,23 @@ public final class RtContainerTestCase {
         );
     }
 
+    /**
+     * RtContainer can return its parent Docker.
+     */
+    @Test
+    public void returnsDocker() {
+        final Docker parent = Mockito.mock(Docker.class);
+        MatcherAssert.assertThat(
+            new RtContainer(
+                Json.createObjectBuilder().add("Id", "123id456").build(),
+                Mockito.mock(HttpClient.class),
+                URI.create("unix://localhost:80/1.30/containers/123id456"),
+                parent
+            ).docker(),
+            Matchers.is(parent)
+        );
+    }
+    
     /**
      * RtContainer can return info about itself.
      * @throws Exception If something goes wrong.
@@ -88,7 +106,8 @@ public final class RtContainerTestCase {
                     req -> req.getRequestLine().getUri().endsWith("/123/json")
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         );
         final JsonObject info = container.inspect();
         MatcherAssert.assertThat(info.keySet(), Matchers.hasSize(3));
@@ -115,7 +134,8 @@ public final class RtContainerTestCase {
             new AssertRequest(
                 new Response(HttpStatus.SC_NOT_FOUND)
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).inspect();
     }
 
@@ -140,7 +160,8 @@ public final class RtContainerTestCase {
                     req -> req.getRequestLine().getUri().endsWith("/123/start")
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).start();
     }
 
@@ -157,7 +178,8 @@ public final class RtContainerTestCase {
                     HttpStatus.SC_INTERNAL_SERVER_ERROR
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).start();
     }
 
@@ -174,7 +196,8 @@ public final class RtContainerTestCase {
                     HttpStatus.SC_NOT_FOUND
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).start();
     }
 
@@ -191,7 +214,8 @@ public final class RtContainerTestCase {
                     HttpStatus.SC_NOT_MODIFIED
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).start();
     }
 
@@ -216,7 +240,8 @@ public final class RtContainerTestCase {
                     req -> req.getRequestLine().getUri().endsWith("/123/stop")
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).stop();
     }
 
@@ -233,7 +258,8 @@ public final class RtContainerTestCase {
                     HttpStatus.SC_INTERNAL_SERVER_ERROR
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).stop();
     }
 
@@ -250,7 +276,8 @@ public final class RtContainerTestCase {
                     HttpStatus.SC_NOT_FOUND
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).stop();
     }
 
@@ -267,7 +294,8 @@ public final class RtContainerTestCase {
                     HttpStatus.SC_NOT_MODIFIED
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).stop();
     }
 
@@ -293,7 +321,8 @@ public final class RtContainerTestCase {
                         .getUri().endsWith("/9403/restart")
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/9403")
+            URI.create("http://localhost:80/1.30/containers/9403"),
+            Mockito.mock(Docker.class)
         ).restart();
     }
 
@@ -311,7 +340,8 @@ public final class RtContainerTestCase {
                     HttpStatus.SC_INTERNAL_SERVER_ERROR
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).restart();
     }
 
@@ -329,7 +359,8 @@ public final class RtContainerTestCase {
                     HttpStatus.SC_NOT_FOUND
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).restart();
     }
 
@@ -354,7 +385,8 @@ public final class RtContainerTestCase {
                     req -> req.getRequestLine().getUri().endsWith("/123/kill")
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).kill();
     }
 
@@ -371,7 +403,8 @@ public final class RtContainerTestCase {
                     HttpStatus.SC_INTERNAL_SERVER_ERROR
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).kill();
     }
 
@@ -388,7 +421,8 @@ public final class RtContainerTestCase {
                     HttpStatus.SC_NOT_FOUND
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).kill();
     }
     
@@ -415,7 +449,8 @@ public final class RtContainerTestCase {
                     )
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).rename("test");
     }
     
@@ -432,7 +467,8 @@ public final class RtContainerTestCase {
                     HttpStatus.SC_NOT_FOUND
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).rename("test");
     }
     
@@ -449,7 +485,8 @@ public final class RtContainerTestCase {
                     HttpStatus.SC_INTERNAL_SERVER_ERROR
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).rename("newname");
     }
     
@@ -466,7 +503,8 @@ public final class RtContainerTestCase {
                     HttpStatus.SC_CONFLICT
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).rename("duplicate");
     }
     
@@ -493,7 +531,8 @@ public final class RtContainerTestCase {
                     )
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).remove();
     }
     
@@ -510,7 +549,8 @@ public final class RtContainerTestCase {
                     HttpStatus.SC_BAD_REQUEST
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).remove();
     }
     
@@ -527,7 +567,8 @@ public final class RtContainerTestCase {
                     HttpStatus.SC_NOT_FOUND
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).remove();
     }
     
@@ -544,7 +585,8 @@ public final class RtContainerTestCase {
                     HttpStatus.SC_CONFLICT
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).remove();
     }
     
@@ -561,7 +603,8 @@ public final class RtContainerTestCase {
                     HttpStatus.SC_INTERNAL_SERVER_ERROR
                 )
             ),
-            URI.create("http://localhost:80/1.30/containers/123")
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
         ).remove();
     }
     
@@ -578,7 +621,8 @@ public final class RtContainerTestCase {
                         HttpStatus.SC_OK
                     )
                 ),
-                URI.create("http://localhost:80/1.30/containers/123")
+                URI.create("http://localhost:80/1.30/containers/123"),
+                Mockito.mock(Docker.class)
             ).logs(),
             Matchers.notNullValue()
         );

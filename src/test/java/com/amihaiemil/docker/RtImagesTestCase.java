@@ -219,4 +219,24 @@ public final class RtImagesTestCase {
             DOCKER
         ).prune();
     }
+    
+    /**
+     * RtImages can return its Docker parent.
+     */
+    @Test
+    public void returnsDocker() {
+        MatcherAssert.assertThat(
+            new RtImages(
+                new AssertRequest(
+                    new Response(
+                        HttpStatus.SC_OK,
+                        Json.createArrayBuilder().build().toString()
+                    )
+                ),
+                URI.create("http://localhost"),
+                DOCKER
+            ).docker(),
+            Matchers.is(DOCKER)
+        );
+    }
 }

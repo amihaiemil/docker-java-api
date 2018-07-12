@@ -37,6 +37,7 @@ import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * Unit tests for RtContainers.
@@ -47,6 +48,27 @@ import org.junit.Test;
  * @checkstyle MethodName (500 lines)
  */
 public final class RtContainersTestCase {
+    
+    /**
+     * RtContainers can return its parent Docker.
+     */
+    @Test
+    public void returnsDocker() {
+        final Docker parent = Mockito.mock(Docker.class);
+        MatcherAssert.assertThat(
+            new RtContainers(
+                new AssertRequest(
+                    new Response(
+                        HttpStatus.SC_OK,
+                        Json.createArrayBuilder().build().toString()
+                    )
+                ),
+                URI.create("http://localhost"),
+                parent
+            ).docker(),
+            Matchers.is(parent)
+        );
+    }
     
     /**
      * Must return the same number of containers as there are elements in the
@@ -69,7 +91,7 @@ public final class RtContainersTestCase {
                                 .add("Id", "sha256:3e314f95dcace0f5e")
                         ).build().toString()
                 )
-            ), URI.create("http://localhost")
+            ), URI.create("http://localhost"), Mockito.mock(Docker.class)
         ).forEach(container -> count.incrementAndGet());
         MatcherAssert.assertThat(
             count.get(),
@@ -90,7 +112,7 @@ public final class RtContainersTestCase {
                     HttpStatus.SC_OK,
                     Json.createArrayBuilder().build().toString()
                 )
-            ), URI.create("http://localhost")
+            ), URI.create("http://localhost"), Mockito.mock(Docker.class)
         ).forEach(container -> count.incrementAndGet());
         MatcherAssert.assertThat(
             count.get(),
@@ -108,7 +130,8 @@ public final class RtContainersTestCase {
             new AssertRequest(
                 new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
             ),
-            URI.create("http://localhost")
+            URI.create("http://localhost"),
+            Mockito.mock(Docker.class)
         ).iterator();
     }
     
@@ -122,7 +145,8 @@ public final class RtContainersTestCase {
             new AssertRequest(
                 new Response(HttpStatus.SC_BAD_REQUEST)
             ),
-            URI.create("http://localhost")
+            URI.create("http://localhost"),
+            Mockito.mock(Docker.class)
         ).iterator();
     }
     
@@ -158,7 +182,7 @@ public final class RtContainersTestCase {
                     // @checkstyle LineLength (1 line)
                     req -> "some_image".equals(new PayloadOf(req).getString("Image"))
                 )
-            ), URI.create("http://localhost/test")
+            ), URI.create("http://localhost/test"), Mockito.mock(Docker.class)
         ).create("some_image");
     }
 
@@ -175,7 +199,9 @@ public final class RtContainersTestCase {
                         HttpStatus.SC_CREATED,
                         "{ \"Id\": \"df2419f4\", \"Warnings\": [ ]}"
                     )
-                ), URI.create("http://localhost/test")
+                ),
+                URI.create("http://localhost/test"),
+                Mockito.mock(Docker.class)
             ).create("some_image"),
             Matchers.notNullValue()
         );
@@ -192,7 +218,9 @@ public final class RtContainersTestCase {
                 new Response(
                     HttpStatus.SC_BAD_REQUEST
                 )
-            ), URI.create("http://localhost/test")
+            ),
+            URI.create("http://localhost/test"),
+            Mockito.mock(Docker.class)
         ).create("some_image");
     }
 
@@ -207,7 +235,9 @@ public final class RtContainersTestCase {
                 new Response(
                     HttpStatus.SC_NOT_FOUND
                 )
-            ), URI.create("http://localhost/test")
+            ),
+            URI.create("http://localhost/test"),
+            Mockito.mock(Docker.class)    
         ).create("some_image");
     }
 
@@ -222,7 +252,9 @@ public final class RtContainersTestCase {
                 new Response(
                     HttpStatus.SC_NOT_ACCEPTABLE
                 )
-            ), URI.create("http://localhost/test")
+            ),
+            URI.create("http://localhost/test"),
+            Mockito.mock(Docker.class)
         ).create("some_image");
     }
 
@@ -237,7 +269,9 @@ public final class RtContainersTestCase {
                 new Response(
                     HttpStatus.SC_CONFLICT
                 )
-            ), URI.create("http://localhost/test")
+            ),
+            URI.create("http://localhost/test"),
+            Mockito.mock(Docker.class)
         ).create("some_image");
     }
 
@@ -252,7 +286,9 @@ public final class RtContainersTestCase {
                 new Response(
                     HttpStatus.SC_INTERNAL_SERVER_ERROR
                 )
-            ), URI.create("http://localhost/test")
+            ),
+            URI.create("http://localhost/test"),
+            Mockito.mock(Docker.class)
         ).create("some_image");
     }
 
@@ -275,7 +311,9 @@ public final class RtContainersTestCase {
                     // @checkstyle LineLength (1 line)
                     req -> req.getRequestLine().getUri().endsWith("/create?name=some_name")
                 )
-            ), URI.create("http://localhost/test")
+            ),
+            URI.create("http://localhost/test"),
+            Mockito.mock(Docker.class)    
         ).create("some_name", "some_image");
     }
 
@@ -311,7 +349,9 @@ public final class RtContainersTestCase {
                             && payload.getString("StopSignal").equals(json.getString("StopSignal"));
                     }
                 )
-            ), URI.create("http://localhost/test")
+            ),
+            URI.create("http://localhost/test"),
+            Mockito.mock(Docker.class)    
         ).create(json);
     }
 
@@ -348,7 +388,9 @@ public final class RtContainersTestCase {
                             && payload.getString("StopSignal").equals(json.getString("StopSignal"));
                     }
                 )
-            ), URI.create("http://localhost/test")
+            ),
+            URI.create("http://localhost/test"),
+            Mockito.mock(Docker.class)
         ).create("image_name", json);
     }
 
@@ -370,7 +412,8 @@ public final class RtContainersTestCase {
                         .getUri().endsWith("name=Adrian+Toomes")
                 )
             ),
-            URI.create("http://localhost/docker")
+            URI.create("http://localhost/docker"),
+            Mockito.mock(Docker.class)    
         ).create("Adrian Toomes", "some/image");
     }
 
@@ -387,7 +430,9 @@ public final class RtContainersTestCase {
                         HttpStatus.SC_CREATED,
                         "{ \"Id\": \"df2419f4\", \"Warnings\": [ ]}"
                     )
-                ), URI.create("http://localhost/test")
+                ),
+                URI.create("http://localhost/test"),
+                Mockito.mock(Docker.class)
             ).create(
                 Json.createObjectBuilder()
                     .add("Image", "ubuntu").build()
@@ -409,7 +454,9 @@ public final class RtContainersTestCase {
                         HttpStatus.SC_CREATED,
                         "{ \"Id\": \"df2419f4\", \"Warnings\": [ ] }"
                     )
-                ), URI.create("http://localhost/test")
+                ),
+                URI.create("http://localhost/test"),
+                Mockito.mock(Docker.class)    
             ).create(
                 Json.createObjectBuilder()
                     .add("Image", "ubuntu").build()

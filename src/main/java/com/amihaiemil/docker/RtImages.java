@@ -139,4 +139,9 @@ final class RtImages implements Images {
         );
     }
 
+    @Override
+    public Docker docker() {
+        return this.docker;
+    }
+    
 }
