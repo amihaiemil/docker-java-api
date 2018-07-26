@@ -28,10 +28,8 @@ package com.amihaiemil.docker;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.util.Iterator;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 
 import javax.json.Json;
@@ -42,14 +40,14 @@ import javax.json.Json;
  * @version $Id$
  * @since 0.0.1
  */
-final class RtImages implements Images {
+abstract class RtImages implements Images {
     /**
      * Apache HttpClient which sends the requests.
      */
     private final HttpClient client;
 
     /**
-     * Base URI.
+     * Base URI for Images API.
      */
     private final URI baseUri;
 
@@ -63,6 +61,7 @@ final class RtImages implements Images {
      * @param client The http client.
      * @param uri The URI for this Images API.
      * @param dkr The docker entry point.
+     * @checkstyle ParameterNumber (10 lines)
      */
     RtImages(final HttpClient client, final URI uri, final Docker dkr) {
         this.client = client;
@@ -124,24 +123,23 @@ final class RtImages implements Images {
     }
 
     @Override
-    public Iterator<Image> iterator() {
-        return new ResourcesIterator<>(
-            this.client,
-            new HttpGet(this.baseUri.toString().concat("/json")),
-            json-> new RtImage(
-                json,
-                this.client,
-                URI.create(
-                    this.baseUri.toString() + "/" + json.getString("Id")
-                ),
-                this.docker
-            )
-        );
-    }
-
-    @Override
     public Docker docker() {
         return this.docker;
     }
-    
+
+    /**
+     * Get the (protected) HttpClient for subclasses.
+     * @return HttpClient.
+     */
+    HttpClient client() {
+        return this.client;
+    }
+
+    /**
+     * Get the (protected) base URI for subclasses.
+     * @return URI.
+     */
+    URI baseUri() {
+        return this.baseUri;
+    }
 }

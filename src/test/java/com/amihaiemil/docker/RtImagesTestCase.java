@@ -57,7 +57,7 @@ public final class RtImagesTestCase {
     @Test
     public void iteratesImages() {
         final AtomicInteger count = new AtomicInteger();
-        new RtImages(
+        new FilteredImages(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_OK,
@@ -87,7 +87,7 @@ public final class RtImagesTestCase {
     @Test
     public void iteratesZeroImages() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        new RtImages(
+        new FilteredImages(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_OK,
@@ -109,7 +109,7 @@ public final class RtImagesTestCase {
      */
     @Test(expected = UnexpectedResponseException.class)
     public void iterateFailsIfResponseIs500() throws Exception {
-        new RtImages(
+        new FilteredImages(
             new AssertRequest(
                 new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
             ),
@@ -127,7 +127,7 @@ public final class RtImagesTestCase {
      */
     @Test
     public void createSetsGivenParameters() throws Exception {
-        new RtImages(
+        new FilteredImages(
             new AssertRequest(
                 new Response(HttpStatus.SC_OK),
                 new Condition(
@@ -154,7 +154,7 @@ public final class RtImagesTestCase {
      */
     @Test(expected = UnexpectedResponseException.class)
     public void createErrorOnStatus404() throws Exception {
-        new RtImages(
+        new FilteredImages(
             new AssertRequest(
                 new Response(HttpStatus.SC_NOT_FOUND)
             ),
@@ -170,7 +170,7 @@ public final class RtImagesTestCase {
      */
     @Test(expected = UnexpectedResponseException.class)
     public void createErrorOnStatus500() throws Exception {
-        new RtImages(
+        new FilteredImages(
             new AssertRequest(
                 new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
             ),
@@ -186,7 +186,7 @@ public final class RtImagesTestCase {
      */
     @Test
     public void prunesOk() throws Exception {
-        new RtImages(
+        new FilteredImages(
             new AssertRequest(
                 new Response(HttpStatus.SC_OK),
                 new Condition(
@@ -211,7 +211,7 @@ public final class RtImagesTestCase {
      */
     @Test(expected = UnexpectedResponseException.class)
     public void pruneThrowsErrorOnResponse500() throws Exception {
-        new RtImages(
+        new FilteredImages(
             new AssertRequest(
                 new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
             ),
@@ -226,7 +226,7 @@ public final class RtImagesTestCase {
     @Test
     public void returnsDocker() {
         MatcherAssert.assertThat(
-            new RtImages(
+            new FilteredImages(
                 new AssertRequest(
                     new Response(
                         HttpStatus.SC_OK,
