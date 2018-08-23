@@ -36,6 +36,16 @@ import java.net.URL;
  * @since 0.0.1
  * @todo #98:30min Continue implementing the rest of the operations for the
  *  Images interface. See the docs referenced above for more details.
+ * @todo #144:30min Add the filter(Map<String, String>) method which will filter
+ *  the given instance of Images. For instance:
+ *  <pre>
+ *      final Images imgs = docker.imageS();//all listed images.
+ *      final Images filtered = imgs.filter(...);
+ *      final Images again = filtered.filter(...); //respects both filters.
+ *  </pre>
+ * @todo #144:30min Add the save() method, which will save the given Images,
+ *  an InputStream representing the created tarball will be created (see method
+ *  "Export several images" from the docs.
  */
 public interface Images extends Iterable<Image> {
 

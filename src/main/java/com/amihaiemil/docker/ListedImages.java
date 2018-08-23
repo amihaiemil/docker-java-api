@@ -31,12 +31,16 @@ import java.net.URI;
 import java.util.Iterator;
 
 /**
- * These are some Images after applying a filter.
+ * Listed images, which may have a filter applied.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.3
+ * @todo #144:30min Finish implementation here, add a Map to this class, that
+ *  would hold the actual filters and apply them when making the call in the
+ *  iterator() method. Also, more ctors should be available, at least one with
+ *  filters and one without filters.
  */
-final class FilteredImages extends RtImages {
+final class ListedImages extends RtImages {
 
     /**
      * Ctor.
@@ -45,7 +49,7 @@ final class FilteredImages extends RtImages {
      * @param dkr The docker entry point.
      * @checkstyle ParameterNumber (10 lines)
      */
-    FilteredImages(final HttpClient client, final URI uri, final Docker dkr) {
+    ListedImages(final HttpClient client, final URI uri, final Docker dkr) {
         super(client, uri, dkr);
     }
 
