@@ -14,4 +14,4 @@
 
 3. No code changes without at least one type of test (unit test or integration test).
 
-4. No PRs will be accepted if they don't pass the CI build, influding the Checkstyle rules. 
+4. PRs that don't pass the Travis build, including Checkstyle verification, won't be accepted.
