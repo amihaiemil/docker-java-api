@@ -10,7 +10,7 @@
 
 1. Small PRs! Ideally max. 5 changed files. You shouldn't spend more than 30min on it.
 
-2. Please, stay object oriented. Try to understand the library's architecture before you do anything. 
+2. Please, stay object oriented. Try to understand the library's architecture before you do anything. If you have a hard time wrapping your head around it, feel free to open Issues and we'll explain everything.
 
 3. No code changes without at least one type of test (unit test or integration tests).
 
