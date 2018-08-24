@@ -12,6 +12,6 @@
 
 2. Please, stay object oriented. Try to understand the library's architecture before you do anything. If you have a hard time wrapping your head around it, feel free to open Issues and we'll explain everything.
 
-3. No code changes without at least one type of test (unit test or integration tests).
+3. No code changes without at least one type of test (unit test or integration test).
 
 4. No PRs will be accepted if they don't pass the CI build, influding the Checkstyle rules. 
