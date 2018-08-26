@@ -25,13 +25,14 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
+import java.util.StringJoiner;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-
 import javax.json.Json;
 
 /**
@@ -121,6 +122,34 @@ abstract class RtImages implements Images {
             prune.releaseConnection();
         }
     }
+
+    @Override
+    public Reader save() throws IOException, UnexpectedResponseException {
+        final Reader tarball;
+        final StringJoiner names = new StringJoiner(",");
+        for(final Image img : this) {
+            names.add(img.getString("Id"));
+        }
+        if(names.toString().isEmpty()) {
+            tarball = new InputStreamReader(
+                new ByteArrayInputStream(new byte[]{})
+            );
+        } else {
+            final HttpGet save = new HttpGet(
+                new UncheckedUriBuilder(this.baseUri.toString().concat("/get"))
+                    .addParameter("names", names.toString())
+                    .build()
+            );
+            tarball = this.client.execute(
+                save,
+                new ReadStream(
+                    new MatchStatus(save.getURI(), HttpStatus.SC_OK)
+                )
+            );
+        }
+        return tarball;
+    }
+
 
     @Override
     public Docker docker() {
