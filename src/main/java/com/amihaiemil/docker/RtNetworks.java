@@ -25,58 +25,40 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
+import java.net.URI;
+import java.util.Iterator;
+import java.util.function.Supplier;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 
 /**
- * Docker API entry point.
- * @author Mihai Andronache (amihaiemil@gmail.com)
+ * Runtime {@link Networks}.
+ *
+ * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
- * @since 0.0.1
- * @todo #85:30min Continue implementing the rest of the Docker API (except
- *  for Network, Swarm and Images, which are being handled in other tickets).
+ * @since 0.0.4
  */
-public interface Docker {
+final class RtNetworks implements Networks {
+    /**
+     * Network iterators.
+     */
+    private final Supplier<Iterator<Network>> iter;
 
     /**
-     * Ping the Docker Engine.
-     * @return True if it responds with 200 OK, false otherwise.
-     * @throws IOException If there's network problem.
+     * Ctor.
+     * @param http Http client
+     * @param baseUri Docker API URI
      */
-    boolean ping() throws IOException;
-    
-    /**
-     * Entry point for the Containers API.
-     * @return Containers.
-     */
-    Containers containers();
+    RtNetworks(final HttpClient http, final URI baseUri) {
+        this.iter = () -> new ResourcesIterator<>(
+            http,
+            new HttpGet(baseUri.toString().concat("/networks")),
+            RtNetwork::new
+        );
+    }
 
-    /**
-     * Entry point for the Images API.
-     * @return Images.
-     */
-    Images images();
-
-    /**
-     * Entry point for the Networks API.
-     * @return Networks.
-     */
-    Networks networks();
-
-    /**
-     * Entry point for the Volumes API.
-     * @return Volumes.
-     */
-    Volumes volumes();
-
-    /**
-     * Entry point for the Exec API.
-     * @return Exec.
-     */
-    Exec exec();
-
-    /**
-     * Entry point for the Swarm API.
-     * @return Swarm.
-     */
-    Swarm swarm();
+    @Override
+    public Iterator<Network> iterator() {
+        return this.iter.get();
+    }
 }

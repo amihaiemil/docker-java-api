@@ -25,58 +25,21 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
+import javax.json.JsonObject;
 
 /**
- * Docker API entry point.
- * @author Mihai Andronache (amihaiemil@gmail.com)
+ * Runtime {@link Network}.
+ *
+ * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
- * @since 0.0.1
- * @todo #85:30min Continue implementing the rest of the Docker API (except
- *  for Network, Swarm and Images, which are being handled in other tickets).
+ * @since 0.0.4
  */
-public interface Docker {
-
+final class RtNetwork extends JsonResource implements Network {
     /**
-     * Ping the Docker Engine.
-     * @return True if it responds with 200 OK, false otherwise.
-     * @throws IOException If there's network problem.
+     * Ctor.
+     * @param json Network JSON
      */
-    boolean ping() throws IOException;
-    
-    /**
-     * Entry point for the Containers API.
-     * @return Containers.
-     */
-    Containers containers();
-
-    /**
-     * Entry point for the Images API.
-     * @return Images.
-     */
-    Images images();
-
-    /**
-     * Entry point for the Networks API.
-     * @return Networks.
-     */
-    Networks networks();
-
-    /**
-     * Entry point for the Volumes API.
-     * @return Volumes.
-     */
-    Volumes volumes();
-
-    /**
-     * Entry point for the Exec API.
-     * @return Exec.
-     */
-    Exec exec();
-
-    /**
-     * Entry point for the Swarm API.
-     * @return Swarm.
-     */
-    Swarm swarm();
+    RtNetwork(final JsonObject json) {
+        super(() -> json);
+    }
 }

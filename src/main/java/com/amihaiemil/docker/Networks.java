@@ -30,6 +30,8 @@ package com.amihaiemil.docker;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @todo #83:30min Implement Networks and Network interfaces. See
+ *  https://docs.docker.com/engine/api/v1.35/#tag/Network.
  */
-public interface Networks {
+public interface Networks extends Iterable<Network> {
 }
