@@ -34,7 +34,12 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mockito.Mockito;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import org.apache.http.NameValuePair;
 
 /**
  * Unit tests for {@link ListedImages}.
@@ -80,6 +85,47 @@ public final class ListedImagesTestCase {
             Matchers.equalTo("cde2")
         );
 
+    }
+
+    /**
+     * {@link ListedImages} can include filters in request to fetch images.
+     */
+    @Test
+    public void includeFiltersInRequest() {
+        final Map<String, Iterable<String>> filters = new HashMap<>();
+        filters.put(
+            "label",
+            Arrays.asList(
+                "maintainer=john@doe.org",
+                "randomLabel=test"
+            )
+        );
+        new ListedImages(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    "[{\"Id\": \"abc1\"}, {\"Id\":\"cde2\"}]"
+                ),
+                new Condition(
+                    // @checkstyle LineLength (11 lines)
+                    "iterate() query parameters must include the filters provided",
+                    req -> {
+                        final List<NameValuePair> params = new UncheckedUriBuilder(
+                            req.getRequestLine().getUri()
+                        ).getQueryParams();
+                        // @checkstyle BooleanExpressionComplexity (5 lines)
+                        return params.size() == 1
+                            && "filters".equals(params.get(0).getName())
+                            && params.get(0).getValue().contains("label")
+                            && params.get(0).getValue().contains("\"maintainer=john@doe.org\"")
+                            && params.get(0).getValue().contains("\"randomLabel=test\"");
+                    }
+                )
+            ),
+            URI.create("http://localhost/images"),
+            Mockito.mock(Docker.class),
+            filters
+        ).iterator();
     }
 
 }

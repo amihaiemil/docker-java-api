@@ -28,7 +28,12 @@ package com.amihaiemil.docker;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import java.net.URI;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 
 /**
  * Listed images, which may have a filter applied.
@@ -41,23 +46,57 @@ import java.util.Iterator;
  *  filters and one without filters.
  */
 final class ListedImages extends RtImages {
+    /**
+     * Image filters.
+     */
+    private final Map<String, Iterable<String>> filters;
 
     /**
      * Ctor.
      * @param client The http client.
      * @param uri The URI for this Images API.
      * @param dkr The docker entry point.
-     * @checkstyle ParameterNumber (10 lines)
+     * @checkstyle ParameterNumber (2 lines)
      */
     ListedImages(final HttpClient client, final URI uri, final Docker dkr) {
+        this(client, uri, dkr, Collections.emptyMap());
+    }
+
+    /**
+     * Ctor.
+     * @param client The http client.
+     * @param uri The URI for this Images API.
+     * @param dkr The docker entry point.
+     * @param filters Image filter
+     * @checkstyle ParameterNumber (2 lines)
+     */
+    ListedImages(
+        final HttpClient client, final URI uri,
+        final Docker dkr, final Map<String, Iterable<String>> filters
+    ) {
         super(client, uri, dkr);
+        this.filters = filters;
     }
 
     @Override
     public Iterator<Image> iterator() {
+        final UncheckedUriBuilder uri = new UncheckedUriBuilder(
+            super.baseUri().toString().concat("/json")
+        );
+        if (!this.filters.isEmpty()) {
+            final JsonObjectBuilder json = Json.createObjectBuilder();
+            this.filters.forEach(
+                (name, values) -> {
+                    final JsonArrayBuilder array = Json.createArrayBuilder();
+                    values.forEach(array::add);
+                    json.add(name, array);
+                }
+            );
+            uri.addParameter("filters", json.build().toString());
+        }
         return new ResourcesIterator<>(
             super.client(),
-            new HttpGet(super.baseUri().toString().concat("/json")),
+            new HttpGet(uri.build()),
             img -> new RtImage(
                 img,
                 super.client(),
