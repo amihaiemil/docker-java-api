@@ -28,6 +28,7 @@ package com.amihaiemil.docker;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URL;
+import java.util.Map;
 
 /**
  * Images API.
@@ -37,10 +38,6 @@ import java.net.URL;
  * @since 0.0.1
  * @todo #98:30min Continue implementing the rest of the operations for the
  *  Images interface. See the docs referenced above for more details.
- * @todo #144:30min Add the filter(Map<String, String>) method which will
- *  filter the given instance of Images. If filter() is called more times,
- *  all of the specified filters should amount and be applied to the last
- *  resulting Images instance.
  * @todo #152:30min Add Fake implementations of Images and Image, in order to
  *  unit test method save() and other future methods which may require more
  *  than 1 HTTP request. Currently, the unit testing infrastructure does
@@ -93,6 +90,14 @@ public interface Images extends Iterable<Image> {
      *  unexpected status.
      */
     Reader save() throws IOException, UnexpectedResponseException;
+
+    /**
+     * Filter these images.
+     * @param filters Filters to apply.
+     * @return Filtered images.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ImageList">Docker API Docs</a>
+     */
+    Images filter(Map<String, Iterable<String>> filters);
 
     /**
      * Return the Docker engine where these Images came from.

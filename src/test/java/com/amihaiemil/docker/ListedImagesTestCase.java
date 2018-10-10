@@ -128,4 +128,49 @@ public final class ListedImagesTestCase {
         ).iterator();
     }
 
+    /**
+     * {@link ListedImages} can include filters added in filter(), in addition
+     * to those provided via ctor, in request to fetch images.
+     */
+    @Test
+    public void includeAddedFiltersInRequest() {
+        final Map<String, Iterable<String>> initial = new HashMap<>();
+        initial.put(
+            "label",
+            Arrays.asList(
+                "maintainer=john@doe.org",
+                "randomLabel=test"
+            )
+        );
+        final Map<String, Iterable<String>> added = new HashMap<>();
+        added.put("dangling", Arrays.asList("true"));
+        new ListedImages(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    "[{\"Id\": \"abc1\"}, {\"Id\":\"cde2\"}]"
+                ),
+                new Condition(
+                    // @checkstyle LineLength (12 lines)
+                    "iterate() query parameters must include the filters provided",
+                    req -> {
+                        final List<NameValuePair> params = new UncheckedUriBuilder(
+                            req.getRequestLine().getUri()
+                        ).getQueryParams();
+                        // @checkstyle BooleanExpressionComplexity (6 lines)
+                        return params.size() == 1
+                            && "filters".equals(params.get(0).getName())
+                            && params.get(0).getValue().contains("label")
+                            && params.get(0).getValue().contains("\"maintainer=john@doe.org\"")
+                            && params.get(0).getValue().contains("\"randomLabel=test\"")
+                            && params.get(0).getValue().contains("\"dangling\":[\"true\"]");
+                    }
+                )
+            ),
+            URI.create("http://localhost/images"),
+            Mockito.mock(Docker.class),
+            initial
+        ).filter(added).iterator();
+    }
+
 }
