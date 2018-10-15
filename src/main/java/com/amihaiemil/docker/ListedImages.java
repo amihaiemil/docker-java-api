@@ -29,6 +29,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import java.net.URI;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import javax.json.Json;
@@ -105,6 +106,20 @@ final class ListedImages extends RtImages {
                 ),
                 super.docker()
             )
+        );
+    }
+
+    @Override
+    public Images filter(final Map<String, Iterable<String>> fltrs) {
+        final Map<String, Iterable<String>> merged = new HashMap<>(
+            this.filters
+        );
+        merged.putAll(fltrs);
+        return new ListedImages(
+            super.client(),
+            this.baseUri(),
+            this.docker(),
+            merged
         );
     }
 }
