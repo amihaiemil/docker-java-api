@@ -30,7 +30,8 @@ import java.io.IOException;
 import java.util.Iterator;
 
 /**
- * Containers API.
+ * Containers API. This is also an Iterable over the running containers.
+ * If you need an Iterable over all the containers, use the .all() method.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
@@ -74,8 +75,7 @@ public interface Containers extends Iterable<Container> {
     Container create(final JsonObject container) throws IOException;
     
     /**
-     * Return all the Containers, not only the running ones (simply iterating
-     * over this Containers instance will fetch only the running ones).
+     * Return all the Containers, not only the running ones.
      * @return Iterator over all the containers.
      */
     Iterator<Container> all();
