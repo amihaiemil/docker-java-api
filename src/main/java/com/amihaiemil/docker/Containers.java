@@ -27,6 +27,7 @@ package com.amihaiemil.docker;
 
 import javax.json.JsonObject;
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * Containers API.
@@ -71,6 +72,13 @@ public interface Containers extends Iterable<Container> {
      * @throws IOException If something goes wrong.
      */
     Container create(final JsonObject container) throws IOException;
+    
+    /**
+     * Return all the Containers, not only the running ones (simply iterating
+     * over this Containers instance will fetch only the running ones).
+     * @return Iterator over all the containers.
+     */
+    Iterator<Container> all();
     
     /**
      * Return the Docker engine where these Containers came from.

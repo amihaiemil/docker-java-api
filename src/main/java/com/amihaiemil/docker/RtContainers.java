@@ -140,11 +140,27 @@ final class RtContainers implements Containers {
     }
 
     @Override
+    public Iterator<Container> all() {
+        return new ResourcesIterator<>(
+            this.client,
+            new HttpGet(this.baseUri.toString().concat("/json?all=true")),
+            json -> new RtContainer(
+                json,
+                this.client,
+                URI.create(
+                    this.baseUri.toString() + "/" + json.getString("Id")
+                ),
+                this.docker
+            )
+        );
+    }
+    
+    @Override
     public Iterator<Container> iterator() {
         return new ResourcesIterator<>(
             this.client,
             new HttpGet(this.baseUri.toString().concat("/json")),
-            json-> new RtContainer(
+            json -> new RtContainer(
                 json,
                 this.client,
                 URI.create(

@@ -76,7 +76,7 @@ public final class RtContainersTestCase {
      * @throws Exception If an error occurs.
      */
     @Test
-    public void iteratesContainers() throws Exception {
+    public void returnsAllContainers() throws Exception {
         final AtomicInteger count = new AtomicInteger();
         new RtContainers(
             new AssertRequest(
@@ -90,8 +90,51 @@ public final class RtContainersTestCase {
                             Json.createObjectBuilder()
                                 .add("Id", "sha256:3e314f95dcace0f5e")
                         ).build().toString()
+                ),
+                new Condition(
+                    "Resource path must be /json",
+                    req -> req.getRequestLine().getUri().endsWith(
+                        "/json?all=true"
+                    )
                 )
-            ), URI.create("http://localhost"), Mockito.mock(Docker.class)
+            ),
+            URI.create("http://localhost/containers/"),
+            Mockito.mock(Docker.class)
+        ).all().forEachRemaining(container -> count.incrementAndGet());
+        MatcherAssert.assertThat(
+            count.get(),
+            Matchers.is(2)
+        );
+    }
+    
+    /**
+     * Must return the same number of containers as there are elements in the
+     * json array returned by the service.
+     * @throws Exception If an error occurs.
+     */
+    @Test
+    public void iteratesRunningContainers() throws Exception {
+        final AtomicInteger count = new AtomicInteger();
+        new RtContainers(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    Json.createArrayBuilder()
+                        .add(
+                            Json.createObjectBuilder()
+                                .add("Id", "sha256:e216a057b1cb1efc1")
+                        ).add(
+                            Json.createObjectBuilder()
+                                .add("Id", "sha256:3e314f95dcace0f5e")
+                        ).build().toString()
+                ),
+                new Condition(
+                    "Resource path must be /json",
+                    req -> req.getRequestLine().getUri().endsWith("/json")
+                )
+            ),
+            URI.create("http://localhost/containers/json"),
+            Mockito.mock(Docker.class)
         ).forEach(container -> count.incrementAndGet());
         MatcherAssert.assertThat(
             count.get(),
