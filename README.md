@@ -1,5 +1,7 @@
 ### docker-java-api
 
+[![Managed by Zerocrat](https://www.0crat.com/badge/G6LPQQV2P.svg)](https://www.0crat.com/p/G6LPQQV2P)
+
 [![Build Status](https://travis-ci.org/amihaiemil/docker-java-api.svg?branch=master)](https://travis-ci.org/amihaiemil/docker-java-api)
 [![Coverage Status](https://coveralls.io/repos/github/amihaiemil/docker-java-api/badge.svg?branch=master)](https://coveralls.io/github/amihaiemil/docker-java-api?branch=master)
 
