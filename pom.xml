@@ -47,11 +47,17 @@
 		    <artifactId>jnr-unixsocket</artifactId>
 		    <version>0.18</version>
 		</dependency>
+                <dependency>
+                    <groupId>javax.json</groupId>
+                    <artifactId>javax.json-api</artifactId>
+                    <version>1.0</version>
+                    <scope>provided</scope>
+                </dependency>
 		<dependency>
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.json</artifactId>
 			<version>1.0.4</version>
-                        <scope>provided</scope>
+                        <scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
