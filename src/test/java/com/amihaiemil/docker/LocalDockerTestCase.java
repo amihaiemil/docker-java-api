@@ -27,6 +27,7 @@ package com.amihaiemil.docker;
 
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Response;
+import org.apache.http.client.HttpClient;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -124,6 +125,23 @@ public final class LocalDockerTestCase {
                 new File("/var/run/docker.sock")
             ).images(),
             Matchers.notNullValue()
+        );
+    }
+
+    /**
+     * LocalDocker can return its HttpClient.
+     */
+    @Test
+    public void returnsHttpClient() {
+        MatcherAssert.assertThat(
+            new LocalDocker(
+                new File("/var/run/docker.sock")
+            ).httpClient(),
+            Matchers.allOf(
+                Matchers.notNullValue(),
+                Matchers.instanceOf(HttpClient.class),
+                Matchers.instanceOf(UnixHttpClient.class)
+            )
         );
     }
 }

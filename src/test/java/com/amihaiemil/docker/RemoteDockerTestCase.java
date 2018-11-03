@@ -27,6 +27,7 @@ package com.amihaiemil.docker;
 
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Response;
+
 import java.net.URI;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -119,6 +120,25 @@ public final class RemoteDockerTestCase {
                 URI.create("http://localhost")
             ).images(),
             Matchers.notNullValue()
+        );
+    }
+
+    /**
+     * LocalDocker can return its HttpClient.
+     */
+    @Test
+    public void returnsHttpClient() {
+        final HttpClient client = Mockito.mock(HttpClient.class);
+        MatcherAssert.assertThat(
+            new RemoteDocker(
+                client,
+                URI.create("http://localhost")
+            ).httpClient(),
+            Matchers.allOf(
+                Matchers.notNullValue(),
+                Matchers.instanceOf(HttpClient.class),
+                Matchers.sameInstance(client)
+            )
         );
     }
 }

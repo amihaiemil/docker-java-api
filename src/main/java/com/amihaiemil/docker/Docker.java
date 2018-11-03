@@ -25,6 +25,8 @@
  */
 package com.amihaiemil.docker;
 
+import org.apache.http.client.HttpClient;
+
 import java.io.IOException;
 
 /**
@@ -79,4 +81,19 @@ public interface Docker {
      * @return Swarm.
      */
     Swarm swarm();
+
+    /**
+     * The underlying, immutable, Apache HttpClient.<br><br>
+     *
+     * Use this method to fetch the underlying HttpClient and perform your own
+     * HTTP requests, in case the API is missing the desired method.<br><br>
+     *
+     * Usage in any other scenario is discouraged. Try to find the desired
+     * method before using this. Also, if the method is missing, open an
+     * Issue at https://www.github.com/amihaiemil/docker-java-api, maybe
+     * it can be implemented and released quickly.
+     *
+     * @return The underlying HttpClient.
+     */
+    HttpClient httpClient();
 }

@@ -118,4 +118,9 @@ abstract class RtDocker implements Docker {
             this
         );
     }
+
+    @Override
+    public HttpClient httpClient() {
+        return this.client;
+    }
 }
