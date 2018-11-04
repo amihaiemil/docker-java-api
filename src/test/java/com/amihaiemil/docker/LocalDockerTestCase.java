@@ -27,7 +27,6 @@ package com.amihaiemil.docker;
 
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Response;
-import org.apache.http.client.HttpClient;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
