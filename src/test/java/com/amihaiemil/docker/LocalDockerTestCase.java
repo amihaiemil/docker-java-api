@@ -139,7 +139,6 @@ public final class LocalDockerTestCase {
             ).httpClient(),
             Matchers.allOf(
                 Matchers.notNullValue(),
-                Matchers.instanceOf(HttpClient.class),
                 Matchers.instanceOf(UnixHttpClient.class)
             )
         );
