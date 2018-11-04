@@ -136,7 +136,6 @@ public final class RemoteDockerTestCase {
             ).httpClient(),
             Matchers.allOf(
                 Matchers.notNullValue(),
-                Matchers.instanceOf(HttpClient.class),
                 Matchers.sameInstance(client)
             )
         );
