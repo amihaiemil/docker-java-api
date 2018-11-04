@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.amihaiemil.web</groupId>
 	<artifactId>docker-java-api</artifactId>
-	<version>0.0.5-SNAPSHOT</version><!--rrv-sed-flag-->
+	<version>0.0.6-SNAPSHOT</version><!--rrv-sed-flag-->
 	<name>Docker Java API</name>
 	<description>Elegant OOP wrapper over Docker's API</description>
 	<url>https://www.github.com/amihaiemil/docker-java-api</url>
