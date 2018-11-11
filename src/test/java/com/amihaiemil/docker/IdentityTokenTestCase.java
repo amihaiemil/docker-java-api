@@ -25,20 +25,36 @@
  */
 package com.amihaiemil.docker;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import javax.json.Json;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
+
 /**
- * Authentication for Docker API.
+ * Unit tests for {@link IdentityToken}.
+ *
  * @author George Aristy (george.aristy@gmail.com)
- * @version $Id$
- * @see <a href="https://docs.docker.com/engine/api/v1.35/#section/Authentication">Authentication</a>
- * @since 0.0.1
- * @todo #171:30min We have implemented all forms of Auth. We also have the
- *  AuthHttpClient. Figure out how to make the library decorate the base
- *  HttpClient with the AuthHttpClient in a seemless manner.
+ * @since 0.0.4
  */
-public interface Auth {
+public final class IdentityTokenTestCase {
     /**
-     * This {@link Auth} as a Base-64 encoded string.
-     * @return This auth as a base64-encoded string.
+     * Correctly encodes to base64 all attributes as a JSON object.
      */
-    String encoded();
+    @Test
+    public void correctEncoding() {
+        final String token = "abc123";
+        MatcherAssert.assertThat(
+            new IdentityToken(token).encoded(),
+            Matchers.is(
+                Base64.getEncoder().encodeToString(
+                    Json.createObjectBuilder()
+                        .add("identitytoken", token)
+                        .build().toString()
+                        .getBytes(StandardCharsets.UTF_8)
+                )
+            )
+        );
+    }
 }

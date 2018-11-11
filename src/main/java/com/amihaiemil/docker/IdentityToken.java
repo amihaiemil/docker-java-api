@@ -23,22 +23,50 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.amihaiemil.docker;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.function.Supplier;
+import javax.json.Json;
+
 /**
- * Authentication for Docker API.
+ * A {@link Auth} holding an Identity token.
+ * <p>
+ * Identity tokens are obtained after validating your {@link Credentials}
+ * with a registry. However, the docker engine is capable of obtaining this
+ * token transparently if you just provide {@link Credentials}.
+ * <p>
+ * {@link IdentityToken} is useful for cases when you have already obtained
+ * a token from a previous session and you wish to reuse it.
+ *
  * @author George Aristy (george.aristy@gmail.com)
- * @version $Id$
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#section/Authentication">Authentication</a>
- * @since 0.0.1
- * @todo #171:30min We have implemented all forms of Auth. We also have the
- *  AuthHttpClient. Figure out how to make the library decorate the base
- *  HttpClient with the AuthHttpClient in a seemless manner.
+ * @see <a href="https://docs.docker.com/registry/spec/auth/token/">Token Authentication Specification</a>
+ * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/SystemAuth">Check auth configuration</a>
+ * @since 0.0.4
  */
-public interface Auth {
+public final class IdentityToken implements Auth {
     /**
-     * This {@link Auth} as a Base-64 encoded string.
-     * @return This auth as a base64-encoded string.
+     * Base64-encoded JSON structure holding the identity token. 
      */
-    String encoded();
+    private final Supplier<String> value;
+
+    /**
+     * Ctor.
+     * @param value The token's value
+     */
+    public IdentityToken(final String value) {
+        this.value = () -> Base64.getEncoder().encodeToString(
+            Json.createObjectBuilder().add("identitytoken", value)
+                .build().toString()
+                .getBytes(StandardCharsets.UTF_8)
+        );
+    }
+
+    @Override
+    public String encoded() {
+        return this.value.get();
+    }
 }
