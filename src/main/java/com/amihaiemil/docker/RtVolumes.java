@@ -29,6 +29,12 @@ import org.apache.http.client.HttpClient;
 
 import java.net.URI;
 
+/**
+ * Runtime {@link Volumes}.
+ * @author Marco Teixeira (marcoo.teixeira@gmail.com)
+ * @version $Id$
+ * @since 0.0.6
+ */
 public abstract class RtVolumes implements Volumes {
     /**
      * Apache HttpClient which sends the requests.

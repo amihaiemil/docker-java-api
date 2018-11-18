@@ -30,8 +30,8 @@ package com.amihaiemil.docker;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #169:30min Extend Iterable of Volumes to and continue implementing the rest of the operations
- * for the volume.
+ * @todo #169:30min Extend Iterable of Volumes to and
+ * continue implementing the rest of the operations for the volume.
  */
 public interface Volumes {
 }

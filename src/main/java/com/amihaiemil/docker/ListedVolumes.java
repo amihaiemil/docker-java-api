@@ -29,17 +29,22 @@ import org.apache.http.client.HttpClient;
 
 import java.net.URI;
 
+/**
+ * Listed volumes.
+ * @author Marco Teixeira (marcoo.teixeira@gmail.com)
+ * @version $Id$
+ * @since 0.0.6
+ */
 public class ListedVolumes extends RtVolumes {
 
     /**
      * Ctor.
-     *
      * @param client The http client.
-     * @param uri    The URI for this Images API.
-     * @param dkr    The docker entry point.
-     * @checkstyle ParameterNumber (10 lines)
+     * @param uri The URI for this Images API.
+     * @param dkr The docker entry point.
+     * @checkstyle ParameterNumber (2 lines)
      */
-    ListedVolumes(HttpClient client, URI uri, Docker dkr) {
+    ListedVolumes(final HttpClient client, final URI uri, final Docker dkr) {
         super(client, uri, dkr);
     }
 }
