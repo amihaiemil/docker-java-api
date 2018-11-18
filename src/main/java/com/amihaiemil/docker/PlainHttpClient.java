@@ -31,6 +31,7 @@ import org.apache.http.impl.client.HttpClients;
  * Plain HTTP (no TLS) client.
  *
  * @author George Aristy (george.aristy@gmail.com)
+ * @version $Id$
  * @since 0.0.4
  */
 final class PlainHttpClient extends HttpClientEnvelope {

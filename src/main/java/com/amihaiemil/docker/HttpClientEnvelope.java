@@ -42,6 +42,7 @@ import org.apache.http.protocol.HttpContext;
  * HTTP client envelope.
  *
  * @author George Aristy (george.aristy@gmail.com)
+ * @version $Id$
  * @since 0.0.4
  */
 abstract class HttpClientEnvelope implements HttpClient {
