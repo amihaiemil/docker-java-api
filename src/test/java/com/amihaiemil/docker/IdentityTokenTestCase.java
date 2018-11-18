@@ -36,6 +36,7 @@ import org.junit.Test;
  * Unit tests for {@link IdentityToken}.
  *
  * @author George Aristy (george.aristy@gmail.com)
+ * @version $Id$
  * @since 0.0.4
  */
 public final class IdentityTokenTestCase {

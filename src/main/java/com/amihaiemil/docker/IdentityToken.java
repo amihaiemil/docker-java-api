@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 import javax.json.Json;
 
 /**
- * A {@link Auth} holding an Identity token.
+ * An {@link Auth} holding an Identity token.
  * <p>
  * Identity tokens are obtained after validating your {@link Credentials}
  * with a registry. However, the docker engine is capable of obtaining this
@@ -45,6 +45,7 @@ import javax.json.Json;
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#section/Authentication">Authentication</a>
  * @see <a href="https://docs.docker.com/registry/spec/auth/token/">Token Authentication Specification</a>
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/SystemAuth">Check auth configuration</a>
+ * @version $Id$
  * @since 0.0.4
  */
 public final class IdentityToken implements Auth {
