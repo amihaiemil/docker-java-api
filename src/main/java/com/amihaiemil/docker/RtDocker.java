@@ -96,9 +96,10 @@ abstract class RtDocker implements Docker {
 
     @Override
     public final Volumes volumes() {
-        throw new UnsupportedOperationException(
-            "Volumes API is not yet implemented. If you can contribute please,"
-            + " do it here: https://www.github.com/amihaiemil/docker-java-api"
+        return new ListedVolumes(
+            this.client,
+            URI.create(this.baseUri.toString() + "/volumes"),
+            this
         );
     }
 

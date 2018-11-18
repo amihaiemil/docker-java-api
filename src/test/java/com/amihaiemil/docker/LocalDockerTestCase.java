@@ -142,4 +142,17 @@ public final class LocalDockerTestCase {
             )
         );
     }
+
+    /**
+     * LocalDocker can return Volumes.
+     */
+    @Test
+    public void returnsVolumes() {
+        MatcherAssert.assertThat(
+            new LocalDocker(
+                new File("/var/run/docker.sock")
+            ).volumes(),
+            Matchers.notNullValue()
+        );
+    }
 }

@@ -25,13 +25,21 @@
  */
 package com.amihaiemil.docker;
 
-/**
- * Volumes API.
- * @author Mihai Andronache (amihaiemil@gmail.com)
- * @version $Id$
- * @since 0.0.1
- * @todo #169:30min Extend Iterable of Volumes to and continue implementing the rest of the operations
- * for the volume.
- */
-public interface Volumes {
+import org.apache.http.client.HttpClient;
+
+import java.net.URI;
+
+public class ListedVolumes extends RtVolumes {
+
+    /**
+     * Ctor.
+     *
+     * @param client The http client.
+     * @param uri    The URI for this Images API.
+     * @param dkr    The docker entry point.
+     * @checkstyle ParameterNumber (10 lines)
+     */
+    ListedVolumes(HttpClient client, URI uri, Docker dkr) {
+        super(client, uri, dkr);
+    }
 }

@@ -140,4 +140,18 @@ public final class RemoteDockerTestCase {
             )
         );
     }
+
+    /**
+     * RemoteDocker can return Volumes.
+     */
+    @Test
+    public void returnsVolumes() {
+        MatcherAssert.assertThat(
+            new RemoteDocker(
+                Mockito.mock(HttpClient.class),
+                URI.create("http://localhost")
+            ).volumes(),
+            Matchers.notNullValue()
+        );
+    }
 }

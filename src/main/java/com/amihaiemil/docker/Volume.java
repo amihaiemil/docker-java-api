@@ -26,12 +26,10 @@
 package com.amihaiemil.docker;
 
 /**
- * Volumes API.
- * @author Mihai Andronache (amihaiemil@gmail.com)
+ * Volume API.
+ * @author Marco Teixeira (marcoo.teixeira@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #169:30min Extend Iterable of Volumes to and continue implementing the rest of the operations
- * for the volume.
  */
-public interface Volumes {
+public interface Volume {
 }
