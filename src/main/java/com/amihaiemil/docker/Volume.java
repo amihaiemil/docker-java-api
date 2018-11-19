@@ -26,10 +26,13 @@
 package com.amihaiemil.docker;
 
 /**
- * Volume API.
+ * A volume manager.
  * @author Marco Teixeira (marcoo.teixeira@gmail.com)
  * @version $Id$
- * @since 0.0.1
+ * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Volume">Docker Volume API</a>
+ * @since 0.0.6
+ * @todo #169:30min Continue the implementation of Volume.
+ *
  */
 public interface Volume {
 }

@@ -56,9 +56,7 @@ public abstract class RtVolumes implements Volumes {
      * @param client The http client.
      * @param uri The URI for this Images API.
      * @param dkr The docker entry point.
-     * @checkstyle ParameterNumber (10 lines)
      */
-
     RtVolumes(final HttpClient client, final URI uri, final Docker dkr) {
         this.client = client;
         this.baseUri = uri;
