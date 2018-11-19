@@ -42,7 +42,6 @@ public class ListedVolumes extends RtVolumes {
      * @param client The http client.
      * @param uri The URI for this Images API.
      * @param dkr The docker entry point.
-     * @checkstyle ParameterNumber (2 lines)
      */
     ListedVolumes(final HttpClient client, final URI uri, final Docker dkr) {
         super(client, uri, dkr);
