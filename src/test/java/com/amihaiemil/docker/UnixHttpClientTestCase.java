@@ -70,7 +70,7 @@ public final class UnixHttpClientTestCase {
         final HttpClient decorated = Mockito.mock(HttpClient.class);
         Mockito.when(decorated.getParams()).thenReturn(params);
 
-        final HttpClient unix = new UnixHttpClient(decorated);
+        final HttpClient unix = new UnixHttpClient(() -> decorated);
         MatcherAssert.assertThat(unix.getParams(), Matchers.is(params));
         Mockito.verify(
             decorated, Mockito.times(1)
@@ -88,7 +88,7 @@ public final class UnixHttpClientTestCase {
         final HttpClient decorated = Mockito.mock(HttpClient.class);
         Mockito.when(decorated.getConnectionManager()).thenReturn(cmngr);
 
-        final HttpClient unix = new UnixHttpClient(decorated);
+        final HttpClient unix = new UnixHttpClient(() -> decorated);
         MatcherAssert.assertThat(
             unix.getConnectionManager(), Matchers.is(cmngr)
         );
@@ -108,7 +108,7 @@ public final class UnixHttpClientTestCase {
         final HttpClient decorated = Mockito.mock(HttpClient.class);
         Mockito.when(decorated.execute(req)).thenReturn(resp);
 
-        final HttpClient unix = new UnixHttpClient(decorated);
+        final HttpClient unix = new UnixHttpClient(() -> decorated);
         MatcherAssert.assertThat(
             unix.execute(req), Matchers.is(resp)
         );
@@ -132,7 +132,7 @@ public final class UnixHttpClientTestCase {
             decorated.execute(req, context)
         ).thenReturn(resp);
 
-        final HttpClient unix = new UnixHttpClient(decorated);
+        final HttpClient unix = new UnixHttpClient(() -> decorated);
         MatcherAssert.assertThat(
             unix.execute(req, context), Matchers.is(resp)
         );
@@ -155,7 +155,7 @@ public final class UnixHttpClientTestCase {
             decorated.execute(host, req)
         ).thenReturn(resp);
 
-        final HttpClient unix = new UnixHttpClient(decorated);
+        final HttpClient unix = new UnixHttpClient(() -> decorated);
         MatcherAssert.assertThat(
             unix.execute(host, req), Matchers.is(resp)
         );
@@ -180,7 +180,7 @@ public final class UnixHttpClientTestCase {
                 decorated.execute(host, req, context)
         ).thenReturn(resp);
 
-        final HttpClient unix = new UnixHttpClient(decorated);
+        final HttpClient unix = new UnixHttpClient(() -> decorated);
         MatcherAssert.assertThat(
             unix.execute(host, req, context), Matchers.is(resp)
         );
@@ -205,7 +205,7 @@ public final class UnixHttpClientTestCase {
             decorated.execute(req, handler)
         ).thenReturn("executed");
 
-        final HttpClient unix = new UnixHttpClient(decorated);
+        final HttpClient unix = new UnixHttpClient(() -> decorated);
         MatcherAssert.assertThat(
             unix.execute(req, handler), Matchers.equalTo("executed")
         );
@@ -231,7 +231,7 @@ public final class UnixHttpClientTestCase {
             decorated.execute(req, handler, context)
         ).thenReturn("executed");
 
-        final HttpClient unix = new UnixHttpClient(decorated);
+        final HttpClient unix = new UnixHttpClient(() -> decorated);
         MatcherAssert.assertThat(
             unix.execute(req, handler, context), Matchers.equalTo("executed")
         );
@@ -258,7 +258,7 @@ public final class UnixHttpClientTestCase {
             decorated.execute(host, req, handler)
         ).thenReturn("executed");
 
-        final HttpClient unix = new UnixHttpClient(decorated);
+        final HttpClient unix = new UnixHttpClient(() -> decorated);
         MatcherAssert.assertThat(
             unix.execute(host, req, handler), Matchers.equalTo("executed")
         );
@@ -285,7 +285,7 @@ public final class UnixHttpClientTestCase {
             decorated.execute(host, req, handler, context)
         ).thenReturn("executed");
 
-        final HttpClient unix = new UnixHttpClient(decorated);
+        final HttpClient unix = new UnixHttpClient(() -> decorated);
         MatcherAssert.assertThat(
             unix.execute(host, req, handler, context),
             Matchers.equalTo("executed")

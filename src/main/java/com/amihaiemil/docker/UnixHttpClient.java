@@ -25,20 +25,11 @@
  */
 package com.amihaiemil.docker;
 
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HttpContext;
 import java.io.File;
-import java.io.IOException;
 import java.util.function.Supplier;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
@@ -51,13 +42,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
  * @checkstyle ParameterNumber (150 lines)
  * @checkstyle AnonInnerLength (150 lines)
  */
-final class UnixHttpClient implements HttpClient {
-
-    /**
-     * Decorated HttpClient.
-     */
-    private HttpClient client;
-
+final class UnixHttpClient extends HttpClientEnvelope {
     /**
      * Ctor.
      * @param socketFile Unix socket on disk.
@@ -81,97 +66,9 @@ final class UnixHttpClient implements HttpClient {
 
     /**
      * Ctor.
-     * @param client The HttpClient.
+     * @param client The http client
      */
     UnixHttpClient(final Supplier<HttpClient> client) {
-        this(client.get());
-    }
-
-    /**
-     * Ctor.
-     * @param client Decorated HttpClient.
-     */
-    UnixHttpClient(final HttpClient client) {
-        this.client = client;
-    }
-
-    @Override
-    public HttpParams getParams() {
-        return this.client.getParams();
-    }
-
-    @Override
-    public ClientConnectionManager getConnectionManager() {
-        return this.client.getConnectionManager();
-    }
-
-    @Override
-    public HttpResponse execute(
-        final HttpUriRequest httpUriRequest
-    ) throws IOException {
-        return this.client.execute(httpUriRequest);
-    }
-
-    @Override
-    public HttpResponse execute(
-        final HttpUriRequest httpUriRequest, final HttpContext httpContext
-    ) throws IOException {
-        return this.client.execute(httpUriRequest, httpContext);
-    }
-
-    @Override
-    public HttpResponse execute(
-        final HttpHost httpHost, final HttpRequest httpRequest
-    ) throws IOException {
-        return this.client.execute(httpHost, httpRequest);
-    }
-
-    @Override
-    public HttpResponse execute(
-        final HttpHost httpHost,
-        final HttpRequest httpRequest,
-        final HttpContext httpContext
-    ) throws IOException {
-        return this.client.execute(httpHost, httpRequest, httpContext);
-    }
-
-    @Override
-    public <T> T execute(
-        final HttpUriRequest httpUriRequest,
-        final ResponseHandler<? extends T> responseHandler
-    ) throws IOException {
-        return this.client.execute(httpUriRequest, responseHandler);
-    }
-
-    @Override
-    public <T> T execute(
-        final HttpUriRequest httpUriRequest,
-        final ResponseHandler<? extends T> responseHandler,
-        final HttpContext httpContext
-    ) throws IOException {
-        return this.client.execute(
-            httpUriRequest, responseHandler, httpContext
-        );
-    }
-
-    @Override
-    public <T> T execute(
-        final HttpHost httpHost,
-        final HttpRequest httpRequest,
-        final ResponseHandler<? extends T> responseHandler
-    ) throws IOException {
-        return this.client.execute(httpHost, httpRequest, responseHandler);
-    }
-
-    @Override
-    public <T> T execute(
-        final HttpHost httpHost,
-        final HttpRequest httpRequest,
-        final ResponseHandler<? extends T> responseHandler,
-        final HttpContext httpContext
-    ) throws IOException {
-        return this.client.execute(
-            httpHost, httpRequest, responseHandler, httpContext
-        );
+        super(client);
     }
 }

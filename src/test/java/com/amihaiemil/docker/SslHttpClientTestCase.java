@@ -52,7 +52,7 @@ public final class SslHttpClientTestCase {
         final Response response = new Response(HttpStatus.SC_OK, "");
         MatcherAssert.assertThat(
             new SslHttpClient(
-                new AssertRequest(response)
+                () -> new AssertRequest(response)
             ).execute(new HttpGet()),
             Matchers.is(response)
         );
