@@ -83,6 +83,12 @@ public interface Docker {
     Swarm swarm();
 
     /**
+     * Entry point for the DockerSystem API.
+     * @return DockerSystem.
+     */
+    DockerSystem system();
+
+    /**
      * The underlying, immutable, Apache HttpClient.<br><br>
      *
      * Use this method to fetch the underlying HttpClient and perform your own
