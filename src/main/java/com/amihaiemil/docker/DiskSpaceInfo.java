@@ -1,11 +1,13 @@
 package com.amihaiemil.docker;
 
+import javax.json.JsonObject;
+
 /**
  * Info about Docker disk space usage in bytes.
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @since 0.0.6
  */
-public interface DiskSpaceInfo {
+public interface DiskSpaceInfo extends JsonObject {
 
     /**
      * Images disk usage.

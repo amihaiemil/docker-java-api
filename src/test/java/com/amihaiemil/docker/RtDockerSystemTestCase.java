@@ -40,6 +40,9 @@ public final class RtDockerSystemTestCase {
                                 .add(
                                     Json.createObjectBuilder()
                                     .add("SizeRootFs", 50)
+                                ).add(
+                                    Json.createObjectBuilder()
+                                    .add("SizeRootFs", 60)
                                 )
                             )
                         .add(
@@ -52,7 +55,14 @@ public final class RtDockerSystemTestCase {
                                             Json.createObjectBuilder()
                                                 .add("Size", 200)
                                         )
-                                )
+                                ).add(
+                                    Json.createObjectBuilder()
+                                        .add(
+                                            "UsageData",
+                                            Json.createObjectBuilder()
+                                                .add("Size", 100)
+                                        )
+                            )
                         ).build().toString()
                 )
             ),
@@ -61,7 +71,7 @@ public final class RtDockerSystemTestCase {
         ).diskUsage().totalSpace();
         MatcherAssert.assertThat(
             totalSpace,
-            Matchers.is(500L)
+            Matchers.is(660L)
         );
     }
 
