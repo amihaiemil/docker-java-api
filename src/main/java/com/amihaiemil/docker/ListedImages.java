@@ -27,24 +27,21 @@ package com.amihaiemil.docker;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
 
 /**
  * Listed images, which may have a filter applied.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.3
- * @todo #144:30min Finish implementation here, add a Map to this class, that
- *  would hold the actual filters and apply them when making the call in the
- *  iterator() method. Also, more ctors should be available, at least one with
- *  filters and one without filters.
  */
 final class ListedImages extends RtImages {
     /**
