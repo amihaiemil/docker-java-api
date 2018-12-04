@@ -37,27 +37,30 @@ public final class RtDockerSystem implements DockerSystem {
      * @param baseUri Base URI, ending with /system.
      * @param dkr The Docker engine.
      */
-    RtDockerSystem(final HttpClient client, final URI baseUri,
-                   final Docker dkr) {
+    RtDockerSystem(
+        final HttpClient client, final URI baseUri, final Docker dkr
+    ) {
         this.client = client;
         this.baseUri = baseUri;
         this.docker = dkr;
     }
 
     @Override
-    public DiskSpaceInfo diskUsage() throws IOException,
-            UnexpectedResponseException {
+    public DiskSpaceInfo diskUsage()
+        throws IOException, UnexpectedResponseException {
         final HttpGet init = new HttpGet(this.baseUri.toString() + "/df");
         try {
-            return new SystemDiskSpaceInfo(this.client.execute(
+            return new SystemDiskSpaceInfo(
+                this.client.execute(
                     init,
                     new ReadJsonObject(
-                            new MatchStatus(
-                                    init.getURI(),
-                                    HttpStatus.SC_OK
-                            )
+                        new MatchStatus(
+                            init.getURI(),
+                            HttpStatus.SC_OK
+                        )
                     )
-            ));
+                )
+            );
         } finally {
             init.releaseConnection();
         }
