@@ -18,6 +18,6 @@ public interface DockerSystem {
      *  unexpected status.
      */
     DiskSpaceInfo diskUsage()
-            throws IOException, UnexpectedResponseException;
+        throws IOException, UnexpectedResponseException;
 
 }
