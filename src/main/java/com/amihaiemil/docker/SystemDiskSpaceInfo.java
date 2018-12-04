@@ -8,7 +8,7 @@ import javax.json.JsonObject;
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @since 0.0.6
  */
-public final class SystemDiskSpaceInfo extends JsonResource
+final class SystemDiskSpaceInfo extends JsonResource
         implements DiskSpaceInfo {
 
     /**

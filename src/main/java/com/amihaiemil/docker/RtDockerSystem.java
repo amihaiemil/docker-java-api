@@ -13,7 +13,7 @@ import java.net.URI;
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @since 0.0.6
  */
-public final class RtDockerSystem implements DockerSystem {
+final class RtDockerSystem implements DockerSystem {
 
     /**
      * Apache HttpClient which sends the requests.
