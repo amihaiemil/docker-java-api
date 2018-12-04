@@ -37,9 +37,9 @@ import org.apache.http.client.HttpClient;
  * @version $Id$
  * @since 0.0.1
  * @checkstyle ParameterNumber (150 lines)
- * @todo #68:30min Implement integration tests for RemoteDocker. We have to
- *  figure out how to create a remote Docker host and connect to it from Travis.
- *  Also, it will probably have to be paid (some machine on AWS or DO?).
+ * @todo #178:30min Based on the input from
+ *  https://github.com/amihaiemil/docker-java-api/issues/178#issuecomment-444029856
+ *  we should setup a "remote" Docker instance in Travis, for Integration testing.
  */
 public final class RemoteDocker extends RtDocker {
 
