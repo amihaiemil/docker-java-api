@@ -28,14 +28,15 @@ package com.amihaiemil.docker;
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
-import java.net.URI;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.json.Json;
 import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import javax.json.Json;
+import java.net.URI;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Unit tests for {@link RtImages}.

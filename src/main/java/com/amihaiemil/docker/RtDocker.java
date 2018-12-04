@@ -121,6 +121,15 @@ abstract class RtDocker implements Docker {
     }
 
     @Override
+    public DockerSystem system() {
+        return new RtDockerSystem(
+            this.client,
+            URI.create(this.baseUri.toString().concat("/system")),
+            this
+        );
+    }
+
+    @Override
     public HttpClient httpClient() {
         return this.client;
     }
