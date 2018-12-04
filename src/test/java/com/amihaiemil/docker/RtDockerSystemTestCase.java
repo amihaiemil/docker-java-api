@@ -29,31 +29,39 @@ public final class RtDockerSystemTestCase {
     @Test
     public void returnsDiskSpaceUsage() throws Exception {
         long totalSpace = new RtDockerSystem(
-                new AssertRequest(
-                    new Response(
-                        HttpStatus.SC_OK,
-                        Json.createObjectBuilder()
-                            .add("LayersSize", 250)
-                            .add("Containers",
-                                Json.createArrayBuilder()
-                                    .add(Json.createObjectBuilder()
-                                        .add("SizeRootFs", 50))
-                            ).add("Volumes",
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    Json.createObjectBuilder()
+                        .add("LayersSize", 250)
+                        .add(
+                            "Containers",
                             Json.createArrayBuilder()
-                                    .add(
-                                        Json.createObjectBuilder()
-                                            .add("UsageData",
-                                                Json.createObjectBuilder()
-                                                    .add("Size", 200)))
+                                .add(
+                                    Json.createObjectBuilder()
+                                    .add("SizeRootFs", 50)
+                                )
+                            )
+                        .add(
+                            "Volumes",
+                            Json.createArrayBuilder()
+                                .add(
+                                    Json.createObjectBuilder()
+                                        .add(
+                                            "UsageData",
+                                            Json.createObjectBuilder()
+                                                .add("Size", 200)
+                                        )
+                                )
                         ).build().toString()
-                    )
-                ),
-                URI.create("http://localhost/system"),
-                Mockito.mock(Docker.class)
-                ).diskUsage().totalSpace();
+                )
+            ),
+            URI.create("http://localhost/system"),
+            Mockito.mock(Docker.class)
+        ).diskUsage().totalSpace();
         MatcherAssert.assertThat(
-                totalSpace,
-                Matchers.is(500L)
+            totalSpace,
+            Matchers.is(500L)
         );
     }
 
