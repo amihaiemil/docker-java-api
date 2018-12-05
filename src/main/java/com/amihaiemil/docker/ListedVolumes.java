@@ -26,14 +26,20 @@
 package com.amihaiemil.docker;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 
 import java.net.URI;
+import java.util.Iterator;
 
 /**
  * Listed volumes.
  * @author Marco Teixeira (marcoo.teixeira@gmail.com)
  * @version $Id$
  * @since 0.0.6
+ * @todo #181:30min Finish implementation here, add a Map to this class, that
+ *  would hold the actual filters and apply them when making the call in the
+ *  iterator() method. Also, more ctors should be available, at least one with
+ *  filters and one without filters.
  */
 public class ListedVolumes extends RtVolumes {
 
@@ -45,5 +51,22 @@ public class ListedVolumes extends RtVolumes {
      */
     ListedVolumes(final HttpClient client, final URI uri, final Docker dkr) {
         super(client, uri, dkr);
+    }
+
+    @Override
+    public Iterator<Volume> iterator() {
+        return new ResourcesIterator<>(
+            super.client(),
+            new HttpGet(super.baseUri().toString() + "/volumes"),
+            volume -> new RtVolume(
+                volume,
+                super.client(),
+                URI.create(
+                    super.baseUri().toString() + "/" +
+                        volume.getString("Name")
+                ),
+                super.docker()
+            )
+        );
     }
 }

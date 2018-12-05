@@ -28,10 +28,17 @@ package com.amihaiemil.docker;
 /**
  * Volumes API.
  * @author Mihai Andronache (amihaiemil@gmail.com)
+ * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #169:30min Extend Iterable of Volumes to
- *  continue implementing the rest of the operations for the volume.
+ * @todo #180:30min Continue implementing prune volumes operation.
  */
-public interface Volumes {
+public interface Volumes extends Iterable<Volume> {
+
+    /**
+     * Return the Docker engine where these Images came from.
+     * @return Docker.
+     */
+    Docker docker();
+
 }
