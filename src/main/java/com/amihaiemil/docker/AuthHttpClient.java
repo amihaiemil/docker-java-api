@@ -44,9 +44,9 @@ import java.io.IOException;
  * @version $Id$
  * @since 0.0.1
  * @todo #182:30min Based on the input from
- * https://github.com/amihaiemil/docker-java-api/issues/172#issuecomment-444049472
- * we there should be a different implementation for request requiring
- * authentication
+ *  https://github.com/amihaiemil/docker-java-api/issues/172#issuecomment-444049472
+ *  there should be a different implementation for request requiring
+ *  authentication.
  */
 final class AuthHttpClient implements HttpClient {
     /**
