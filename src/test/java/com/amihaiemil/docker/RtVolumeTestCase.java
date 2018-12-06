@@ -59,10 +59,12 @@ public final class RtVolumeTestCase {
         );
         final JsonObject info = volume.inspect();
         MatcherAssert.assertThat(
-                "Size of Json keys should be 4",
-                info.keySet(),
-                new IsCollectionWithSize<>(
-                        new IsEqual<>(4)));
+            "Size of Json keys should be 4",
+            info.keySet(),
+            new IsCollectionWithSize<>(
+                new IsEqual<>(4)
+            )
+        );
         MatcherAssert.assertThat(
             "Name value should be 'v1'",
             info.getString("Name"),

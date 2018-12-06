@@ -46,19 +46,22 @@ public final class ListedVolumesTestCase {
             Mockito.mock(Docker.class)
         );
         MatcherAssert.assertThat(
-                "There should be 2 volumes in the list",
-                all, new IsIterableWithSize<>(new IsEqual<>(2))
+            "There should be 2 volumes in the list",
+            all,
+            new IsIterableWithSize<>(
+                new IsEqual<>(2)
+            )
         );
         final Iterator<Volume> itr = all.iterator();
         MatcherAssert.assertThat(
-                "Name should match abc1",
-                itr.next().getString("Name"),
-                new IsEqual<>("abc1")
+            "Name should match abc1",
+            itr.next().getString("Name"),
+            new IsEqual<>("abc1")
         );
         MatcherAssert.assertThat(
-                "Name should match cde2",
-                itr.next().getString("Name"),
-                new IsEqual<>("cde2")
+            "Name should match cde2",
+            itr.next().getString("Name"),
+            new IsEqual<>("cde2")
         );
 
     }
