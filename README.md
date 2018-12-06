@@ -9,7 +9,7 @@
 [![DevOps By Rultor.com](http://www.rultor.com/b/amihaiemil/docker-java-api)](http://www.rultor.com/p/amihaiemil/docker-java-api)
 [![We recommend IntelliJ IDEA](http://amihaiemil.github.io/images/intellij-idea-recommend.svg)](https://www.jetbrains.com/idea/)
 
-Lightweight, object oriented, Docker client for Java
+Lightweight, object-oriented, Docker client for Java
 
 A Java library for the Docker Engine API. It is the equivalent of the ``docker`` command-line client, for Java applications.
 
