@@ -25,7 +25,6 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -37,13 +36,16 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
 
+import java.io.IOException;
+
 /**
  * An authenticated HttpClient.
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #99:30min Start decorating our internal HttpClients with this one
- *  for calls that require authentication headers.
+ * @todo #182:30min Based on the input from
+ * https://github.com/amihaiemil/docker-java-api/issues/172#issuecomment-444049472
+ * we there should be a different implementation for request requiring authentication
  */
 final class AuthHttpClient implements HttpClient {
     /**
