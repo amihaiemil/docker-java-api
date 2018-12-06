@@ -5,7 +5,8 @@ import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
 import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
+import org.hamcrest.collection.IsCollectionWithSize;
+import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -57,20 +58,30 @@ public final class RtVolumeTestCase {
             DOCKER
         );
         final JsonObject info = volume.inspect();
-        MatcherAssert.assertThat(info.keySet(), Matchers.hasSize(4));
         MatcherAssert.assertThat(
-            info.getString("Name"), Matchers.equalTo("v1")
+                "Size of Json keys should be 4",
+                info.keySet(),
+                new IsCollectionWithSize<>(
+                        new IsEqual<>(4)));
+        MatcherAssert.assertThat(
+            "Name value should be 'v1'",
+            info.getString("Name"),
+            new IsEqual<>("v1")
         );
         MatcherAssert.assertThat(
+            "Driver value should be 'custom'",
             info.getString("Driver"),
-            Matchers.equalTo("custom")
+            new IsEqual<>("custom")
         );
         MatcherAssert.assertThat(
+            "Mountpoint value should be '/var/lib/docker/volumes/v1'",
             info.getString("Mountpoint"),
-            Matchers.equalTo("/var/lib/docker/volumes/v1")
+            new IsEqual<>("/var/lib/docker/volumes/v1")
         );
         MatcherAssert.assertThat(
-            info.getString("Scope"), Matchers.equalTo("local")
+            "Scope value should be 'local'",
+            info.getString("Scope"),
+            new IsEqual<>("local")
         );
     }
 

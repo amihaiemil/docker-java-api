@@ -5,7 +5,8 @@ import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
 import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
+import org.hamcrest.collection.IsIterableWithSize;
+import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -44,15 +45,20 @@ public final class ListedVolumesTestCase {
             URI.create("http://localhost/volumes"),
             Mockito.mock(Docker.class)
         );
-        MatcherAssert.assertThat(all, Matchers.iterableWithSize(2));
+        MatcherAssert.assertThat(
+                "There should be 2 volumes in the list",
+                all, new IsIterableWithSize<>(new IsEqual<>(2))
+        );
         final Iterator<Volume> itr = all.iterator();
         MatcherAssert.assertThat(
+                "Name should match abc1",
                 itr.next().getString("Name"),
-                Matchers.equalTo("abc1")
+                new IsEqual<>("abc1")
         );
         MatcherAssert.assertThat(
+                "Name should match cde2",
                 itr.next().getString("Name"),
-                Matchers.equalTo("cde2")
+                new IsEqual<>("cde2")
         );
 
     }

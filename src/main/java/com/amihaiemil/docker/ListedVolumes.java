@@ -57,13 +57,19 @@ final class ListedVolumes extends RtVolumes {
     public Iterator<Volume> iterator() {
         return new ResourcesIterator<>(
             super.client(),
-            new HttpGet(super.baseUri().toString() + "/volumes"),
+            new HttpGet(
+                String.format("%s/%s",
+                    super.baseUri().toString(),
+                    "volumes")
+            ),
             volume -> new RtVolume(
                 volume,
                 super.client(),
                 URI.create(
-                    super.baseUri().toString() + "/"
-                        + volume.getString("Name")
+                    String.format("%s/%s",
+                        super.baseUri().toString(),
+                        volume.getString("Name")
+                    )
                 ),
                 super.docker()
             )
