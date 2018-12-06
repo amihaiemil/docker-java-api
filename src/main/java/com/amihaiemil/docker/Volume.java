@@ -25,14 +25,29 @@
  */
 package com.amihaiemil.docker;
 
+import javax.json.JsonObject;
+import java.io.IOException;
+
 /**
  * A volume manager.
  * @author Marco Teixeira (marcoo.teixeira@gmail.com)
+ * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @version $Id$
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Volume">Docker Volume API</a>
  * @since 0.0.6
- * @todo #169:30min Continue the implementation of Volume.
+ * @todo #179:30min Continue implementing create and remove volume operations.
  *
  */
-public interface Volume {
+public interface Volume extends JsonObject {
+
+    /**
+     * Return low-level information about this volume.
+     * @return JsonObject information.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/VolumeInspect">Inspect Volume</a>
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (200 OK).
+     */
+    JsonObject inspect() throws IOException, UnexpectedResponseException;
+
 }

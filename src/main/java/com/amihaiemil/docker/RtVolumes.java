@@ -35,7 +35,7 @@ import java.net.URI;
  * @version $Id$
  * @since 0.0.6
  */
-public abstract class RtVolumes implements Volumes {
+abstract class RtVolumes implements Volumes {
     /**
      * Apache HttpClient which sends the requests.
      */
@@ -61,5 +61,26 @@ public abstract class RtVolumes implements Volumes {
         this.client = client;
         this.baseUri = uri;
         this.docker = dkr;
+    }
+
+    @Override
+    public Docker docker() {
+        return this.docker;
+    }
+
+    /**
+     * Get the (protected) HttpClient for subclasses.
+     * @return HttpClient.
+     */
+    HttpClient client() {
+        return this.client;
+    }
+
+    /**
+     * Get the (protected) base URI for subclasses.
+     * @return URI.
+     */
+    URI baseUri() {
+        return this.baseUri;
     }
 }
