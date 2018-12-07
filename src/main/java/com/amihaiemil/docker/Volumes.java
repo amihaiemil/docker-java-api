@@ -25,15 +25,24 @@
  */
 package com.amihaiemil.docker;
 
+import java.io.IOException;
+
 /**
  * Volumes API.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #180:30min Continue implementing prune volumes operation.
  */
 public interface Volumes extends Iterable<Volume> {
+
+    /**
+     * Deletes unused volumes.
+     * @throws IOException If an I/O error occurs.
+     * @throws UnexpectedResponseException If the API responds with an
+     *  unexpected status.
+     */
+    void prune() throws IOException, UnexpectedResponseException;
 
     /**
      * Return the Docker engine where these Images came from.

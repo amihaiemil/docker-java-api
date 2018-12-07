@@ -25,8 +25,11 @@
  */
 package com.amihaiemil.docker;
 
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
 
+import java.io.IOException;
 import java.net.URI;
 
 /**
@@ -61,6 +64,21 @@ abstract class RtVolumes implements Volumes {
         this.client = client;
         this.baseUri = uri;
         this.docker = dkr;
+    }
+
+    @Override
+    public void prune() throws IOException, UnexpectedResponseException {
+        final HttpPost prune = new HttpPost(
+            this.baseUri.toString().concat("/prune")
+        );
+        try {
+            this.client.execute(
+                prune,
+                new MatchStatus(prune.getURI(), HttpStatus.SC_OK)
+            );
+        } finally {
+            prune.releaseConnection();
+        }
     }
 
     @Override
