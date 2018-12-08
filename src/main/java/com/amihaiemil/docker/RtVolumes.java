@@ -25,12 +25,11 @@
  */
 package com.amihaiemil.docker;
 
+import java.io.IOException;
+import java.net.URI;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-
-import java.io.IOException;
-import java.net.URI;
 
 /**
  * Runtime {@link Volumes}.
