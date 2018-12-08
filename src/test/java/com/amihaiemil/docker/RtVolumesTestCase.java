@@ -32,7 +32,7 @@ public final class RtVolumesTestCase {
      */
     @Test
     public void prunesOk() throws Exception {
-        new ListedImages(
+        new ListedVolumes(
             new AssertRequest(
                 new Response(HttpStatus.SC_OK),
                 new Condition(
@@ -57,7 +57,7 @@ public final class RtVolumesTestCase {
      */
     @Test(expected = UnexpectedResponseException.class)
     public void pruneThrowsErrorOnResponse500() throws Exception {
-        new ListedImages(
+        new ListedVolumes(
             new AssertRequest(
                 new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
             ),
@@ -72,7 +72,7 @@ public final class RtVolumesTestCase {
     @Test
     public void returnsDocker() {
         MatcherAssert.assertThat(
-            new ListedImages(
+            new ListedVolumes(
                 new AssertRequest(
                     new Response(
                         HttpStatus.SC_OK,
