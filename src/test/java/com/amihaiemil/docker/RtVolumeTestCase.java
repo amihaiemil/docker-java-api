@@ -140,6 +140,32 @@ public final class RtVolumeTestCase {
     }
 
     /**
+     * RtVolume.delete(null) must send a DELETE request to the volume's url.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void deleteWithNullParameter() throws Exception {
+        new RtVolume(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(HttpStatus.SC_OK),
+                new Condition(
+                    "RtVolume.delete() must send a DELETE HTTP request",
+                    req -> "DELETE".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "RtVolume.delete() must send the request to the volume url",
+                    req -> "http://localhost/volumes/test".equals(
+                        req.getRequestLine().getUri()
+                    )
+                )
+            ),
+            URI.create("http://localhost/volumes/test"),
+            DOCKER
+        ).delete(null);
+    }
+
+    /**
      * RtVolume.delete(false) must throw UnexpectedResponseException if service
      * responds with 404.
      * @throws Exception The UnexpectedResponseException

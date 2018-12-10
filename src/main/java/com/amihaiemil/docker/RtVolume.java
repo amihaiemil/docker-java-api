@@ -59,7 +59,9 @@ final class RtVolume extends JsonResource implements Volume {
         final UncheckedUriBuilder uri = new UncheckedUriBuilder(
             this.baseUri.toString()
         );
-        uri.addParameter("force", force.toString());
+        if (force != null) {
+            uri.addParameter("force", force.toString());
+        }
         final HttpDelete delete = new HttpDelete(
             uri.build()
         );
