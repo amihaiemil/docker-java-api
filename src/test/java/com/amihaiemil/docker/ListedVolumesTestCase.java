@@ -63,6 +63,5 @@ public final class ListedVolumesTestCase {
             itr.next().getString("Name"),
             new IsEqual<>("cde2")
         );
-
     }
 }
