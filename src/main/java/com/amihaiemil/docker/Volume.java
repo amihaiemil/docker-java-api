@@ -51,12 +51,22 @@ public interface Volume extends JsonObject {
 
     /**
      * Remove a volume.
-     * @param force If true delete volumes that are in use
      * @throws IOException If something goes wrong.
      * @throws UnexpectedResponseException If the status response is not
      *  the expected one (200 OK).
      * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/VolumeDelete">Remove a volume</a>
      */
-    void delete(Boolean force) throws IOException, UnexpectedResponseException;
+    void remove() throws IOException, UnexpectedResponseException;
+
+    /**
+     * Remove a volume.
+     * @param force If true remove volumes that are in use
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (200 OK).
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/VolumeDelete">Remove a volume</a>
+     */
+    void remove(final boolean force)
+        throws IOException, UnexpectedResponseException;
 
 }

@@ -54,14 +54,17 @@ final class RtVolume extends JsonResource implements Volume {
     }
 
     @Override
-    public void delete(final Boolean force)
+    public void remove() throws IOException, UnexpectedResponseException {
+        this.remove(false);
+    }
+
+    @Override
+    public void remove(final boolean force)
         throws IOException, UnexpectedResponseException {
         final UncheckedUriBuilder uri = new UncheckedUriBuilder(
             this.baseUri.toString()
         );
-        if (force != null) {
-            uri.addParameter("force", force.toString());
-        }
+        uri.addParameter("force", String.valueOf(force));
         final HttpDelete delete = new HttpDelete(
             uri.build()
         );

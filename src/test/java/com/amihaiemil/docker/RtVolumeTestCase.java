@@ -87,21 +87,21 @@ public final class RtVolumeTestCase {
     }
 
     /**
-     * RtVolume.delete(false) must send a DELETE request to the volume's url.
+     * RtVolume.remove() must send a DELETE request to the volume's url.
      * @throws Exception If something goes wrong.
      */
     @Test
-    public void deleteSendsCorrectRequest() throws Exception {
+    public void removeSendsCorrectRequest() throws Exception {
         new RtVolume(
             Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(HttpStatus.SC_OK),
                 new Condition(
-                    "RtVolume.delete() must send a DELETE HTTP request",
+                    "RtVolume.remove() must send a DELETE HTTP request",
                     req -> "DELETE".equals(req.getRequestLine().getMethod())
                 ),
                 new Condition(
-                    "RtVolume.delete() must send the request to the volume url",
+                    "RtVolume.remove() must send the request to the volume url",
                     req -> "http://localhost/volumes/test?force=false".equals(
                         req.getRequestLine().getUri()
                     )
@@ -109,26 +109,26 @@ public final class RtVolumeTestCase {
             ),
             URI.create("http://localhost/volumes/test"),
             DOCKER
-        ).delete(Boolean.FALSE);
+        ).remove();
     }
 
     /**
-     * RtVolume.delete(true) must send a DELETE request to the volume's url
+     * RtVolume.remove(true) must send a DELETE request to the volume's url
      * with force param set to true.
      * @throws Exception If something goes wrong.
      */
     @Test
-    public void deleteWithForce() throws Exception {
+    public void removeWithForce() throws Exception {
         new RtVolume(
             Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(HttpStatus.SC_OK),
                 new Condition(
-                    "RtVolume.delete() must send a DELETE HTTP request",
+                    "RtVolume.remove() must send a DELETE HTTP request",
                     req -> "DELETE".equals(req.getRequestLine().getMethod())
                 ),
                 new Condition(
-                    "RtVolume.delete() must send the request to the volume url",
+                    "RtVolume.remove() must send the request to the volume url",
                     req -> "http://localhost/volumes/test?force=true".equals(
                         req.getRequestLine().getUri()
                     )
@@ -136,42 +136,16 @@ public final class RtVolumeTestCase {
             ),
             URI.create("http://localhost/volumes/test"),
             DOCKER
-        ).delete(Boolean.TRUE);
+        ).remove(true);
     }
 
     /**
-     * RtVolume.delete(null) must send a DELETE request to the volume's url.
-     * @throws Exception If something goes wrong.
-     */
-    @Test
-    public void deleteWithNullParameter() throws Exception {
-        new RtVolume(
-            Json.createObjectBuilder().build(),
-            new AssertRequest(
-                new Response(HttpStatus.SC_OK),
-                new Condition(
-                    "RtVolume.delete() must send a DELETE HTTP request",
-                    req -> "DELETE".equals(req.getRequestLine().getMethod())
-                ),
-                new Condition(
-                    "RtVolume.delete() must send the request to the volume url",
-                    req -> "http://localhost/volumes/test".equals(
-                        req.getRequestLine().getUri()
-                    )
-                )
-            ),
-            URI.create("http://localhost/volumes/test"),
-            DOCKER
-        ).delete(null);
-    }
-
-    /**
-     * RtVolume.delete(false) must throw UnexpectedResponseException if service
+     * RtVolume.remove() must throw UnexpectedResponseException if service
      * responds with 404.
      * @throws Exception The UnexpectedResponseException
      */
     @Test(expected = UnexpectedResponseException.class)
-    public void deleteErrorOn404() throws Exception {
+    public void removeErrorOn404() throws Exception {
         new RtVolume(
             Json.createObjectBuilder().build(),
             new AssertRequest(
@@ -179,16 +153,16 @@ public final class RtVolumeTestCase {
             ),
             URI.create("http://localhost/volumes/test"),
             DOCKER
-        ).delete(Boolean.FALSE);
+        ).remove();
     }
 
     /**
-     * RtVolume.delete(false) must throw UnexpectedResponseException if service
+     * RtVolume.remove() must throw UnexpectedResponseException if service
      * responds with 409.
      * @throws Exception The UnexpectedResponseException
      */
     @Test(expected = UnexpectedResponseException.class)
-    public void deleteErrorOn409() throws Exception {
+    public void removeErrorOn409() throws Exception {
         new RtVolume(
             Json.createObjectBuilder().build(),
             new AssertRequest(
@@ -196,6 +170,6 @@ public final class RtVolumeTestCase {
             ),
             URI.create("http://localhost/volumes/test"),
             DOCKER
-        ).delete(Boolean.FALSE);
+        ).remove();
     }
 }
