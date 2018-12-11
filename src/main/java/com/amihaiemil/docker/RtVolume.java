@@ -1,10 +1,11 @@
 package com.amihaiemil.docker;
 
-import org.apache.http.client.HttpClient;
-
-import javax.json.JsonObject;
 import java.io.IOException;
 import java.net.URI;
+import javax.json.JsonObject;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 
 /**
  * Runtime {@link Volume}.
@@ -50,5 +51,30 @@ final class RtVolume extends JsonResource implements Volume {
     public JsonObject inspect()
         throws IOException, UnexpectedResponseException {
         return new Inspection(this.client, this.baseUri.toString());
+    }
+
+    @Override
+    public void remove() throws IOException, UnexpectedResponseException {
+        this.remove(false);
+    }
+
+    @Override
+    public void remove(final boolean force)
+        throws IOException, UnexpectedResponseException {
+        final UncheckedUriBuilder uri = new UncheckedUriBuilder(
+            this.baseUri.toString()
+        );
+        uri.addParameter("force", String.valueOf(force));
+        final HttpDelete delete = new HttpDelete(
+            uri.build()
+        );
+        try {
+            this.client.execute(
+                delete,
+                new MatchStatus(delete.getURI(), HttpStatus.SC_OK)
+            );
+        } finally {
+            delete.releaseConnection();
+        }
     }
 }

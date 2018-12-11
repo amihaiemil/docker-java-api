@@ -67,6 +67,48 @@ public final class RtVolumesTestCase {
     }
 
     /**
+     * RtVolumes.create() must send a correct POST request sends
+     * and exist successfully on response code 201.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void createOk() throws Exception {
+        new ListedVolumes(
+            new AssertRequest(
+                new Response(HttpStatus.SC_CREATED),
+                new Condition(
+                    "RtVolume.create() must send a POST HTTP request",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "RtVolume.create() must send the request to the create url",
+                    req -> "http://localhost/volumes/create".equals(
+                        req.getRequestLine().getUri()
+                    )
+                )
+            ),
+            URI.create("http://localhost/volumes"),
+            DOCKER
+        ).create("test");
+    }
+
+    /**
+     * RtVolumes.create() must throw UnexpectedResponseException if service
+     * responds with 500.
+     * @throws Exception The UnexpectedResponseException.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void createThrowsErrorOnResponse500() throws Exception {
+        new ListedVolumes(
+            new AssertRequest(
+                new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+            ),
+            URI.create("http://localhost/volumes"),
+            DOCKER
+        ).create("test");
+    }
+
+    /**
      * RtVolumes can return its Docker parent.
      */
     @Test
