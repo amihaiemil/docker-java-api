@@ -37,9 +37,6 @@ import org.apache.http.client.HttpClient;
  * @version $Id$
  * @since 0.0.1
  * @checkstyle ParameterNumber (150 lines)
- * @todo #178:30min Based on the input from
- *  https://github.com/amihaiemil/docker-java-api/issues/178#issuecomment-444029856
- *  we should setup a Docker instance in Travis, for Integration testing.
  */
 public final class RemoteDocker extends RtDocker {
 
