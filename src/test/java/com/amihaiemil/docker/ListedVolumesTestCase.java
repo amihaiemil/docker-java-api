@@ -5,10 +5,9 @@ import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Arrays;
-import java.util.HashSet;
-import javax.json.Json;
 import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.collection.IsIterableWithSize;
@@ -76,55 +75,37 @@ public final class ListedVolumesTestCase {
     @Ignore
     @Test
     public void iterateWithFilters() throws IOException {
-        final Volumes filtered = new ListedVolumes(
-            new AssertRequest(
-                new Response(
-                    HttpStatus.SC_OK,
-                    "[{\"Name\": \"fgh3\"}, {\"Name\":\"ijk4\"}]"
-                ),
-                new Condition(
-                    "iterate() must send a GET request",
-                    req -> "GET".equals(req.getRequestLine().getMethod())
-                ),
-                new Condition(
-                    "iterate() resource URL must be '/volumes'",
-                    req -> req.getRequestLine()
-                            .getUri().endsWith("/volumes")
-                )
-            ),
-            URI.create("http://localhost/volumes"),
-            Mockito.mock(Docker.class),
-            new HashSet<Volume>(
-                Arrays.asList(
-                    new RtVolume(
-                        Json.createObjectBuilder().build(),
-                        new AssertRequest(
-                            new Response(
-                                HttpStatus.SC_OK,
-                                "[{\"Name\": \"ijk4\"}"
-                            ),
-                            new Condition(
-                                "iterate() must send a GET request",
-                                req -> "GET".equals(
-                                    req.getRequestLine().getMethod()
-                                )
-                            ),
-                            new Condition(
-                                "iterate() resource URL must be '/volumes'",
-                                req -> req.getRequestLine()
-                                        .getUri().endsWith("/volumes")
-                            )
-                        ),
-                        URI.create("http://localhost/volumes"),
-                        Mockito.mock(Docker.class)
+        final Iterator<Volume> itr =
+            new ListedVolumes(
+                new AssertRequest(
+                    new Response(
+                        HttpStatus.SC_OK,
+                        //@checkstyle LineLength (1 line)
+                        "[{\"Name\": \"abc1\"}, {\"Name\": \"def2\"}, {\"Name\": \"ghi3\"}, {\"Name\":\"jkl4\"}]"
+                    ),
+                    new Condition(
+                        "iterate() must send a GET request",
+                        req -> "GET".equals(req.getRequestLine().getMethod())
+                    ),
+                    new Condition(
+                        "iterate() resource URL must be '/volumes'",
+                        req -> req.getRequestLine()
+                                .getUri().endsWith("/volumes")
                     )
-                )
-            )
+                ),
+                URI.create("http://localhost/volumes"),
+                Mockito.mock(Docker.class),
+                Collections.singletonMap("Name", Arrays.asList("def2", "jkl4"))
+            ).iterator();
+        MatcherAssert.assertThat(
+            "Name should match abc1",
+            itr.next().getString("Name"),
+            new IsEqual<>("abc1")
         );
         MatcherAssert.assertThat(
-            "Wrong volume returned",
-            filtered.iterator().next().getString("Name"),
-            new IsEqual<>("ijk4")
+            "Name should match cde2",
+            itr.next().getString("Name"),
+            new IsEqual<>("cde2")
         );
     }
 }

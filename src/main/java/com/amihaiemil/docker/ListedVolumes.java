@@ -26,9 +26,9 @@
 package com.amihaiemil.docker;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 
@@ -46,7 +46,7 @@ final class ListedVolumes extends RtVolumes {
     /**
      * Volume filters.
      */
-    private final Set<Volume> filters;
+    private final Map<String, Iterable<String>> filters;
 
     /**
      * Ctor.
@@ -55,7 +55,7 @@ final class ListedVolumes extends RtVolumes {
      * @param dkr The docker entry point.
      */
     ListedVolumes(final HttpClient client, final URI uri, final Docker dkr) {
-        this(client, uri, dkr, new HashSet<>());
+        this(client, uri, dkr, Collections.emptyMap());
     }
 
     /**
@@ -67,7 +67,7 @@ final class ListedVolumes extends RtVolumes {
      * @checkstyle ParameterNumber (3 lines)
      */
     ListedVolumes(final HttpClient client, final URI uri,
-        final Docker dkr, final Set<Volume> filters) {
+        final Docker dkr, final Map<String, Iterable<String>> filters) {
         super(client, uri, dkr);
         this.filters = filters;
     }
