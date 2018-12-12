@@ -25,9 +25,15 @@
  */
 package com.amihaiemil.docker;
 
-import org.apache.http.client.HttpClient;
-
+import java.io.IOException;
 import java.net.URI;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 
 /**
  * Runtime {@link Volumes}.
@@ -61,6 +67,48 @@ abstract class RtVolumes implements Volumes {
         this.client = client;
         this.baseUri = uri;
         this.docker = dkr;
+    }
+
+    @Override
+    public void prune() throws IOException, UnexpectedResponseException {
+        final HttpPost prune = new HttpPost(
+            this.baseUri.toString().concat("/prune")
+        );
+        try {
+            this.client.execute(
+                prune,
+                new MatchStatus(prune.getURI(), HttpStatus.SC_OK)
+            );
+        } finally {
+            prune.releaseConnection();
+        }
+    }
+
+    @Override
+    public void create(final String name)
+        throws IOException, UnexpectedResponseException {
+        JsonObjectBuilder json = Json.createObjectBuilder();
+        json.add("Name", name);
+        final HttpPost create =
+            new HttpPost(
+                String.format("%s/%s", this.baseUri.toString(), "create")
+            );
+        try {
+            create.setEntity(
+                new StringEntity(
+                    json.build().toString(), ContentType.APPLICATION_JSON
+                )
+            );
+            this.client.execute(
+                create,
+                new MatchStatus(
+                    create.getURI(),
+                    HttpStatus.SC_CREATED
+                )
+            );
+        } finally {
+            create.releaseConnection();
+        }
     }
 
     @Override

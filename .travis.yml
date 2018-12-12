@@ -11,4 +11,5 @@ script:
   - docker --help
   - dockerd --help
   - docker pull hello-world #for some IT cases
+  - docker run -d --privileged -p 12375:2375 docker:dind
   - mvn clean install -Pcheckstyle,itcases jacoco:report coveralls:report

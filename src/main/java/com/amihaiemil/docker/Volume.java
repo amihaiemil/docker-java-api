@@ -25,8 +25,8 @@
  */
 package com.amihaiemil.docker;
 
-import javax.json.JsonObject;
 import java.io.IOException;
+import javax.json.JsonObject;
 
 /**
  * A volume manager.
@@ -35,7 +35,6 @@ import java.io.IOException;
  * @version $Id$
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Volume">Docker Volume API</a>
  * @since 0.0.6
- * @todo #179:30min Continue implementing create and remove volume operations.
  *
  */
 public interface Volume extends JsonObject {
@@ -49,5 +48,25 @@ public interface Volume extends JsonObject {
      *  the expected one (200 OK).
      */
     JsonObject inspect() throws IOException, UnexpectedResponseException;
+
+    /**
+     * Remove a volume.
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (200 OK).
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/VolumeDelete">Remove a volume</a>
+     */
+    void remove() throws IOException, UnexpectedResponseException;
+
+    /**
+     * Remove a volume.
+     * @param force If true remove volumes that are in use
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (200 OK).
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/VolumeDelete">Remove a volume</a>
+     */
+    void remove(final boolean force)
+        throws IOException, UnexpectedResponseException;
 
 }

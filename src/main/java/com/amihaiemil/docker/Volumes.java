@@ -25,15 +25,38 @@
  */
 package com.amihaiemil.docker;
 
+import java.io.IOException;
+
 /**
  * Volumes API.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #180:30min Continue implementing prune volumes operation.
+ * @todo #183:30min Extend create with options to specify driver,
+ * driver options and add labels as specified at:
+ * https://docs.docker.com/engine/api/v1.35/#operation/VolumeCreate
  */
 public interface Volumes extends Iterable<Volume> {
+
+    /**
+     * Create a volume.
+     * @param name Name of the volume.
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (200 OK).
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/VolumeCreate">Create a volume</a>
+     */
+    void create(final String name)
+        throws IOException, UnexpectedResponseException;
+
+    /**
+     * Deletes unused volumes.
+     * @throws IOException If an I/O error occurs.
+     * @throws UnexpectedResponseException If the API responds with an
+     *  unexpected status.
+     */
+    void prune() throws IOException, UnexpectedResponseException;
 
     /**
      * Return the Docker engine where these Images came from.
