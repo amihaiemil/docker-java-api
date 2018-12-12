@@ -25,23 +25,28 @@
  */
 package com.amihaiemil.docker;
 
+import java.net.URI;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-
-import java.net.URI;
-import java.util.Iterator;
 
 /**
  * Listed volumes.
  * @author Marco Teixeira (marcoo.teixeira@gmail.com)
  * @version $Id$
  * @since 0.0.6
- * @todo #181:30min Finish implementation here, add a Map to this class, that
+ * @todo #207:30min Finish implementation here, add a Map to this class, that
  *  would hold the actual filters and apply them when making the call in the
- *  iterator() method. Also, more ctors should be available, at least one with
- *  filters and one without filters.
+ *  iterator() method. Then uncomment filtering test in ListedVolumesTestCase.
  */
 final class ListedVolumes extends RtVolumes {
+
+    /**
+     * Volume filters.
+     */
+    private final Map<String, Iterable<String>> filters;
 
     /**
      * Ctor.
@@ -50,7 +55,21 @@ final class ListedVolumes extends RtVolumes {
      * @param dkr The docker entry point.
      */
     ListedVolumes(final HttpClient client, final URI uri, final Docker dkr) {
+        this(client, uri, dkr, Collections.emptyMap());
+    }
+
+    /**
+     * Ctor with filters.
+     * @param client The http client.
+     * @param uri The URI for this Images API.
+     * @param dkr The docker entry point.
+     * @param filters Volume filters.
+     * @checkstyle ParameterNumber (3 lines)
+     */
+    ListedVolumes(final HttpClient client, final URI uri,
+        final Docker dkr, final Map<String, Iterable<String>> filters) {
         super(client, uri, dkr);
+        this.filters = filters;
     }
 
     @Override
