@@ -25,12 +25,12 @@
  */
 package com.amihaiemil.docker;
 
+import java.io.IOException;
+import java.net.URI;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import java.io.IOException;
-import java.net.URI;
 
 /**
  * Restful Docker.
@@ -126,6 +126,15 @@ abstract class RtDocker implements Docker {
             this.client,
             URI.create(this.baseUri.toString().concat("/system")),
             this
+        );
+    }
+
+
+    @Override
+    public Plugins plugins() {
+        throw new UnsupportedOperationException(
+            "Plugins API is not yet implemented. If you can contribute please,"
+            + " do it here: https://www.github.com/amihaiemil/docker-java-api"
         );
     }
 

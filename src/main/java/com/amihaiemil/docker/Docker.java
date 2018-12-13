@@ -25,17 +25,14 @@
  */
 package com.amihaiemil.docker;
 
-import org.apache.http.client.HttpClient;
-
 import java.io.IOException;
+import org.apache.http.client.HttpClient;
 
 /**
  * Docker API entry point.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #85:30min Continue implementing the rest of the Docker API (except
- *  for Network, Swarm and Images, which are being handled in other tickets).
  */
 public interface Docker {
 
@@ -87,6 +84,12 @@ public interface Docker {
      * @return DockerSystem.
      */
     DockerSystem system();
+
+    /**
+     * Entry point for the Plugins API.
+     * @return Plugins.
+     */
+    Plugins plugins();
 
     /**
      * The underlying, immutable, Apache HttpClient.<br><br>
