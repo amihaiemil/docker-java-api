@@ -26,8 +26,12 @@
 package com.amihaiemil.docker;
 
 import java.io.File;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 
 /**
@@ -58,4 +62,80 @@ public final class RtContainerITCase {
         );
         container.remove();
     }
+
+    /**
+     * {@link RtContainer} can start/stop Docker container it represents.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void startStopContainer() throws Exception {
+        final Container container = new LocalDocker(
+            new File("/var/run/docker.sock")
+        ).containers().create("TestStart", this.containerJsonObject());
+        container.start();
+        MatcherAssert.assertThat(
+            container.inspect().getJsonObject("State").getBoolean("Running"),
+            new IsEqual<>(true)
+        );
+        container.stop();
+        container.remove();
+    }
+
+    /**
+     * {@link RtContainer} can kill Docker container it represents.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void killContainer() throws Exception {
+        final Container container = new LocalDocker(
+            new File("/var/run/docker.sock")
+        ).containers().create("TestKill", this.containerJsonObject());
+        container.start();
+        MatcherAssert.assertThat(
+            container.inspect().getJsonObject("State").getBoolean("Running"),
+            new IsEqual<>(true)
+        );
+        container.kill();
+        MatcherAssert.assertThat(
+            container.inspect().getJsonObject("State").getBoolean("Running"),
+            new IsEqual<>(false)
+        );
+        container.remove();
+    }
+
+    /**
+     * {@link RtContainer} can restart Docker container it represents.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void restartContainer() throws Exception {
+        final Container container = new LocalDocker(
+            new File("/var/run/docker.sock")
+        ).containers().create("TestRestart", this.containerJsonObject());
+        container.start();
+        MatcherAssert.assertThat(
+            container.inspect().getJsonObject("State").getBoolean("Running"),
+            new IsEqual<>(true)
+        );
+        container.restart();
+        MatcherAssert.assertThat(
+            container.inspect().getJsonObject("State").getBoolean("Running"),
+            new IsEqual<>(true)
+        );
+        container.stop();
+        container.remove();
+    }
+
+    /**
+     * Create Container Json Object to support stop/restart/kill commands.
+     * @return Json Object representing Docker Container
+     */
+    private JsonObject containerJsonObject() {
+        JsonObjectBuilder json = Json.createObjectBuilder();
+        json.add("Image", "ubuntu");
+        json.add("Tty", true);
+        json.add("Cmd", "bash");
+        return json.build();
+    }
+
 }
