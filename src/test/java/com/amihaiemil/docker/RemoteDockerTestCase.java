@@ -142,6 +142,23 @@ public final class RemoteDockerTestCase {
     }
 
     /**
+     * LocalDocker should have AuthHttpClient.
+     */
+    @Test
+    public void returnsAuthHttpClient() {
+        MatcherAssert.assertThat(
+            new RemoteDocker(
+                URI.create("http://localhost"),
+                new Credentials("user", "pwd", "user@email.com", "server.com")
+            ).httpClient(),
+            Matchers.allOf(
+                Matchers.notNullValue(),
+                Matchers.instanceOf(AuthHttpClient.class)
+            )
+        );
+    }    
+    
+    /**
      * RemoteDocker can return Volumes.
      */
     @Test

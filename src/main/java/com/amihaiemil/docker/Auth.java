@@ -31,9 +31,6 @@ package com.amihaiemil.docker;
  * @version $Id$
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#section/Authentication">Authentication</a>
  * @since 0.0.1
- * @todo #171:30min We have implemented all forms of Auth. We also have the
- *  AuthHttpClient. Figure out how to make the library decorate the base
- *  HttpClient with the AuthHttpClient in a seemless manner.
  */
 public interface Auth {
     /**
