@@ -82,6 +82,18 @@ public final class RemoteDocker extends RtDocker {
      */
     public RemoteDocker(final URI uri) {
         this(new PlainHttpClient(), uri);
+    }    
+    
+    /**
+     * Remote Docker engine.
+     * 
+     * An insecure docker API v1.35 endpoint is assumed.
+     * 
+     * @param uri Remote Docker URI.
+     * @param auth Remote Docker {@link Auth}
+     */
+    public RemoteDocker(final URI uri, final Auth auth) {
+        this(new AuthHttpClient(new PlainHttpClient(), auth), uri);
     }
 
     /**
