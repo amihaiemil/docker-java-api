@@ -36,8 +36,6 @@ import java.io.IOException;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #84:30min Write some unit tests for this class, it is
- *  currently only tested by RtImagesITCase#iteratesImages.
  */
 final class ReadJsonArray implements ResponseHandler<JsonArray> {
 
