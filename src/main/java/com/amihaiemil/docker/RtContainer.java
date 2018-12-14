@@ -25,14 +25,13 @@
  */
 package com.amihaiemil.docker;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-
-import javax.json.JsonObject;
 import java.io.IOException;
 import java.net.URI;
+import javax.json.JsonObject;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpPost;
 
 /**
  * Restful Container.
@@ -42,9 +41,6 @@ import org.apache.http.client.methods.HttpDelete;
  * @todo #97:30min Continue implementing the rest of the Container operations
  *  (pause, unpause, logs etc) See the Docker API Docs for reference:
  *  https://docs.docker.com/engine/api/v1.35/#tag/Container
- * @todo #58:30min Now that we have the CI environment properly setup with
- *  a Docker instance, continue integration tests for RtContainer(s) and other
- *  parts of the API.
  */
 final class RtContainer extends JsonResource implements Container {
 
