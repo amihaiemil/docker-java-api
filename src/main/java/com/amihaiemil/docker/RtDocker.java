@@ -133,8 +133,11 @@ abstract class RtDocker implements Docker {
     @Override
     public Plugins plugins() {
         throw new UnsupportedOperationException(
-            "Plugins API is not yet implemented. If you can contribute please,"
-            + " do it here: https://www.github.com/amihaiemil/docker-java-api"
+            String.join(" ",
+                "Plugins API is not yet implemented.",
+                "If you can contribute please",
+                "do it here: https://www.github.com/amihaiemil/docker-java-api"
+            )
         );
     }
 

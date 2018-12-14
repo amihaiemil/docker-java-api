@@ -27,11 +27,11 @@ package com.amihaiemil.docker;
 
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Response;
+import java.io.File;
+import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
-import java.io.File;
-import org.apache.http.HttpStatus;
 
 /**
  * Unit tests for LocalDocker.
@@ -154,5 +154,35 @@ public final class LocalDockerTestCase {
             ).volumes(),
             Matchers.notNullValue()
         );
+    }
+
+    /**
+     * LocalDocker throws UnsupportedOperationException for Networks.
+     */
+    @Test(expected = UnsupportedOperationException.class)
+    public void unsupportedOperationNetworks() {
+        new LocalDocker(
+            new File("/var/run/docker.sock")
+        ).networks();
+    }
+
+    /**
+     * LocalDocker throws UnsupportedOperationException for Exec.
+     */
+    @Test(expected = UnsupportedOperationException.class)
+    public void unsupportedOperationExec() {
+        new LocalDocker(
+            new File("/var/run/docker.sock")
+        ).exec();
+    }
+
+    /**
+     * LocalDocker throws UnsupportedOperationException for Plugins.
+     */
+    @Test(expected = UnsupportedOperationException.class)
+    public void unsupportedOperationPlugins() {
+        new LocalDocker(
+            new File("/var/run/docker.sock")
+        ).plugins();
     }
 }

@@ -25,40 +25,14 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
+import javax.json.JsonObject;
 
 /**
- * Plugins API.
+ * A docker plugin.
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
+ * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Plugin">Docker Plugin API</a>
  * @since 0.0.7
- * @todo #208:30min Continue implementing Plugins API methods. More information
- *  about available methods:
- *  https://docs.docker.com/engine/api/v1.35/#tag/Plugin
  */
-public interface Plugins {
-
-    /**
-     * Create a plugin.
-     * @param name Name of the plugin.
-     * @throws IOException If something goes wrong.
-     * @throws UnexpectedResponseException If the status response is not
-     *  the expected one (200 OK).
-     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/PluginCreate">Create a plugin</a>
-     */
-    void create(final String name)
-        throws IOException, UnexpectedResponseException;
-
-    /**
-     * Pulls and installs a plugin.
-     * @param remote Remote reference for plugin to install.
-     * @param name Local name for the pulled plugin.
-     * @return The installed {@link Plugin}.
-     * @throws IOException If something goes wrong.
-     * @throws UnexpectedResponseException If the status response is not
-     *  the expected one (200 OK).
-     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/PluginPull">Install a plugin</a>
-     */
-    Plugin pullAndInstall(final String remote, final String name)
-        throws IOException, UnexpectedResponseException;
+public interface Plugin extends JsonObject {
 
 }
