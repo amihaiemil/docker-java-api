@@ -26,6 +26,7 @@
 package com.amihaiemil.docker;
 
 import java.io.File;
+import java.io.IOException;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -74,7 +75,7 @@ public final class RtContainerITCase {
         ).containers().create("TestStart", this.containerJsonObject());
         container.start();
         MatcherAssert.assertThat(
-            container.inspect().getJsonObject("State").getBoolean("Running"),
+            this.runningState(container),
             new IsEqual<>(true)
         );
         container.stop();
@@ -92,12 +93,12 @@ public final class RtContainerITCase {
         ).containers().create("TestKill", this.containerJsonObject());
         container.start();
         MatcherAssert.assertThat(
-            container.inspect().getJsonObject("State").getBoolean("Running"),
+            this.runningState(container),
             new IsEqual<>(true)
         );
         container.kill();
         MatcherAssert.assertThat(
-            container.inspect().getJsonObject("State").getBoolean("Running"),
+            this.runningState(container),
             new IsEqual<>(false)
         );
         container.remove();
@@ -114,12 +115,12 @@ public final class RtContainerITCase {
         ).containers().create("TestRestart", this.containerJsonObject());
         container.start();
         MatcherAssert.assertThat(
-            container.inspect().getJsonObject("State").getBoolean("Running"),
+            this.runningState(container),
             new IsEqual<>(true)
         );
         container.restart();
         MatcherAssert.assertThat(
-            container.inspect().getJsonObject("State").getBoolean("Running"),
+            this.runningState(container),
             new IsEqual<>(true)
         );
         container.stop();
@@ -136,6 +137,17 @@ public final class RtContainerITCase {
         json.add("Tty", true);
         json.add("Cmd", "bash");
         return json.build();
+    }
+
+    /**
+     * Inspect Container and check running state.
+     * @param container Docker Container.
+     * @return Running state.
+     * @throws IOException If something goes wrong.
+     */
+    private boolean runningState(final Container container) throws IOException {
+        return container.inspect().getJsonObject("State")
+            .getBoolean("Running");
     }
 
 }
