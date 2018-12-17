@@ -45,7 +45,8 @@ import org.mockito.Mockito;
  * @since 0.0.7
  * @checkstyle MethodName (500 lines)
  * @todo #211:30min Finish implementing unit tests for RtNetwork methods
- *  connect, disconnect and add negative test cases for remove
+ *  connect, disconnect and add negative test cases for remove().
+ *  Remove dummy operation not supported tests.
  */
 public final class RtNetworkTestCase {
 
@@ -133,5 +134,69 @@ public final class RtNetworkTestCase {
             URI.create("http://localhost/network/id1"),
             DOCKER
         ).remove();
+    }
+
+    /**
+     * RtNetwork throws UnsupportedOperationException for Inspect.
+     * @throws Exception If something else goes wrong.
+     */
+    @Test(expected = UnsupportedOperationException.class)
+    public void unsupportedOperationInspect() throws Exception {
+        new RtNetwork(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(HttpStatus.SC_OK)
+            ),
+            URI.create("http://localhost/networks/id1"),
+            DOCKER
+        ).inspect();
+    }
+
+    /**
+     * RtNetwork throws UnsupportedOperationException for Remove.
+     * @throws Exception If something else goes wrong.
+     */
+    @Test(expected = UnsupportedOperationException.class)
+    public void unsupportedOperationRemove() throws Exception {
+        new RtNetwork(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(HttpStatus.SC_OK)
+            ),
+            URI.create("http://localhost/networks/id1"),
+            DOCKER
+        ).remove();
+    }
+
+    /**
+     * RtNetwork throws UnsupportedOperationException for Connect.
+     * @throws Exception If something else goes wrong.
+     */
+    @Test(expected = UnsupportedOperationException.class)
+    public void unsupportedOperationConnect() throws Exception {
+        new RtNetwork(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(HttpStatus.SC_OK)
+            ),
+            URI.create("http://localhost/networks/id1"),
+            DOCKER
+        ).connect("containerId");
+    }
+
+    /**
+     * RtNetwork throws UnsupportedOperationException for Disconnect.
+     * @throws Exception If something else goes wrong.
+     */
+    @Test(expected = UnsupportedOperationException.class)
+    public void unsupportedOperationDisconnect() throws Exception {
+        new RtNetwork(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(HttpStatus.SC_OK)
+            ),
+            URI.create("http://localhost/networks/id1"),
+            DOCKER
+        ).disconnect("containerId");
     }
 }
