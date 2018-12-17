@@ -31,7 +31,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicHeader;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
+import org.hamcrest.core.IsEqual;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -49,11 +49,6 @@ public final class AuthHttpClientTestCase {
     private static HttpClient noOpClient;
 
     /**
-     * Mock Auth that always returns same header and value.
-     */
-    private static Auth dummyAuth;
-
-    /**
      * Setup the mock http client.
      * @throws Exception If something does wrong.
      */
@@ -62,9 +57,6 @@ public final class AuthHttpClientTestCase {
         noOpClient = Mockito.mock(HttpClient.class);
         Mockito.when(noOpClient.execute(Mockito.any(HttpUriRequest.class)))
             .thenReturn(null);
-        dummyAuth = Mockito.mock(Auth.class);
-        Mockito.when(dummyAuth.headerName()).thenReturn("X-Registry-Auth");
-        Mockito.when(dummyAuth.encoded()).thenReturn("123");
     }
 
     /**
@@ -75,10 +67,13 @@ public final class AuthHttpClientTestCase {
     @Test
     public void injectsHeaderIfAbsent() throws Exception {
         final HttpUriRequest request = new HttpGet();
-        new AuthHttpClient(noOpClient, dummyAuth).execute(request);
+        new AuthHttpClient(
+            noOpClient,
+            this.fakeAuth("X-Registry-Auth", "123")
+        ).execute(request);
         MatcherAssert.assertThat(
             request.getFirstHeader("X-Registry-Auth").getValue(),
-            Matchers.is("123")
+            new IsEqual<>("123")
         );
     }
 
@@ -91,10 +86,38 @@ public final class AuthHttpClientTestCase {
         final Header auth = new BasicHeader("X-Registry-Auth", "12356");
         final HttpUriRequest request = new HttpGet();
         request.setHeader(auth);
-        new AuthHttpClient(noOpClient, dummyAuth).execute(request);
+        new AuthHttpClient(
+            noOpClient,
+            this.fakeAuth("X-New-Header", "abc")
+        ).execute(request);
         MatcherAssert.assertThat(
-            request.getFirstHeader("X-Registry-Auth"),
-            Matchers.is(auth)
+            request.getFirstHeader("X-Registry-Auth").getValue(),
+            new IsEqual<>("12356")
         );
+        MatcherAssert.assertThat(
+            request.getFirstHeader("X-New-Header").getValue(),
+            new IsEqual<>("abc")
+        );
+    }
+
+    /**
+     * Create Fake Auth object.
+     * @param header Name of the header.
+     * @param value Header value.
+     * @return New Auth object.
+     */
+    private Auth fakeAuth(final String header, final String value) {
+        return new Auth() {
+
+            @Override
+            public String headerName() {
+                return header;
+            }
+
+            @Override
+            public String encoded() {
+                return value;
+            }
+        };
     }
 }
