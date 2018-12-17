@@ -26,55 +26,156 @@
 package com.amihaiemil.docker;
 
 import com.amihaiemil.docker.mock.AssertRequest;
+import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
+import java.io.IOException;
 import java.net.URI;
+import javax.json.Json;
+import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.collection.IsIterableWithSize;
 import org.hamcrest.core.IsEqual;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
- * Tests for {@link RtNetworks}.
+ * Unit tests for {@link RtNetworks}.
  *
  * @author George Aristy (george.aristy@gmail.com)
+ * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @version $Id$
  * @since 0.0.4
+ * @checkstyle MethodName (500 lines)
  */
 public final class RtNetworksTest {
+
     /**
-     * RtNetworks must iterate all networks returned by docker's API.
+     * Mock docker.
+     */
+    private static final Docker DOCKER = Mockito.mock(Docker.class);
+
+    /**
+     * RtNetworks.prune() sends correct request and exist successfully on
+     * response code 200.
+     * @throws Exception If an error occurs.
      */
     @Test
-    public void iterateNetworks() {
+    public void prunesOk() throws Exception {
+        new ListedNetworks(
+            new AssertRequest(
+                new Response(HttpStatus.SC_OK),
+                new Condition(
+                    "prune() must send a POST request",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "prune() resource URL must be '/networks/prune'",
+                    req -> req.getRequestLine()
+                        .getUri().endsWith("/networks/prune")
+                )
+            ),
+            URI.create("http://localhost/networks"),
+            DOCKER
+        ).prune();
+    }
+
+    /**
+     * RtNetworks.prune() must throw UnexpectedResponseException if service
+     * responds with 500.
+     * @throws Exception The UnexpectedResponseException.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void pruneThrowsErrorOnResponse500() throws Exception {
+        new ListedNetworks(
+            new AssertRequest(
+                new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+            ),
+            URI.create("http://localhost/networks"),
+            DOCKER
+        ).prune();
+    }
+
+    /**
+     * RtNetworks.create() must send a correct POST request sends
+     * and exist successfully on response code 201.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void createOk() throws Exception {
+        Network network = new ListedNetworks(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_CREATED,
+                    Json.createObjectBuilder()
+                        .add("Id", "id1").build().toString()
+                ),
+                new Condition(
+                    "create() must send a POST HTTP request",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "create() must send the request to the create url",
+                    req -> "http://localhost/networks/create".equals(
+                        req.getRequestLine().getUri()
+                    )
+                )
+            ),
+            URI.create("http://localhost/networks"),
+            DOCKER
+        ).create("test");
         MatcherAssert.assertThat(
-            "Cannot iterate networks in JSON",
-            new RtNetworks(
+            network.getString("Id"),
+            new IsEqual<>("id1")
+        );
+    }
+
+    /**
+     * RtNetworks.create() must throw IOException if response is empty.
+     * @throws Exception The IOException.
+     */
+    @Test(expected = IOException.class)
+    public void createThrowsErrorOnEmptyResponse() throws Exception {
+        new ListedNetworks(
+            new AssertRequest(
+                new Response(HttpStatus.SC_CREATED)
+            ),
+            URI.create("http://localhost/networks"),
+            DOCKER
+        ).create("test");
+    }
+
+    /**
+     * RtNetworks.create() must throw UnexpectedResponseException if service
+     * responds with 500.
+     * @throws Exception The UnexpectedResponseException.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void createThrowsErrorOnResponse500() throws Exception {
+        new ListedNetworks(
+            new AssertRequest(
+                new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+            ),
+            URI.create("http://localhost/networks"),
+            DOCKER
+        ).create("test");
+    }
+
+    /**
+     * RtNetworks can return its Docker parent.
+     */
+    @Test
+    public void returnsDocker() {
+        MatcherAssert.assertThat(
+            new ListedNetworks(
                 new AssertRequest(
                     new Response(
-                        200,
-                        // @checkstyle LineLength (20 lines)
-                        "[\n"
-                        + "  {\n"
-                        + "    \"Name\": \"bridge\",\n"
-                        + "    \"Id\": \"f2de39df4171b0dc801e8002d1d999b77256983dfc63041c0f34030aa3977566\",\n"
-                        + "    \"Created\": \"2016-10-19T06:21:00.416543526Z\"\n"
-                        + "  },\n"
-                        + "  {\n"
-                        + "    \"Name\": \"none\",\n"
-                        + "    \"Id\": \"e086a3893b05ab69242d3c44e49483a3bbbd3a26b46baa8f61ab797c1088d794\",\n"
-                        + "    \"Created\": \"0001-01-01T00:00:00Z\"\n"
-                        + "  },\n"
-                        + "  {\n"
-                        + "    \"Name\": \"host\",\n"
-                        + "    \"Id\": \"13e871235c677f196c4e1ecebb9dc733b9b2d2ab589e30c539efeda84a24215e\",\n"
-                        + "    \"Created\": \"0001-01-01T00:00:00Z\"\n"
-                        + "  }\n"
-                        + "]"
+                        HttpStatus.SC_OK,
+                        Json.createArrayBuilder().build().toString()
                     )
                 ),
-                URI.create("http://test.docker.com")
-            ),
-            new IsIterableWithSize<>(new IsEqual<>(3))
+                URI.create("http://localhost"),
+                DOCKER
+            ).docker(),
+            new IsEqual<>(DOCKER)
         );
     }
 }

@@ -25,11 +25,16 @@
  */
 package com.amihaiemil.docker;
 
+import java.io.IOException;
 import java.net.URI;
-import java.util.Iterator;
-import java.util.function.Supplier;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 
 /**
  * Runtime {@link Networks}.
@@ -38,27 +43,110 @@ import org.apache.http.client.methods.HttpGet;
  * @version $Id$
  * @since 0.0.4
  */
-final class RtNetworks implements Networks {
+abstract class RtNetworks implements Networks {
     /**
-     * Network iterators.
+     * Apache HttpClient which sends the requests.
      */
-    private final Supplier<Iterator<Network>> iter;
+    private final HttpClient client;
+
+    /**
+     * Base URI for Networks API.
+     */
+    private final URI baseUri;
+
+    /**
+     * Docker API.
+     */
+    private final Docker docker;
 
     /**
      * Ctor.
-     * @param http Http client
-     * @param baseUri Docker API URI
+     * @param client The http client.
+     * @param uri The URI for this Network API.
+     * @param dkr The docker entry point.
      */
-    RtNetworks(final HttpClient http, final URI baseUri) {
-        this.iter = () -> new ResourcesIterator<>(
-            http,
-            new HttpGet(baseUri.toString().concat("/networks")),
-            RtNetwork::new
-        );
+    RtNetworks(final HttpClient client, final URI uri, final Docker dkr) {
+        this.client = client;
+        this.baseUri = uri;
+        this.docker = dkr;
     }
 
     @Override
-    public Iterator<Network> iterator() {
-        return this.iter.get();
+    public Network create(final String name)
+        throws IOException, UnexpectedResponseException {
+        JsonObjectBuilder json = Json.createObjectBuilder();
+        json.add("Name", name);
+        final HttpPost create =
+            new HttpPost(
+                String.format("%s/%s", this.baseUri.toString(), "create")
+            );
+        try {
+            create.setEntity(
+                new StringEntity(
+                    json.build().toString(), ContentType.APPLICATION_JSON
+                )
+            );
+            JsonObject createResult = this.client.execute(
+                create,
+                new ReadJsonObject(
+                    new MatchStatus(
+                        create.getURI(),
+                        HttpStatus.SC_CREATED
+                    )
+                )
+            );
+            if (createResult.size() > 0) {
+                return new RtNetwork(createResult,
+                    this.client,
+                    URI.create(
+                        String.format("%s/%s", this.baseUri.toString(),
+                            createResult.getString("Id"))
+                    ),
+                    this.docker
+                );
+            } else {
+                throw new IOException(
+                    "Got empty response from Networks.create() method"
+                );
+            }
+        } finally {
+            create.releaseConnection();
+        }
+    }
+
+    @Override
+    public void prune() throws IOException, UnexpectedResponseException {
+        final HttpPost prune = new HttpPost(
+            this.baseUri.toString().concat("/prune")
+        );
+        try {
+            this.client.execute(
+                prune,
+                new MatchStatus(prune.getURI(), HttpStatus.SC_OK)
+            );
+        } finally {
+            prune.releaseConnection();
+        }
+    }
+
+    @Override
+    public Docker docker() {
+        return this.docker;
+    }
+
+    /**
+     * Get the (protected) HttpClient for subclasses.
+     * @return HttpClient.
+     */
+    HttpClient client() {
+        return this.client;
+    }
+
+    /**
+     * Get the (protected) base URI for subclasses.
+     * @return URI.
+     */
+    URI baseUri() {
+        return this.baseUri;
     }
 }

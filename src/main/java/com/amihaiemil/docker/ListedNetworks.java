@@ -25,43 +25,38 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
+import java.net.URI;
+import java.util.Iterator;
+import org.apache.http.client.HttpClient;
 
 /**
- * Networks API.
- * @author Mihai Andronache (amihaiemil@gmail.com)
- * @version $Id$
- * @since 0.0.1
- * @todo #209:30min Extend create with options to specify driver,
- *  driver options, IPAM and add labels as specified at:
- *  https://docs.docker.com/engine/api/v1.35/#operation/NetworkCreate.
+ * Listed networks.
+ * @author Boris Kuzmic (boris.kuzmic@gmail.com)
+ * @since 0.0.7
+ * @todo #211:30min Implement ListedNetworks iterator with filtering using Map.
+ *  See ListedImages or ListedVolumes as examples.
  */
-public interface Networks extends Iterable<Network> {
+final class ListedNetworks extends RtNetworks {
 
     /**
-     * Create a network.
-     * @param name Name of the network.
-     * @throws IOException If something goes wrong.
-     * @throws UnexpectedResponseException If the status response is not
-     *  the expected one (200 OK).
-     * @return The created network.
-     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/NetworkCreate">Create a network</a>
+     * Ctor.
+     *
+     * @param client The http client.
+     * @param uri The URI for this Network API.
+     * @param dkr The docker entry point.
      */
-    Network create(final String name)
-        throws IOException, UnexpectedResponseException;
+    ListedNetworks(final HttpClient client, final URI uri, final Docker dkr) {
+        super(client, uri, dkr);
+    }
 
-    /**
-     * Deletes unused networks.
-     * @throws IOException If an I/O error occurs.
-     * @throws UnexpectedResponseException If the API responds with an
-     *  unexpected status.
-     */
-    void prune() throws IOException, UnexpectedResponseException;
-
-    /**
-     * Return the Docker engine where these Networks came from.
-     * @return Docker.
-     */
-    Docker docker();
-
+    @Override
+    public Iterator<Network> iterator() {
+        throw new UnsupportedOperationException(
+            String.join(" ",
+                "ListedNetworks.iterator() is not yet implemented.",
+                "If you can contribute please",
+                "do it here: https://www.github.com/amihaiemil/docker-java-api"
+            )
+        );
+    }
 }

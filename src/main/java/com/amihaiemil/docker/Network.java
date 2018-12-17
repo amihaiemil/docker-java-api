@@ -25,6 +25,7 @@
  */
 package com.amihaiemil.docker;
 
+import java.io.IOException;
 import javax.json.JsonObject;
 
 /**
@@ -34,7 +35,53 @@ import javax.json.JsonObject;
  * @version $Id$
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Network">Docker API v1.35</a>
  * @since 0.0.4
+ * @todo #210:30min Implement Network methods: inspect, remove, connect and
+ *  disconnect like specified at:
+ *  https://docs.docker.com/engine/api/v1.35/#tag/Network.
  */
 public interface Network extends JsonObject {
-  
+
+    /**
+     * Return detailed information about this network.
+     * @return JsonObject information.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/NetworkInspect">Inspect a network</a>
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (200 OK).
+     */
+    JsonObject inspect() throws IOException, UnexpectedResponseException;
+
+    /**
+     * Remove a network.
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (200 OK).
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/NetworkDelete">Remove a network</a>
+     */
+    void remove() throws IOException, UnexpectedResponseException;
+
+    /**
+     * Connect container to network.
+     * @param containerId The ID or name of the container to connect to the
+     *  network.
+     * @throws IOException  If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (200 OK).
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/NetworkConnect">Connect a container to a network</a>
+     */
+    void connect(final String containerId)
+        throws IOException, UnexpectedResponseException;
+
+    /**
+     * Disconnect container from network.
+     * @param containerId The ID or name of the container to disconnect from the
+     *  network.
+     * @throws IOException  If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (200 OK).
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/NetworkDisconnect">Disconnect a container from a network</a>
+     */
+    void disconnect(final String containerId)
+        throws IOException, UnexpectedResponseException;
+
 }

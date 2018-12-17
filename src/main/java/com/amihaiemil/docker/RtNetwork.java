@@ -25,7 +25,10 @@
  */
 package com.amihaiemil.docker;
 
+import java.io.IOException;
+import java.net.URI;
 import javax.json.JsonObject;
+import org.apache.http.client.HttpClient;
 
 /**
  * Runtime {@link Network}.
@@ -35,11 +38,84 @@ import javax.json.JsonObject;
  * @since 0.0.4
  */
 final class RtNetwork extends JsonResource implements Network {
+
+    /**
+     * Apache HttpClient which sends the requests.
+     */
+    private final HttpClient client;
+
+    /**
+     * Base URI.
+     */
+    private final URI baseUri;
+
+    /**
+     * Docker API.
+     */
+    private final Docker docker;
+
     /**
      * Ctor.
-     * @param json Network JSON
+     * @param rep JsonObject representation of this Volume.
+     * @param client The http client.
+     * @param uri The URI for this network.
+     * @param dkr The docker entry point.
+     * @checkstyle ParameterNumber (5 lines)
      */
-    RtNetwork(final JsonObject json) {
-        super(() -> json);
+    RtNetwork(
+        final JsonObject rep, final HttpClient client,
+        final URI uri, final Docker dkr
+    ) {
+        super(rep);
+        this.client = client;
+        this.baseUri = uri;
+        this.docker = dkr;
+    }
+
+    @Override
+    public JsonObject inspect()
+        throws IOException, UnexpectedResponseException {
+        throw new UnsupportedOperationException(
+            String.join(" ",
+                "Network.inspect() is not yet implemented.",
+                "If you can contribute please",
+                "do it here: https://www.github.com/amihaiemil/docker-java-api"
+            )
+        );
+    }
+
+    @Override
+    public void remove() throws IOException, UnexpectedResponseException {
+        throw new UnsupportedOperationException(
+            String.join(" ",
+                "Network.remove() is not yet implemented.",
+                "If you can contribute please",
+                "do it here: https://www.github.com/amihaiemil/docker-java-api"
+            )
+        );
+    }
+
+    @Override
+    public void connect(final String containerId)
+        throws IOException, UnexpectedResponseException {
+        throw new UnsupportedOperationException(
+            String.join(" ",
+                "Network.connect() is not yet implemented.",
+                "If you can contribute please",
+                "do it here: https://www.github.com/amihaiemil/docker-java-api"
+            )
+        );
+    }
+
+    @Override
+    public void disconnect(final String containerId)
+        throws IOException, UnexpectedResponseException {
+        throw new UnsupportedOperationException(
+            String.join(" ",
+                "Network.disconnect() is not yet implemented.",
+                "If you can contribute please",
+                "do it here: https://www.github.com/amihaiemil/docker-java-api"
+            )
+        );
     }
 }
