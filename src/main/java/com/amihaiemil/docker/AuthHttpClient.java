@@ -41,10 +41,6 @@ import org.apache.http.protocol.HttpContext;
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #182:30min Based on the input from
- *  https://github.com/amihaiemil/docker-java-api/issues/172#issuecomment-444049472
- *  there should be a different implementation for request requiring
- *  authentication.
  */
 final class AuthHttpClient implements HttpClient {
     /**
@@ -79,9 +75,11 @@ final class AuthHttpClient implements HttpClient {
     @Override
     public HttpResponse execute(final HttpUriRequest request)
         throws IOException {
-        final String header = "X-Registry-Auth";
-        if (!request.containsHeader(header)) {
-            request.setHeader(header, this.authentication.encoded());
+        if (!request.containsHeader(this.authentication.headerName())) {
+            request.setHeader(
+                this.authentication.headerName(),
+                this.authentication.encoded()
+            );
         }
         return this.origin.execute(request);
     }

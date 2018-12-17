@@ -25,6 +25,7 @@
  */
 package com.amihaiemil.docker;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import javax.json.Json;
@@ -33,29 +34,63 @@ import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 
 /**
- * Unit tests for {@link Credentials}.
- * @author George Aristy (george.aristy@gmail.com)
- * @version $Id$
- * @since 0.0.1
+ * Unit tests for {@link RegistryConfigAuth}.
+ *
+ * @author Boris Kuzmic (boris.kuzmic@gmail.com)
+ * @since 0.0.7
  */
-public final class CredentialsTestCase {
+public final class RegistryConfigAuthTestCase {
+
     /**
-     * Correctly encodes to base64 all attributes as a JSON object.
+     * Correctly encodes identity token to Base64 with key registry URI.
      */
     @Test
-    public void correctEncoding() {
+    public void correctlyEncodesToken() {
+        final String token = "abc123";
+        final URI registryUri = URI.create("https://index.docker.io/v1/");
         MatcherAssert.assertThat(
             "Encoded Base64 strings should match",
-            new Credentials(
-                "user", "pass", "john@doe.com", "server"
+            new RegistryConfigAuth(
+                registryUri,
+                token
             ).encoded(),
             new IsEqual<>(
                 Base64.getEncoder().encodeToString(
                     Json.createObjectBuilder()
-                        .add("username", "user")
-                        .add("password", "pass")
-                        .add("email", "john@doe.com")
-                        .add("serveraddress", "server")
+                        .add(registryUri.toString(),
+                            Json.createObjectBuilder()
+                                .add("identitytoken", token)
+                        )
+                        .build().toString()
+                        .getBytes(StandardCharsets.UTF_8)
+                )
+            )
+        );
+    }
+
+    /**
+     * Correctly encodes credentials to Base64 with key registry URI.
+     */
+    @Test
+    public void correctlyEncodesCredentials() {
+        final String user = "bob";
+        final String pwd = "123";
+        final URI registryUri = URI.create("docker.example.com");
+        MatcherAssert.assertThat(
+            "Encoded Base64 strings should match",
+            new RegistryConfigAuth(
+                registryUri,
+                user,
+                pwd
+            ).encoded(),
+            new IsEqual<>(
+                Base64.getEncoder().encodeToString(
+                    Json.createObjectBuilder()
+                        .add(registryUri.toString(),
+                            Json.createObjectBuilder()
+                                .add("username", user)
+                                .add("password", pwd)
+                        )
                         .build().toString()
                         .getBytes(StandardCharsets.UTF_8)
                 )
@@ -68,11 +103,16 @@ public final class CredentialsTestCase {
      */
     @Test
     public void correctHeaderName() {
+        final String token = "abc123";
+        final URI registryUri = URI.create("https://index.docker.io/v1/");
         MatcherAssert.assertThat(
-            "The header name should be 'X-Registry-Auth'",
-            new Credentials("user", "pass", "john@doe.com", "server")
-                .headerName(),
-            new IsEqual<>("X-Registry-Auth")
+            "The header name should be 'X-Registry-Config'",
+            new RegistryConfigAuth(
+                registryUri,
+                token
+            ).headerName(),
+            new IsEqual<>("X-Registry-Config")
         );
     }
+
 }

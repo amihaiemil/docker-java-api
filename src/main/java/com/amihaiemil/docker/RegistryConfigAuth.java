@@ -14,7 +14,7 @@ import javax.json.JsonObject;
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ImageBuild">Build an image</a>
  * @since 0.0.7
  */
-public class RegistryConfigAuth implements Auth {
+public final class RegistryConfigAuth implements Auth {
 
     /**
      * Base64-encoded JSON structure holding the regsitry config header value.
@@ -29,11 +29,9 @@ public class RegistryConfigAuth implements Auth {
      */
     public RegistryConfigAuth(final URI registry, final String user,
                               final String pwd) {
-        JsonObject credentials = Json.createObjectBuilder()
+        this(registry, Json.createObjectBuilder()
             .add("username", user)
-            .add("password", pwd).build();
-
-        this.value = setValue(registry, credentials);
+            .add("password", pwd).build());
     }
 
     /**
@@ -42,16 +40,19 @@ public class RegistryConfigAuth implements Auth {
      * @param identityToken The Identity Token.
      */
     public RegistryConfigAuth(final URI registry, final String identityToken) {
-        JsonObject token = Json.createObjectBuilder()
+        this(registry, Json.createObjectBuilder()
             .add("identitytoken", identityToken)
-            .build();
-
-        this.value = setValue(registry, token);
+            .build());
     }
 
-    private Supplier<String> setValue(URI registry, JsonObject token) {
-        return () -> Base64.getEncoder().encodeToString(
-            Json.createObjectBuilder().add(registry.toString(), token)
+    /**
+     * Private Ctor.
+     * @param registry The registry URI.
+     * @param data The Json Object representing Auth Config.
+     */
+    private RegistryConfigAuth(final URI registry, final JsonObject data) {
+        this.value = () -> Base64.getEncoder().encodeToString(
+            Json.createObjectBuilder().add(registry.toString(), data)
                 .build().toString()
                 .getBytes(StandardCharsets.UTF_8)
         );

@@ -29,7 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import javax.json.Json;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
+import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 
 /**
@@ -47,8 +47,9 @@ public final class IdentityTokenTestCase {
     public void correctEncoding() {
         final String token = "abc123";
         MatcherAssert.assertThat(
+            "Encoded Base64 strings should match",
             new IdentityToken(token).encoded(),
-            Matchers.is(
+            new IsEqual<>(
                 Base64.getEncoder().encodeToString(
                     Json.createObjectBuilder()
                         .add("identitytoken", token)
@@ -56,6 +57,18 @@ public final class IdentityTokenTestCase {
                         .getBytes(StandardCharsets.UTF_8)
                 )
             )
+        );
+    }
+
+    /**
+     * Provides correct header name.
+     */
+    @Test
+    public void correctHeaderName() {
+        MatcherAssert.assertThat(
+            "The header name should be 'X-Registry-Auth'",
+            new IdentityToken("123").headerName(),
+            new IsEqual<>("X-Registry-Auth")
         );
     }
 }

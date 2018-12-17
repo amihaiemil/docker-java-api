@@ -35,7 +35,7 @@ package com.amihaiemil.docker;
 public interface Auth {
 
     /**
-     * Header name for HttpRequest
+     * Header name for Http Request.
      * @return Return authentication header name
      */
     String headerName();

@@ -49,6 +49,11 @@ public final class AuthHttpClientTestCase {
     private static HttpClient noOpClient;
 
     /**
+     * Mock Auth that always returns same header and value.
+     */
+    private static Auth dummyAuth;
+
+    /**
      * Setup the mock http client.
      * @throws Exception If something does wrong.
      */
@@ -57,6 +62,9 @@ public final class AuthHttpClientTestCase {
         noOpClient = Mockito.mock(HttpClient.class);
         Mockito.when(noOpClient.execute(Mockito.any(HttpUriRequest.class)))
             .thenReturn(null);
+        dummyAuth = Mockito.mock(Auth.class);
+        Mockito.when(dummyAuth.headerName()).thenReturn("X-Registry-Auth");
+        Mockito.when(dummyAuth.encoded()).thenReturn("123");
     }
 
     /**
@@ -67,7 +75,7 @@ public final class AuthHttpClientTestCase {
     @Test
     public void injectsHeaderIfAbsent() throws Exception {
         final HttpUriRequest request = new HttpGet();
-        new AuthHttpClient(noOpClient, () -> "123").execute(request);
+        new AuthHttpClient(noOpClient, dummyAuth).execute(request);
         MatcherAssert.assertThat(
             request.getFirstHeader("X-Registry-Auth").getValue(),
             Matchers.is("123")
@@ -75,7 +83,7 @@ public final class AuthHttpClientTestCase {
     }
 
     /**
-     * Leaves the request's header instact if it exists.
+     * Leaves the request's header intact if it exists.
      * @throws Exception If something goes wrong.
      */
     @Test
@@ -83,7 +91,7 @@ public final class AuthHttpClientTestCase {
         final Header auth = new BasicHeader("X-Registry-Auth", "12356");
         final HttpUriRequest request = new HttpGet();
         request.setHeader(auth);
-        new AuthHttpClient(noOpClient, () -> "abc").execute(request);
+        new AuthHttpClient(noOpClient, dummyAuth).execute(request);
         MatcherAssert.assertThat(
             request.getFirstHeader("X-Registry-Auth"),
             Matchers.is(auth)
