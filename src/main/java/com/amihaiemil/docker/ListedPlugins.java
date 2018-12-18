@@ -25,43 +25,39 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
-import javax.json.JsonArray;
+import java.net.URI;
+import java.util.Iterator;
+import org.apache.http.client.HttpClient;
 
 /**
- * Plugins API.
+ * Listed plugins.
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @since 0.0.7
- * @todo #232:30min Implement getting plugin privilages. More information
- *  about API method can be found at:
- *  https://docs.docker.com/engine/api/v1.35/#operation/GetPluginPrivileges
+ * @todo #231:30min Implement ListedPlugins iterator with filtering using Map.
+ *  See ListedImages or ListedVolumes as examples.
  */
-public interface Plugins extends Iterable<Plugin> {
+final class ListedPlugins extends RtPlugins {
 
     /**
-     * Create a plugin.
-     * @param name Name of the plugin.
-     * @param pluginDataDir Path to plugin's data dir.
-     * @throws IOException If something goes wrong.
-     * @throws UnexpectedResponseException If the status response is not
-     *  the expected one (200 OK).
-     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/PluginCreate">Create a plugin</a>
+     * Ctor.
+     *
+     * @param client The http client.
+     * @param uri The URI for this Network API.
+     * @param dkr The docker entry point.
      */
-    void create(final String name, final String pluginDataDir)
-        throws IOException, UnexpectedResponseException;
+    ListedPlugins(final HttpClient client, final URI uri, final Docker dkr) {
+        super(client, uri, dkr);
+    }
 
-    /**
-     * Pulls and installs a plugin.
-     * @param remote Remote reference for plugin to install.
-     * @param name Local name for the pulled plugin.
-     * @param pluginProperties Json Array of plugin key-value properties.
-     * @throws IOException If something goes wrong.
-     * @throws UnexpectedResponseException If the status response is not
-     *  the expected one (200 OK).
-     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/PluginPull">Install a plugin</a>
-     */
-    void pullAndInstall(final String remote, final String name,
-                          final JsonArray pluginProperties)
-        throws IOException, UnexpectedResponseException;
+    @Override
+    public Iterator<Plugin> iterator() {
+        throw new UnsupportedOperationException(
+            String.join(" ",
+                "ListedPlugins.iterator() is not yet implemented.",
+                "If you can contribute please",
+                "do it here: https://www.github.com/amihaiemil/docker-java-api"
+            )
+        );
+    }
 
 }

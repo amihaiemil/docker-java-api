@@ -48,7 +48,7 @@ import org.mockito.Mockito;
  * @since 0.0.4
  * @checkstyle MethodName (500 lines)
  */
-public final class RtNetworksTest {
+public final class RtNetworksTestCase {
 
     /**
      * Mock docker.
