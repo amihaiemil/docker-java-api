@@ -26,9 +26,20 @@
 package com.amihaiemil.docker;
 
 import com.amihaiemil.docker.mock.AssertRequest;
+import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
+
+import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.core.IsEqual;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -45,17 +56,48 @@ public final class ListedNetworksTestCase {
     private static final Docker DOCKER = Mockito.mock(Docker.class);
 
     /**
-     * ListedNetworks throws UnsupportedOperationException for Iterator.
+     * ListedNetworks can filter according filters.
+     * @throws IOException if something goes wrong
      */
-    @Test(expected = UnsupportedOperationException.class)
-    public void unsupportedOperationIterator() {
-        new ListedNetworks(
-            new AssertRequest(
-                new Response(HttpStatus.SC_OK)
-            ),
-            URI.create("http://localhost/networks/id1"),
-            DOCKER
-        ).iterator();
+    @Test
+    @Ignore
+    public void filterResults() throws IOException {
+        final Map<String, Iterable<String>> filters = new HashMap<>();
+        filters.put(
+            "scope",
+            Arrays.asList(
+                "local"
+            )
+        );
+        MatcherAssert.assertThat(
+            "Could not filter networks",
+            new ListedNetworks(
+                //@checkstyle LineLength (50 lines)
+                new AssertRequest(
+                    new Response(
+                        HttpStatus.SC_OK,
+                        "[{\"Id\": \"id1\", \"scope\":\"local\"}, {\"Id\":\"cde2\"}]"
+                    ),
+                    new Condition(
+                        // @checkstyle LineLength (11 lines)
+                        "iterate() query parameters must include the filters provided",
+                        req -> {
+                            final List<NameValuePair> params = new UncheckedUriBuilder(
+                                req.getRequestLine().getUri()
+                            ).getQueryParams();
+                            // @checkstyle BooleanExpressionComplexity (5 lines)
+                            return params.size() == 1
+                                && "filters".equals(params.get(0).getName())
+                                && params.get(0).getValue().contains("scope")
+                                && params.get(0).getValue().contains("local");
+                        }
+                    )
+                ),
+                URI.create("http://localhost/networks/id1"),
+                DOCKER,
+                filters
+            ).iterator().next().inspect().getString("id"),
+            new IsEqual<>("id1")
+        );
     }
-
 }
