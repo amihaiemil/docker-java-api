@@ -35,9 +35,10 @@ import javax.json.JsonObject;
  * @version $Id$
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Network">Docker API v1.35</a>
  * @since 0.0.4
- * @todo #210:30min Implement Network methods: inspect, remove, connect and
+ * @todo #225:30min Implement Network methods: inspect, remove, connect and
  *  disconnect like specified at:
- *  https://docs.docker.com/engine/api/v1.35/#tag/Network.
+ *   https://docs.docker.com/engine/api/v1.35/#tag/Network. Then remove @Ignore
+ *   annotaton from all network tests in RtNetworkTestCase.
  */
 public interface Network extends JsonObject {
 
