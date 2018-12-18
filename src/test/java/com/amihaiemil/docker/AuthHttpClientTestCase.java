@@ -31,7 +31,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicHeader;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
+import org.hamcrest.core.IsEqual;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -67,15 +67,18 @@ public final class AuthHttpClientTestCase {
     @Test
     public void injectsHeaderIfAbsent() throws Exception {
         final HttpUriRequest request = new HttpGet();
-        new AuthHttpClient(noOpClient, () -> "123").execute(request);
+        new AuthHttpClient(
+            noOpClient,
+            this.fakeAuth("X-Registry-Auth", "123")
+        ).execute(request);
         MatcherAssert.assertThat(
             request.getFirstHeader("X-Registry-Auth").getValue(),
-            Matchers.is("123")
+            new IsEqual<>("123")
         );
     }
 
     /**
-     * Leaves the request's header instact if it exists.
+     * Leaves the request's header intact if it exists.
      * @throws Exception If something goes wrong.
      */
     @Test
@@ -83,10 +86,38 @@ public final class AuthHttpClientTestCase {
         final Header auth = new BasicHeader("X-Registry-Auth", "12356");
         final HttpUriRequest request = new HttpGet();
         request.setHeader(auth);
-        new AuthHttpClient(noOpClient, () -> "abc").execute(request);
+        new AuthHttpClient(
+            noOpClient,
+            this.fakeAuth("X-New-Header", "abc")
+        ).execute(request);
         MatcherAssert.assertThat(
-            request.getFirstHeader("X-Registry-Auth"),
-            Matchers.is(auth)
+            request.getFirstHeader("X-Registry-Auth").getValue(),
+            new IsEqual<>("12356")
         );
+        MatcherAssert.assertThat(
+            request.getFirstHeader("X-New-Header").getValue(),
+            new IsEqual<>("abc")
+        );
+    }
+
+    /**
+     * Create Fake Auth object.
+     * @param header Name of the header.
+     * @param value Header value.
+     * @return New Auth object.
+     */
+    private Auth fakeAuth(final String header, final String value) {
+        return new Auth() {
+
+            @Override
+            public String headerName() {
+                return header;
+            }
+
+            @Override
+            public String encoded() {
+                return value;
+            }
+        };
     }
 }

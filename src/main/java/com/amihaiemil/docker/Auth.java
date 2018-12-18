@@ -33,6 +33,13 @@ package com.amihaiemil.docker;
  * @since 0.0.1
  */
 public interface Auth {
+
+    /**
+     * Header name for Http Request.
+     * @return Return authentication header name
+     */
+    String headerName();
+
     /**
      * This {@link Auth} as a Base-64 encoded string.
      * @return This auth as a base64-encoded string.

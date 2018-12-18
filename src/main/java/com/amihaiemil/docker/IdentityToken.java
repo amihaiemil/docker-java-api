@@ -67,6 +67,11 @@ public final class IdentityToken implements Auth {
     }
 
     @Override
+    public String headerName() {
+        return "X-Registry-Auth";
+    }
+
+    @Override
     public String encoded() {
         return this.value.get();
     }

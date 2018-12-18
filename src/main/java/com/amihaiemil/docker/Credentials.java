@@ -65,6 +65,11 @@ public final class Credentials implements Auth {
                 .getBytes(StandardCharsets.UTF_8)
         );
     }
+
+    @Override
+    public String headerName() {
+        return "X-Registry-Auth";
+    }
   
     @Override
     public String encoded() {
