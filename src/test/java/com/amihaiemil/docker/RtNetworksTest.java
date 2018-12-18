@@ -30,10 +30,13 @@ import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import javax.json.Json;
 import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -125,6 +128,82 @@ public final class RtNetworksTest {
         MatcherAssert.assertThat(
             network.getString("Id"),
             new IsEqual<>("id1")
+        );
+    }
+
+    /**
+     * RtNetworks.create() must send a correct POST request sends
+     * and exist successfully on response code 201.
+     * @throws Exception If something goes wrong.
+     * @checkstyle ExecutableStatementCount (100 lines)
+     */
+    @Test
+    @Ignore
+    public void createWithParametersOk() throws Exception {
+        final Map<String, String> ipam = new HashMap<>();
+        ipam.put("IPAMDriver", "IPAMdriver");
+        ipam.put("Subnet", "200.255.255.255/24");
+        ipam.put("IPRange", "200.15.255.255/16");
+        ipam.put("Gateway", "200.15.110.245");
+        ipam.put("AuxAddress", "auxiliar:200.15.110.200");
+        ipam.put("driveroption1", "some driver option");
+        ipam.put("driveroption1", "another driver option");
+        final Map<String, String> options = new HashMap<>();
+        options.put("option1", "some option");
+        options.put("option2", "another option");
+        final Map<String, String> labels = new HashMap<>();
+        labels.put("label1", "some label");
+        labels.put("label2", "another label");
+        Network network = new ListedNetworks(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_CREATED,
+                    Json.createObjectBuilder()
+                        .add("Id", "id1").build().toString()
+                ),
+                new Condition(
+                    "create() must send a POST HTTP request",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "create() must send the request to the create url",
+                    req -> "http://localhost/networks/create".equals(
+                        req.getRequestLine().getUri()
+                    )
+                )
+            ),
+            URI.create("http://localhost/networks"),
+            DOCKER
+        ).create("testwithparameters", "networkdriver", ipam, options, labels);
+        MatcherAssert.assertThat(
+            "could not return correct network id",
+            network.getString("Id"),
+            new IsEqual<>("id1")
+        );
+        MatcherAssert.assertThat(
+            "could not return correct network id",
+            network.getString("Name"),
+            new IsEqual<>("testwithparameters")
+        );
+        MatcherAssert.assertThat(
+            "could not return correct network driver",
+            network.getString("Driver"),
+            new IsEqual<>("networkdriver")
+        );
+        MatcherAssert.assertThat(
+            "could not return correct IPAM configurations",
+            network.getJsonArray("IPAM"),
+            new IsEqual<>(ipam)
+        );
+        MatcherAssert.assertThat(
+            "could not return correct options",
+            network.getJsonArray("Options"),
+            new IsEqual<>(options)
+        );
+        MatcherAssert.assertThat(
+            "could not return correct labels",
+            network.getJsonArray("Labels"),
+            new IsEqual<>(labels)
         );
     }
 

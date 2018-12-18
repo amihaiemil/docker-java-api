@@ -27,6 +27,7 @@ package com.amihaiemil.docker;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Map;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -112,6 +113,15 @@ abstract class RtNetworks implements Networks {
         } finally {
             create.releaseConnection();
         }
+    }
+
+    //@checkstyle ParameterNumber (5 lines)
+    @Override
+    public Network create(final String name, final String driver,
+        final Map<String, String> ipam, final Map<String, String> options,
+        final Map<String, String> labels)
+        throws IOException, UnexpectedResponseException {
+        throw new UnsupportedOperationException("create not implemented");
     }
 
     @Override
