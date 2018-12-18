@@ -30,9 +30,8 @@ import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 import javax.json.Json;
+import javax.json.JsonObject;
 import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
@@ -140,20 +139,19 @@ public final class RtNetworksTest {
     @Test
     @Ignore
     public void createWithParametersOk() throws Exception {
-        final Map<String, String> ipam = new HashMap<>();
-        ipam.put("IPAMDriver", "IPAMdriver");
-        ipam.put("Subnet", "200.255.255.255/24");
-        ipam.put("IPRange", "200.15.255.255/16");
-        ipam.put("Gateway", "200.15.110.245");
-        ipam.put("AuxAddress", "auxiliar:200.15.110.200");
-        ipam.put("driveroption1", "some driver option");
-        ipam.put("driveroption1", "another driver option");
-        final Map<String, String> options = new HashMap<>();
-        options.put("option1", "some option");
-        options.put("option2", "another option");
-        final Map<String, String> labels = new HashMap<>();
-        labels.put("label1", "some label");
-        labels.put("label2", "another label");
+        final JsonObject ipam = Json.createObjectBuilder()
+            .add("Driver", "IPAMDriver")
+            .add("Subnet", "200.255.255.255/24")
+            .add("Gateway", "200.15.110.245")
+            .add("AuxAddress", "auxiliar:200.15.110.200")
+            .add("driveroption1", "some driver option")
+            .add("driveroption1", "another driver option").build();
+        final JsonObject options = Json.createObjectBuilder()
+            .add("option1", "option one")
+            .add("option2", "option two").build();
+        final JsonObject labels = Json.createObjectBuilder()
+            .add("label1", "label one")
+            .add("label2", "label two").build();
         Network network = new ListedNetworks(
             new AssertRequest(
                 new Response(
@@ -174,7 +172,21 @@ public final class RtNetworksTest {
             ),
             URI.create("http://localhost/networks"),
             DOCKER
-        ).create("testwithparameters", "networkdriver", ipam, options, labels);
+        ).create(
+            "testwithparameters",
+            Json.createObjectBuilder()
+            .add("Driver", "networkdriver")
+            .add(
+                "IPAM",
+                ipam
+            ).add(
+                "Options",
+                options
+            ).add(
+                "Labels",
+                labels
+            ).build()
+        );
         MatcherAssert.assertThat(
             "could not return correct network id",
             network.getString("Id"),
@@ -192,7 +204,7 @@ public final class RtNetworksTest {
         );
         MatcherAssert.assertThat(
             "could not return correct IPAM configurations",
-            network.getJsonArray("IPAM"),
+            network.getJsonObject("IPAM"),
             new IsEqual<>(ipam)
         );
         MatcherAssert.assertThat(

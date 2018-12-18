@@ -25,8 +25,8 @@
  */
 package com.amihaiemil.docker;
 
+import javax.json.JsonObject;
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Networks API.
@@ -55,27 +55,15 @@ public interface Networks extends Iterable<Network> {
     /**
      * Create a network with additional parameters.
      * @param name Name of the network
-     * @param driver Name of the network driver plugin to use
-     * @param ipam Map containing:
-     *  "Driver": Name of the IPAM driver to use
-     *  List of IPAM configuration options:
-     *  "Subnet": CIDR
-     *  "IPRange": CIDR
-     *  "Gateway": IP address
-     *  "AuxAddress": device_name:IP address
-     *  Driver-specific options, specified as a map.     *
-     * @param options Network specific options to be used by the drivers.
-     * @param labels User-defined key/value metadata.
+     * @param parameters Network parameters
      * @throws IOException If something goes wrong.
      * @throws UnexpectedResponseException If the status response is not
      *  the expected one (200 OK).
      * @return The created network.
      * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/NetworkCreate">Create a network</a>
-     * @checkstyle ParameterNumber (3 lines)
      */
-    Network create(final String name, final String driver, final Map<String,
-        String> ipam, final Map<String, String> options, final Map<String,
-        String> labels) throws IOException, UnexpectedResponseException;
+    Network create(final String name, JsonObject parameters)
+        throws IOException, UnexpectedResponseException;
 
     /**
      * Deletes unused networks.
