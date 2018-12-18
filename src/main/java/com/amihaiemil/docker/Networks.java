@@ -33,9 +33,10 @@ import java.util.Map;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #209:30min Extend create with options to specify driver,
+ * @todo #224:30min Extend create with options to specify driver,
  *  driver options, IPAM and add labels as specified at:
- *  https://docs.docker.com/engine/api/v1.35/#operation/NetworkCreate.
+ *  https://docs.docker.com/engine/api/v1.35/#operation/NetworkCreate. Then
+ *  remove Ignore annotation from RtNetworksTest.createWithParametersOk
  */
 public interface Networks extends Iterable<Network> {
 
