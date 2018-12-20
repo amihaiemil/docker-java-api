@@ -114,6 +114,7 @@ public final class RtNetworkTestCase {
      * @throws Exception If something goes wrong.
      */
     @Test
+    @Ignore
     public void removeSendsCorrectRequest() throws Exception {
         new RtNetwork(
             Json.createObjectBuilder().build(),
