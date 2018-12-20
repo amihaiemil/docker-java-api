@@ -27,6 +27,12 @@ package com.amihaiemil.docker;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
+
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
+
 import org.apache.http.client.utils.URIBuilder;
 
 /**
@@ -58,6 +64,38 @@ final class UncheckedUriBuilder extends URIBuilder {
         return this;
     }
 
+    /**
+     * Adds a JSON encoded `filters` parameter.
+     * 
+     * @param filters Value of the filters.
+     * @return A {@link UncheckedUriBuilder} instance.
+     * 
+     * @todo #227:30min we should take out this functionality in a URIBuilder 
+     * decorator. It should be used like this:
+     * <pre>
+     *     final URIBuilder buidler = new Filtered(
+     *          new UncheckedUriBuilder(...), filters
+     *     );
+     * </pre>
+     */
+    public UncheckedUriBuilder addFilters(
+        final Map<String, Iterable<String>> filters
+    ) {
+        if (filters != null && !filters.isEmpty()) {
+            final JsonObjectBuilder json = Json.createObjectBuilder();
+            filters.forEach(
+                (name, values) -> {
+                    final JsonArrayBuilder array = Json.createArrayBuilder();
+                    values.forEach(array::add);
+                    json.add(name, array);
+                }
+            );
+            this.addParameter("filters", json.build().toString());
+        }
+        
+        return this;
+    }
+    
     @Override
     public URI build() {
         try {
