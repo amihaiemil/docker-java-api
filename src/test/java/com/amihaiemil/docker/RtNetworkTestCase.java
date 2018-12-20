@@ -28,11 +28,14 @@ package com.amihaiemil.docker;
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
+
+import java.io.IOException;
 import java.net.URI;
 import javax.json.Json;
 import javax.json.JsonObject;
 import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
+import org.hamcrest.collection.IsEmptyIterable;
 import org.hamcrest.core.IsEqual;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -137,66 +140,71 @@ public final class RtNetworkTestCase {
     }
 
     /**
-     * RtNetwork throws UnsupportedOperationException for Inspect.
-     * @throws Exception If something else goes wrong.
+     * RtNetwork.connect() must send a POST request to the correct url and
+     * connect the desired container to the network.
+     * @throws IOException If something goes wrong.
      */
-    @Test(expected = UnsupportedOperationException.class)
-    public void unsupportedOperationInspect() throws Exception {
-        new RtNetwork(
+    @Test
+    @Ignore
+    public void connectContainer() throws IOException {
+        final Network network = new RtNetwork(
             Json.createObjectBuilder().build(),
             new AssertRequest(
-                new Response(HttpStatus.SC_OK)
+                new Response(HttpStatus.SC_OK),
+                new Condition(
+                    "connect() must send a POST HTTP request",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "connect() must send the request to the network url",
+                    req -> "http://localhost/network/id1".equals(
+                        req.getRequestLine().getUri()
+                    )
+                )
             ),
-            URI.create("http://localhost/networks/id1"),
+            URI.create("http://localhost/network/id1"),
             DOCKER
-        ).inspect();
+        );
+        network.connect("containerId");
+        MatcherAssert.assertThat(
+            "could not create container",
+            network.inspect().getJsonArray("Container"),
+            new IsEmptyIterable<>()
+        );
     }
 
     /**
-     * RtNetwork throws UnsupportedOperationException for Remove.
-     * @throws Exception If something else goes wrong.
+     * RtNetwork.disconnect() must send a POST request to the correct url and
+     * disconnect the desired container from the network.
+     * @throws IOException If something goes wrong.
      */
-    @Test(expected = UnsupportedOperationException.class)
-    public void unsupportedOperationRemove() throws Exception {
-        new RtNetwork(
+    @Test
+    @Ignore
+    public void disconnectContainer() throws IOException {
+        final Network network = new RtNetwork(
             Json.createObjectBuilder().build(),
             new AssertRequest(
-                new Response(HttpStatus.SC_OK)
+                new Response(HttpStatus.SC_OK),
+                new Condition(
+                    "connect() must send a POST HTTP request",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "connect() must send the request to the network url",
+                    req -> "http://localhost/network/id1".equals(
+                        req.getRequestLine().getUri()
+                    )
+                )
             ),
-            URI.create("http://localhost/networks/id1"),
+            URI.create("http://localhost/network/id1"),
             DOCKER
-        ).remove();
-    }
-
-    /**
-     * RtNetwork throws UnsupportedOperationException for Connect.
-     * @throws Exception If something else goes wrong.
-     */
-    @Test(expected = UnsupportedOperationException.class)
-    public void unsupportedOperationConnect() throws Exception {
-        new RtNetwork(
-            Json.createObjectBuilder().build(),
-            new AssertRequest(
-                new Response(HttpStatus.SC_OK)
-            ),
-            URI.create("http://localhost/networks/id1"),
-            DOCKER
-        ).connect("containerId");
-    }
-
-    /**
-     * RtNetwork throws UnsupportedOperationException for Disconnect.
-     * @throws Exception If something else goes wrong.
-     */
-    @Test(expected = UnsupportedOperationException.class)
-    public void unsupportedOperationDisconnect() throws Exception {
-        new RtNetwork(
-            Json.createObjectBuilder().build(),
-            new AssertRequest(
-                new Response(HttpStatus.SC_OK)
-            ),
-            URI.create("http://localhost/networks/id1"),
-            DOCKER
-        ).disconnect("containerId");
+        );
+        network.connect("containerId");
+        network.disconnect("containerId");
+        MatcherAssert.assertThat(
+            "could not create container",
+            network.inspect().getJsonArray("Container").size(),
+            new IsEqual<>(0)
+        );
     }
 }
