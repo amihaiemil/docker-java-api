@@ -26,14 +26,18 @@
 package com.amihaiemil.docker;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+
 import org.apache.http.client.HttpClient;
 
 /**
  * Listed networks.
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @since 0.0.7
- * @todo #211:30min Implement ListedNetworks iterator with filtering using Map.
+ * @todo #226:30min Implement ListedNetworks iterator with filtering using Map.
+ *  Then remove Ignore annotations from ListedNetworkTestCase methods.
  *  See ListedImages or ListedVolumes as examples.
  */
 final class ListedNetworks extends RtNetworks {
@@ -46,6 +50,20 @@ final class ListedNetworks extends RtNetworks {
      * @param dkr The docker entry point.
      */
     ListedNetworks(final HttpClient client, final URI uri, final Docker dkr) {
+        this(client, uri, dkr, new HashMap<>());
+    }
+
+    /**
+     * Ctor with filters.
+     *
+     * @param client The http client.
+     * @param uri The URI for this Network API.
+     * @param dkr The docker entry point.
+     * @param filters The filters to be applied.
+     * @checkstyle ParameterNumber (10 lines)
+     */
+    ListedNetworks(final HttpClient client, final URI uri, final Docker dkr,
+        final Map<String, Iterable<String>> filters) {
         super(client, uri, dkr);
     }
 
