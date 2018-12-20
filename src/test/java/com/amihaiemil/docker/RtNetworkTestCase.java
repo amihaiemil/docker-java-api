@@ -47,9 +47,6 @@ import org.mockito.Mockito;
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @since 0.0.7
  * @checkstyle MethodName (500 lines)
- * @todo #211:30min Finish implementing unit tests for RtNetwork methods
- *  connect, disconnect and add negative test cases for remove().
- *  Remove dummy operation not supported tests.
  */
 public final class RtNetworkTestCase {
 
@@ -117,7 +114,6 @@ public final class RtNetworkTestCase {
      * @throws Exception If something goes wrong.
      */
     @Test
-    @Ignore
     public void removeSendsCorrectRequest() throws Exception {
         new RtNetwork(
             Json.createObjectBuilder().build(),
