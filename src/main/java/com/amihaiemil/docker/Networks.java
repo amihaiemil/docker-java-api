@@ -25,18 +25,14 @@
  */
 package com.amihaiemil.docker;
 
-import javax.json.JsonObject;
 import java.io.IOException;
+import javax.json.JsonObject;
 
 /**
  * Networks API.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #224:30min Extend create with options to specify driver,
- *  driver options, IPAM and add labels as specified at:
- *  https://docs.docker.com/engine/api/v1.35/#operation/NetworkCreate. Then
- *  remove Ignore annotation from RtNetworksTest.createWithParametersOk
  */
 public interface Networks extends Iterable<Network> {
 

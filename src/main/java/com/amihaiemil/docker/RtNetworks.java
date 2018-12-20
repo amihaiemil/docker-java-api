@@ -27,9 +27,7 @@ package com.amihaiemil.docker;
 
 import java.io.IOException;
 import java.net.URI;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
+import javax.json.*;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -74,50 +72,16 @@ abstract class RtNetworks implements Networks {
     @Override
     public Network create(final String name)
         throws IOException, UnexpectedResponseException {
-        JsonObjectBuilder json = Json.createObjectBuilder();
-        json.add("Name", name);
-        final HttpPost create =
-            new HttpPost(
-                String.format("%s/%s", this.baseUri.toString(), "create")
-            );
-        try {
-            create.setEntity(
-                new StringEntity(
-                    json.build().toString(), ContentType.APPLICATION_JSON
-                )
-            );
-            JsonObject createResult = this.client.execute(
-                create,
-                new ReadJsonObject(
-                    new MatchStatus(
-                        create.getURI(),
-                        HttpStatus.SC_CREATED
-                    )
-                )
-            );
-            if (createResult.size() > 0) {
-                return new RtNetwork(createResult,
-                    this.client,
-                    URI.create(
-                        String.format("%s/%s", this.baseUri.toString(),
-                            createResult.getString("Id"))
-                    ),
-                    this.docker
-                );
-            } else {
-                throw new IOException(
-                    "Got empty response from Networks.create() method"
-                );
-            }
-        } finally {
-            create.releaseConnection();
-        }
+        return this.create(name, Json.createObjectBuilder().build());
     }
 
     @Override
     public Network create(final String name, final JsonObject filters)
         throws IOException, UnexpectedResponseException {
-        throw new UnsupportedOperationException("create not implemented");
+        JsonObjectBuilder json = Json.createObjectBuilder();
+        json.add("Name", name);
+        filters.forEach(json::add);
+        return this.createNetwork(json);
     }
 
     @Override
@@ -154,5 +118,51 @@ abstract class RtNetworks implements Networks {
      */
     URI baseUri() {
         return this.baseUri;
+    }
+
+    /**
+     * Create network using JsonObjectBuilder.
+     * @param json Json Object Builder object.
+     * @return The created Network.
+     * @throws IOException If something goes wrong.
+     */
+    private Network createNetwork(final JsonObjectBuilder json)
+        throws IOException {
+        final HttpPost create =
+            new HttpPost(
+                String.format("%s/%s", this.baseUri.toString(), "create")
+            );
+        try {
+            create.setEntity(
+                new StringEntity(
+                    json.build().toString(), ContentType.APPLICATION_JSON
+                )
+            );
+            JsonObject createResult = this.client.execute(
+                create,
+                new ReadJsonObject(
+                    new MatchStatus(
+                        create.getURI(),
+                        HttpStatus.SC_CREATED
+                    )
+                )
+            );
+            if (createResult.size() > 0) {
+                return new RtNetwork(createResult,
+                    this.client,
+                    URI.create(
+                        String.format("%s/%s", this.baseUri.toString(),
+                            createResult.getString("Id"))
+                    ),
+                    this.docker
+                );
+            } else {
+                throw new IOException(
+                    "Got empty response from Networks.create() method"
+                );
+            }
+        } finally {
+            create.releaseConnection();
+        }
     }
 }

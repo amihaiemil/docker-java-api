@@ -35,7 +35,6 @@ import javax.json.JsonObject;
 import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -48,7 +47,7 @@ import org.mockito.Mockito;
  * @since 0.0.4
  * @checkstyle MethodName (500 lines)
  */
-public final class RtNetworksTest {
+public final class RtNetworksTestCase {
 
     /**
      * Mock docker.
@@ -137,7 +136,6 @@ public final class RtNetworksTest {
      * @checkstyle ExecutableStatementCount (100 lines)
      */
     @Test
-    @Ignore
     public void createWithParametersOk() throws Exception {
         final JsonObject ipam = Json.createObjectBuilder()
             .add("Driver", "IPAMDriver")
@@ -152,70 +150,56 @@ public final class RtNetworksTest {
         final JsonObject labels = Json.createObjectBuilder()
             .add("label1", "label one")
             .add("label2", "label two").build();
-        Network network = new ListedNetworks(
-            new AssertRequest(
-                new Response(
-                    HttpStatus.SC_CREATED,
-                    Json.createObjectBuilder()
-                        .add("Id", "id1").build().toString()
-                ),
-                new Condition(
-                    "create() must send a POST HTTP request",
-                    req -> "POST".equals(req.getRequestLine().getMethod())
-                ),
-                new Condition(
-                    "create() must send the request to the create url",
-                    req -> "http://localhost/networks/create".equals(
-                        req.getRequestLine().getUri()
+        Network network =
+            new ListedNetworks(
+                new AssertRequest(
+                    new Response(
+                        HttpStatus.SC_CREATED,
+                        Json.createObjectBuilder()
+                            .add("Id", "id1").build().toString()
+                    ),
+                    new Condition(
+                        "create() must send a POST HTTP request",
+                        req -> "POST".equals(req.getRequestLine().getMethod())
+                    ),
+                    new Condition(
+                        "create() must send the request to the create url",
+                        req -> "http://localhost/networks/create".equals(
+                            req.getRequestLine().getUri()
+                        )
+                    ),
+                    new Condition(
+                        "create() must send Json body request",
+                        req -> {
+                            final JsonObject payload = new PayloadOf(req);
+                            // @checkstyle LineLength (3 lines)
+                            return payload.getJsonObject("IPAM").getString("Driver").equals(ipam.getString("Driver"))
+                                && payload.getJsonObject("Options").getString("option1").equals(options.getString("option1"))
+                                && payload.getJsonObject("Labels").getString("label1").equals(labels.getString("label1"));
+                        }
                     )
-                )
-            ),
-            URI.create("http://localhost/networks"),
-            DOCKER
-        ).create(
-            "testwithparameters",
-            Json.createObjectBuilder()
-            .add("Driver", "networkdriver")
-            .add(
-                "IPAM",
-                ipam
-            ).add(
-                "Options",
-                options
-            ).add(
-                "Labels",
-                labels
-            ).build()
-        );
+                ),
+                URI.create("http://localhost/networks"),
+                DOCKER
+            ).create(
+                "testwithparameters",
+                Json.createObjectBuilder()
+                .add("Driver", "networkdriver")
+                .add(
+                    "IPAM",
+                    ipam
+                ).add(
+                    "Options",
+                    options
+                ).add(
+                    "Labels",
+                    labels
+                ).build()
+            );
         MatcherAssert.assertThat(
             "could not return correct network id",
             network.getString("Id"),
             new IsEqual<>("id1")
-        );
-        MatcherAssert.assertThat(
-            "could not return correct network id",
-            network.getString("Name"),
-            new IsEqual<>("testwithparameters")
-        );
-        MatcherAssert.assertThat(
-            "could not return correct network driver",
-            network.getString("Driver"),
-            new IsEqual<>("networkdriver")
-        );
-        MatcherAssert.assertThat(
-            "could not return correct IPAM configurations",
-            network.getJsonObject("IPAM"),
-            new IsEqual<>(ipam)
-        );
-        MatcherAssert.assertThat(
-            "could not return correct options",
-            network.getJsonArray("Options"),
-            new IsEqual<>(options)
-        );
-        MatcherAssert.assertThat(
-            "could not return correct labels",
-            network.getJsonArray("Labels"),
-            new IsEqual<>(labels)
         );
     }
 
