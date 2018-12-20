@@ -126,7 +126,7 @@ public final class RtPluginsTestCase {
                     req -> {
                         String correctUrl =
                             String.join("", "http://localhost/plugins/pull?",
-                                "remote=vieus/sshfs&name=sshfs");
+                                "remote=vieus%2Fsshfs&name=sshfs");
                         return correctUrl.equals(req.getRequestLine().getUri());
                     }
                 ),

@@ -76,12 +76,10 @@ abstract class RtPlugins implements Plugins {
         throws IOException, UnexpectedResponseException {
         final HttpPost pull =
             new HttpPost(
-                String.format("%s/%s?remote=%s&name=%s",
-                    this.baseUri.toString(),
-                    "pull",
-                    remote,
-                    name
-                )
+                new UncheckedUriBuilder(this.baseUri.toString().concat("/pull"))
+                    .addParameter("remote", remote)
+                    .addParameter("name", name)
+                    .build()
             );
         try {
             pull.setEntity(
