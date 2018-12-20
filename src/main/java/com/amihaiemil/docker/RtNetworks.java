@@ -115,6 +115,12 @@ abstract class RtNetworks implements Networks {
     }
 
     @Override
+    public Network create(final String name, final JsonObject filters)
+        throws IOException, UnexpectedResponseException {
+        throw new UnsupportedOperationException("create not implemented");
+    }
+
+    @Override
     public void prune() throws IOException, UnexpectedResponseException {
         final HttpPost prune = new HttpPost(
             this.baseUri.toString().concat("/prune")

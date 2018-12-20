@@ -25,6 +25,7 @@
  */
 package com.amihaiemil.docker;
 
+import javax.json.JsonObject;
 import java.io.IOException;
 
 /**
@@ -32,9 +33,10 @@ import java.io.IOException;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #209:30min Extend create with options to specify driver,
+ * @todo #224:30min Extend create with options to specify driver,
  *  driver options, IPAM and add labels as specified at:
- *  https://docs.docker.com/engine/api/v1.35/#operation/NetworkCreate.
+ *  https://docs.docker.com/engine/api/v1.35/#operation/NetworkCreate. Then
+ *  remove Ignore annotation from RtNetworksTest.createWithParametersOk
  */
 public interface Networks extends Iterable<Network> {
 
@@ -48,6 +50,19 @@ public interface Networks extends Iterable<Network> {
      * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/NetworkCreate">Create a network</a>
      */
     Network create(final String name)
+        throws IOException, UnexpectedResponseException;
+
+    /**
+     * Create a network with additional parameters.
+     * @param name Name of the network
+     * @param parameters Network parameters
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (200 OK).
+     * @return The created network.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/NetworkCreate">Create a network</a>
+     */
+    Network create(final String name, JsonObject parameters)
         throws IOException, UnexpectedResponseException;
 
     /**
