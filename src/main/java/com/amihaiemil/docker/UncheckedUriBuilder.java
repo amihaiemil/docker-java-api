@@ -71,12 +71,12 @@ final class UncheckedUriBuilder extends URIBuilder {
      * @return A {@link UncheckedUriBuilder} instance.
      * 
      * @todo #227:30min we should take out this functionality in a URIBuilder 
-     * decorator. It should be used like this:
-     * <pre>
-     *     final URIBuilder buidler = new Filtered(
-     *          new UncheckedUriBuilder(...), filters
-     *     );
-     * </pre>
+     *  decorator. It should be used like this:
+     *  <pre>
+     *      final URIBuilder buidler = new Filtered(
+     *           new UncheckedUriBuilder(...), filters
+     *      );
+     *  </pre>
      */
     public UncheckedUriBuilder addFilters(
         final Map<String, Iterable<String>> filters
