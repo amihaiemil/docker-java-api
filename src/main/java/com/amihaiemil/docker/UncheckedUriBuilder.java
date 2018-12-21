@@ -70,13 +70,8 @@ final class UncheckedUriBuilder extends URIBuilder {
      * @param filters Value of the filters.
      * @return A {@link UncheckedUriBuilder} instance.
      * 
-     * @todo #227:30min we should take out this functionality in a URIBuilder 
-     *  decorator. It should be used like this:
-     *  <pre>
-     *  final URIBuilder buidler = new Filtered(
-     *  new UncheckedUriBuilder(...), filters
-     *  );
-     *  </pre>
+     * @todo #240:30min Finish FilteredUriBuilder implementation moving this
+     *  method to that class and uncommenting test in FilteredUriBuilderTests
      */
     public UncheckedUriBuilder addFilters(
         final Map<String, Iterable<String>> filters
