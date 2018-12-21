@@ -73,9 +73,9 @@ final class UncheckedUriBuilder extends URIBuilder {
      * @todo #227:30min we should take out this functionality in a URIBuilder 
      *  decorator. It should be used like this:
      *  <pre>
-     *      final URIBuilder buidler = new Filtered(
-     *           new UncheckedUriBuilder(...), filters
-     *      );
+     *  final URIBuilder buidler = new Filtered(
+     *  new UncheckedUriBuilder(...), filters
+     *  );
      *  </pre>
      */
     public UncheckedUriBuilder addFilters(
