@@ -37,9 +37,6 @@ import org.apache.http.client.methods.HttpGet;
  * @author Marco Teixeira (marcoo.teixeira@gmail.com)
  * @version $Id$
  * @since 0.0.6
- * @todo #207:30min Finish implementation here, add a Map to this class, that
- *  would hold the actual filters and apply them when making the call in the
- *  iterator() method. Then uncomment filtering test in ListedVolumesTestCase.
  */
 final class ListedVolumes extends RtVolumes {
 
@@ -74,12 +71,14 @@ final class ListedVolumes extends RtVolumes {
 
     @Override
     public Iterator<Volume> iterator() {
+        final UncheckedUriBuilder uri = new UncheckedUriBuilder(
+                super.baseUri().toString()
+        ).addFilters(this.filters);
+        
         return new ResourcesIterator<>(
             super.client(),
             new HttpGet(
-                String.format("%s/%s",
-                    super.baseUri().toString(),
-                    "volumes")
+                uri.build()
             ),
             volume -> new RtVolume(
                 volume,
