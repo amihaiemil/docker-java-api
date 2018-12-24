@@ -34,7 +34,7 @@ import java.util.Map;
  * {@link URIBuilder} with filtering.
  * @author Paulo Lobo (pauloeduardolobo@gmail.com)
  * @version $Id$
- * @since 0.0.1
+ * @since 0.0.7
  */
 public final class FilteredUriBuilder extends URIBuilder {
 
