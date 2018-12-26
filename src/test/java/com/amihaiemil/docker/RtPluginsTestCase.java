@@ -55,7 +55,7 @@ public final class RtPluginsTestCase {
     private static final Docker DOCKER = Mockito.mock(Docker.class);
 
     /**
-     * RtPlugins.create(name, pluginDataDir) must send
+     * RtPlugins.create(name, directory) must send
      * a correct POST request sends and exist successfully on response code 204.
      * @throws Exception If something goes wrong.
      */
@@ -85,7 +85,7 @@ public final class RtPluginsTestCase {
     }
 
     /**
-     * RtPlugins.create(name,pluginDataDir) must
+     * RtPlugins.create(name, directory) must
      * throw UnexpectedResponseException if service responds with 500.
      * @throws Exception The UnexpectedResponseException.
      */
@@ -101,13 +101,13 @@ public final class RtPluginsTestCase {
     }
 
     /**
-     * RtPlugins.pullAndInstall(remote, name, pluginProperties) must send
+     * RtPlugins.pullAndInstall(remote, name, properties) must send
      * a correct POST request sends and exist successfully on response code 204.
      * @throws Exception If something goes wrong.
      */
     @Test
     public void pullAndInstallOk() throws Exception {
-        JsonArray pluginProperties = Json.createArrayBuilder()
+        final JsonArray properties = Json.createArrayBuilder()
             .add(
                 Json.createObjectBuilder()
                     .add("Name", "network")
@@ -142,11 +142,11 @@ public final class RtPluginsTestCase {
             ),
             URI.create("http://localhost/plugins"),
             DOCKER
-        ).pullAndInstall("vieus/sshfs", "sshfs", pluginProperties);
+        ).pullAndInstall("vieus/sshfs", "sshfs", properties);
     }
 
     /**
-     * RtPlugins.pullAndInstall(remote, name, pluginProperties)
+     * RtPlugins.pullAndInstall(remote, name, properties)
      * must throw UnexpectedResponseException if service responds with 500.
      * @throws Exception The UnexpectedResponseException.
      */
@@ -170,11 +170,13 @@ public final class RtPluginsTestCase {
      */
     private String stringPayloadOf(final HttpRequest request) {
         try {
-            String payload = "";
+            final String payload;
             if (request instanceof HttpEntityEnclosingRequest) {
                 payload = EntityUtils.toString(
                     ((HttpEntityEnclosingRequest) request).getEntity()
                 );
+            } else {
+                payload = "";
             }
             return payload;
         } catch (final IOException ex) {

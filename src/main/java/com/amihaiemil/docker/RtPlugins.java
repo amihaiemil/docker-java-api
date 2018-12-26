@@ -44,7 +44,7 @@ abstract class RtPlugins implements Plugins {
     }
 
     @Override
-    public void create(final String name, final String pluginDataDir)
+    public void create(final String name, final String directory)
         throws IOException, UnexpectedResponseException {
         final HttpPost create =
             new HttpPost(
@@ -56,7 +56,7 @@ abstract class RtPlugins implements Plugins {
             );
         try {
             create.setEntity(
-                new StringEntity(pluginDataDir)
+                new StringEntity(directory)
             );
             this.client.execute(
                 create,
@@ -72,7 +72,7 @@ abstract class RtPlugins implements Plugins {
 
     @Override
     public void pullAndInstall(final String remote, final String name,
-                               final JsonArray pluginProperties)
+                               final JsonArray properties)
         throws IOException, UnexpectedResponseException {
         final HttpPost pull =
             new HttpPost(
@@ -83,7 +83,7 @@ abstract class RtPlugins implements Plugins {
             );
         try {
             pull.setEntity(
-                new StringEntity(pluginProperties.toString())
+                new StringEntity(properties.toString())
             );
             this.client.execute(
                 pull,

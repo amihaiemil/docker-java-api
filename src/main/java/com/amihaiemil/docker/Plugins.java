@@ -32,7 +32,7 @@ import javax.json.JsonArray;
  * Plugins API.
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @since 0.0.7
- * @todo #232:30min Implement getting plugin privilages. More information
+ * @todo #232:30min Implement getting plugin privileges. More information
  *  about API method can be found at:
  *  https://docs.docker.com/engine/api/v1.35/#operation/GetPluginPrivileges
  */
@@ -41,27 +41,27 @@ public interface Plugins extends Iterable<Plugin> {
     /**
      * Create a plugin.
      * @param name Name of the plugin.
-     * @param pluginDataDir Path to plugin's data dir.
+     * @param directory Path to plugin's data dir.
      * @throws IOException If something goes wrong.
      * @throws UnexpectedResponseException If the status response is not
      *  the expected one (200 OK).
      * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/PluginCreate">Create a plugin</a>
      */
-    void create(final String name, final String pluginDataDir)
+    void create(final String name, final String directory)
         throws IOException, UnexpectedResponseException;
 
     /**
      * Pulls and installs a plugin.
      * @param remote Remote reference for plugin to install.
      * @param name Local name for the pulled plugin.
-     * @param pluginProperties Json Array of plugin key-value properties.
+     * @param properties Json Array of plugin key-value properties.
      * @throws IOException If something goes wrong.
      * @throws UnexpectedResponseException If the status response is not
      *  the expected one (200 OK).
      * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/PluginPull">Install a plugin</a>
      */
     void pullAndInstall(final String remote, final String name,
-                          final JsonArray pluginProperties)
+                          final JsonArray properties)
         throws IOException, UnexpectedResponseException;
 
 }
