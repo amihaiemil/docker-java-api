@@ -31,16 +31,19 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 
 /**
  * Listed networks.
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @since 0.0.7
- * @todo #226:30min Implement ListedNetworks iterator with filtering using Map.
- *  Then remove Ignore annotations from ListedNetworkTestCase methods.
- *  See ListedImages or ListedVolumes as examples.
  */
 final class ListedNetworks extends RtNetworks {
+
+    /**
+     * Network filters.
+     */
+    private final Map<String, Iterable<String>> filters;
 
     /**
      * Ctor.
@@ -65,15 +68,30 @@ final class ListedNetworks extends RtNetworks {
     ListedNetworks(final HttpClient client, final URI uri, final Docker dkr,
         final Map<String, Iterable<String>> filters) {
         super(client, uri, dkr);
+        this.filters = filters;
     }
 
     @Override
     public Iterator<Network> iterator() {
-        throw new UnsupportedOperationException(
-            String.join(" ",
-                "ListedNetworks.iterator() is not yet implemented.",
-                "If you can contribute please",
-                "do it here: https://www.github.com/amihaiemil/docker-java-api"
+        final UncheckedUriBuilder uri = new UncheckedUriBuilder(
+            super.baseUri().toString()
+        ).addFilters(this.filters);
+
+        return new ResourcesIterator<>(
+            super.client(),
+            new HttpGet(
+                uri.build()
+            ),
+            network -> new RtNetwork(
+                network,
+                super.client(),
+                URI.create(
+                    String.format("%s/%s",
+                        super.baseUri().toString(),
+                        network.getString("Id")
+                    )
+                ),
+                super.docker()
             )
         );
     }

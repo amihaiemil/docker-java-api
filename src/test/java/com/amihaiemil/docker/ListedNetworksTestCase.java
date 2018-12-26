@@ -28,18 +28,18 @@ package com.amihaiemil.docker;
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.hamcrest.MatcherAssert;
+import org.hamcrest.collection.IsIterableWithSize;
 import org.hamcrest.core.IsEqual;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -60,7 +60,6 @@ public final class ListedNetworksTestCase {
      * @throws IOException if something goes wrong
      */
     @Test
-    @Ignore
     public void filterResults() throws IOException {
         final Map<String, Iterable<String>> filters = new HashMap<>();
         filters.put(
@@ -96,8 +95,53 @@ public final class ListedNetworksTestCase {
                 URI.create("http://localhost/networks/id1"),
                 DOCKER,
                 filters
-            ).iterator().next().inspect().getString("id"),
+            ).iterator().next().getString("Id"),
             new IsEqual<>("id1")
+        );
+    }
+
+    /**
+     * {@link ListedNetworks} can iterate over them without
+     * filters.
+     */
+    @Test
+    public void iterateAll() {
+        final Networks all = new ListedNetworks(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    "[{\"Id\": \"abc1\"}, {\"Id\":\"def2\"}]"
+                ),
+                new Condition(
+                    "iterate() must send a GET request",
+                    req -> "GET".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "iterate() resource URL must be '/networks'",
+                    req -> req.getRequestLine()
+                        .getUri().endsWith("/networks")
+                )
+            ),
+            URI.create("http://localhost/networks"),
+            Mockito.mock(Docker.class)
+        );
+        MatcherAssert.assertThat(
+            "There should be 2 networks in the list",
+            all,
+            new IsIterableWithSize<>(
+                new IsEqual<>(2)
+            )
+        );
+        final Iterator<Network> itr = all.iterator();
+        MatcherAssert.assertThat(
+            "Id should match abc1",
+            itr.next().getString("Id"),
+            new IsEqual<>("abc1")
+        );
+        MatcherAssert.assertThat(
+            "Name should match def2",
+            itr.next().getString("Id"),
+            new IsEqual<>("def2")
         );
     }
 }
