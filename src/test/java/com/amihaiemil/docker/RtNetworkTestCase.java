@@ -31,13 +31,15 @@ import com.amihaiemil.docker.mock.Response;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.Charset;
 import javax.json.Json;
 import javax.json.JsonObject;
+
+import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpStatus;
+import org.apache.http.util.EntityUtils;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.collection.IsEmptyIterable;
 import org.hamcrest.core.IsEqual;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -60,7 +62,6 @@ public final class RtNetworkTestCase {
      * @throws Exception If something else goes wrong.
      */
     @Test
-    @Ignore
     public void inspectsItself() throws Exception {
         final Network network = new RtNetwork(
             Json.createObjectBuilder().build(),
@@ -114,12 +115,11 @@ public final class RtNetworkTestCase {
      * @throws Exception If something goes wrong.
      */
     @Test
-    @Ignore
     public void removeSendsCorrectRequest() throws Exception {
         new RtNetwork(
             Json.createObjectBuilder().build(),
             new AssertRequest(
-                new Response(HttpStatus.SC_OK),
+                new Response(HttpStatus.SC_NO_CONTENT),
                 new Condition(
                     "remove() must send a DELETE HTTP request",
                     req -> "DELETE".equals(req.getRequestLine().getMethod())
@@ -142,7 +142,6 @@ public final class RtNetworkTestCase {
      * @throws IOException If something goes wrong.
      */
     @Test
-    @Ignore
     public void connectContainer() throws IOException {
         final Network network = new RtNetwork(
             Json.createObjectBuilder().build(),
@@ -153,21 +152,31 @@ public final class RtNetworkTestCase {
                     req -> "POST".equals(req.getRequestLine().getMethod())
                 ),
                 new Condition(
-                    "connect() must send the request to the network url",
-                    req -> "http://localhost/network/id1".equals(
-                        req.getRequestLine().getUri()
-                    )
+                    "Resource path must be /connect",
+                    req -> req.getRequestLine().getUri().endsWith("/connect")
+                ),
+                new Condition(
+                    "connect() must send the the container in the request body",
+                    req -> {
+                        boolean condition = false;
+                        try{
+                            condition =
+                                EntityUtils.toString(
+                                    ((HttpEntityEnclosingRequest) req)
+                                    .getEntity(),
+                                    Charset.defaultCharset()
+                                ).contains("containerId");
+                        } catch (final IOException error){
+                            condition = false;
+                        }
+                        return condition;
+                    }
                 )
             ),
             URI.create("http://localhost/network/id1"),
             DOCKER
         );
         network.connect("containerId");
-        MatcherAssert.assertThat(
-            "could not create container",
-            network.inspect().getJsonArray("Container"),
-            new IsEmptyIterable<>()
-        );
     }
 
     /**
@@ -176,32 +185,40 @@ public final class RtNetworkTestCase {
      * @throws IOException If something goes wrong.
      */
     @Test
-    @Ignore
     public void disconnectContainer() throws IOException {
         final Network network = new RtNetwork(
             Json.createObjectBuilder().build(),
             new AssertRequest(
                 new Response(HttpStatus.SC_OK),
                 new Condition(
-                    "connect() must send a POST HTTP request",
+                    "disconnect() must send a POST HTTP request",
                     req -> "POST".equals(req.getRequestLine().getMethod())
                 ),
                 new Condition(
-                    "connect() must send the request to the network url",
-                    req -> "http://localhost/network/id1".equals(
-                        req.getRequestLine().getUri()
-                    )
+                    "Resource path must be /disconnect",
+                    req -> req.getRequestLine().getUri().endsWith("/disconnect")
+                ),
+                new Condition(
+                    "disconnect() must send the container in the request body",
+                    req -> {
+                        boolean condition = false;
+                        try{
+                            condition =
+                                EntityUtils.toString(
+                                    ((HttpEntityEnclosingRequest) req)
+                                    .getEntity(),
+                                    Charset.defaultCharset()
+                                ).contains("containerId");
+                        } catch (final IOException error){
+                            condition = false;
+                        }
+                        return condition;
+                    }
                 )
             ),
             URI.create("http://localhost/network/id1"),
             DOCKER
         );
-        network.connect("containerId");
         network.disconnect("containerId");
-        MatcherAssert.assertThat(
-            "could not create container",
-            network.inspect().getJsonArray("Container").size(),
-            new IsEqual<>(0)
-        );
     }
 }
