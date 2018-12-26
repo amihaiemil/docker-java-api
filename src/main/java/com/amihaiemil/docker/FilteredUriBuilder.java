@@ -36,7 +36,7 @@ import java.util.Map;
  * @version $Id$
  * @since 0.0.7
  */
-public final class FilteredUriBuilder extends URIBuilder {
+final class FilteredUriBuilder extends URIBuilder {
 
     /**
      * Wrapped {@link URIBuilder}.
