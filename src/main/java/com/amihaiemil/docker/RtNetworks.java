@@ -27,7 +27,9 @@ package com.amihaiemil.docker;
 
 import java.io.IOException;
 import java.net.URI;
-import javax.json.*;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -78,7 +80,7 @@ abstract class RtNetworks implements Networks {
     @Override
     public Network create(final String name, final JsonObject filters)
         throws IOException, UnexpectedResponseException {
-        JsonObjectBuilder json = Json.createObjectBuilder();
+        final JsonObjectBuilder json = Json.createObjectBuilder();
         json.add("Name", name);
         filters.forEach(json::add);
         return this.createNetwork(json);
@@ -138,7 +140,7 @@ abstract class RtNetworks implements Networks {
                     json.build().toString(), ContentType.APPLICATION_JSON
                 )
             );
-            JsonObject createResult = this.client.execute(
+            final JsonObject createResult = this.client.execute(
                 create,
                 new ReadJsonObject(
                     new MatchStatus(
@@ -147,7 +149,7 @@ abstract class RtNetworks implements Networks {
                     )
                 )
             );
-            if (createResult.size() > 0) {
+            if (!createResult.isEmpty()) {
                 return new RtNetwork(createResult,
                     this.client,
                     URI.create(

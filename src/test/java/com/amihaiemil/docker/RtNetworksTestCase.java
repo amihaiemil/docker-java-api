@@ -102,7 +102,7 @@ public final class RtNetworksTestCase {
      */
     @Test
     public void createOk() throws Exception {
-        Network network = new ListedNetworks(
+        final Network network = new ListedNetworks(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_CREATED,
@@ -150,7 +150,7 @@ public final class RtNetworksTestCase {
         final JsonObject labels = Json.createObjectBuilder()
             .add("label1", "label one")
             .add("label2", "label two").build();
-        Network network =
+        final Network network =
             new ListedNetworks(
                 new AssertRequest(
                     new Response(
