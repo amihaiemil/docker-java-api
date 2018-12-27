@@ -27,8 +27,12 @@ package com.amihaiemil.docker;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.hamcrest.collection.IsIterableWithSize;
 import org.junit.Test;
+import org.mockito.internal.matchers.GreaterOrEqual;
+
 import java.io.File;
+import java.nio.file.Paths;
 
 /**
  * Integration tests for LocalDocker.
@@ -48,6 +52,21 @@ public final class LocalDockerITCase {
             new File("/var/run/docker.sock")
         );
         MatcherAssert.assertThat(docker.ping(), Matchers.is(Boolean.TRUE));
+    }
+
+    /**
+     * LocalDocker can list {@link Volumes}.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void listVolumes() throws Exception {
+        final Docker docker = new LocalDocker(
+            Paths.get("/var/run/docker.sock").toFile()
+        );
+        MatcherAssert.assertThat(
+            docker.volumes(),
+            new IsIterableWithSize<>(new GreaterOrEqual<>(0))
+        );
     }
 
 }
