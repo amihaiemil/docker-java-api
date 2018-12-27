@@ -3,9 +3,11 @@ package com.amihaiemil.docker;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.function.Supplier;
+import java.util.Collections;
+import java.util.Map;
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 
 /**
  * An {@link Auth} holding a Registry Config.
@@ -17,9 +19,9 @@ import javax.json.JsonObject;
 public final class RegistryConfigAuth implements Auth {
 
     /**
-     * Base64-encoded JSON structure holding the regsitry config header value.
+     * All registry information.
      */
-    private final Supplier<String> value;
+    private final Map<URI, JsonObject> registries;
 
     /**
      * Ctor.
@@ -51,11 +53,15 @@ public final class RegistryConfigAuth implements Auth {
      * @param data The Json Object representing Auth Config.
      */
     private RegistryConfigAuth(final URI registry, final JsonObject data) {
-        this.value = () -> Base64.getEncoder().encodeToString(
-            Json.createObjectBuilder().add(registry.toString(), data)
-                .build().toString()
-                .getBytes(StandardCharsets.UTF_8)
-        );
+        this(Collections.singletonMap(registry, data));
+    }
+
+    /**
+     * Private Ctor.
+     * @param registries The registries URI and.
+     */
+    public RegistryConfigAuth(final Map<URI, JsonObject> registries) {
+        this.registries = registries;
     }
 
     @Override
@@ -65,6 +71,12 @@ public final class RegistryConfigAuth implements Auth {
 
     @Override
     public String encoded() {
-        return this.value.get();
+        final JsonObjectBuilder bldr = Json.createObjectBuilder();
+        this.registries.forEach(
+            (registry, value) -> bldr.add(registry.toString(), value)
+        );
+        return Base64.getEncoder().encodeToString(
+            bldr.build().toString().getBytes(StandardCharsets.UTF_8)
+        );
     }
 }
