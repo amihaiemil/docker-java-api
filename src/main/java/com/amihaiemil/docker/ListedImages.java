@@ -28,9 +28,6 @@ package com.amihaiemil.docker;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
@@ -80,18 +77,8 @@ final class ListedImages extends RtImages {
     public Iterator<Image> iterator() {
         final UncheckedUriBuilder uri = new UncheckedUriBuilder(
             super.baseUri().toString().concat("/json")
-        );
-        if (!this.filters.isEmpty()) {
-            final JsonObjectBuilder json = Json.createObjectBuilder();
-            this.filters.forEach(
-                (name, values) -> {
-                    final JsonArrayBuilder array = Json.createArrayBuilder();
-                    values.forEach(array::add);
-                    json.add(name, array);
-                }
-            );
-            uri.addParameter("filters", json.build().toString());
-        }
+        ).addFilters(this.filters);
+        
         return new ResourcesIterator<>(
             super.client(),
             new HttpGet(uri.build()),

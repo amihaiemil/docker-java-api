@@ -22,46 +22,40 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 package com.amihaiemil.docker;
 
-import java.io.IOException;
-import javax.json.JsonArray;
+import java.util.HashMap;
+import org.apache.http.client.utils.URIBuilder;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.collection.IsIterableWithSize;
+import org.hamcrest.core.IsEqual;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
- * Plugins API.
- * @author Boris Kuzmic (boris.kuzmic@gmail.com)
- * @since 0.0.7
- * @todo #232:30min Implement getting plugin privileges. More information
- *  about API method can be found at:
- *  https://docs.docker.com/engine/api/v1.35/#operation/GetPluginPrivileges
+ * Tests for {@link URIBuilder}.
+ * @author Paulo Lobo (pauloeduardolobo@gmail.com)
+ * @version $Id$
+ * @since 0.0.1
  */
-public interface Plugins extends Iterable<Plugin> {
+public class FilteredUriBuilderTest {
 
     /**
-     * Create a plugin.
-     * @param name Name of the plugin.
-     * @param directory Path to plugin's data dir.
-     * @throws IOException If something goes wrong.
-     * @throws UnexpectedResponseException If the status response is not
-     *  the expected one (200 OK).
-     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/PluginCreate">Create a plugin</a>
+     * Tests if the {@link FilteredUriBuilder} can add filter parameters.
      */
-    void create(final String name, final String directory)
-        throws IOException, UnexpectedResponseException;
+    @Test
+    @Ignore
+    public final void addFilterParameters() {
+        MatcherAssert.assertThat(
+            "Did not added filter parameters to URI",
+            new FilteredUriBuilder(
+                new URIBuilder(), new HashMap<>()
+            ).getQueryParams(),
+            new IsIterableWithSize<>(
+                new IsEqual<>(1)
+            )
+        );
 
-    /**
-     * Pulls and installs a plugin.
-     * @param remote Remote reference for plugin to install.
-     * @param name Local name for the pulled plugin.
-     * @param properties Json Array of plugin key-value properties.
-     * @throws IOException If something goes wrong.
-     * @throws UnexpectedResponseException If the status response is not
-     *  the expected one (200 OK).
-     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/PluginPull">Install a plugin</a>
-     */
-    void pullAndInstall(final String remote, final String name,
-                          final JsonArray properties)
-        throws IOException, UnexpectedResponseException;
-
+    }
 }

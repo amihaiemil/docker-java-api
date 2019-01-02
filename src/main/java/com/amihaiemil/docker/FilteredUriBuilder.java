@@ -25,43 +25,43 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
-import javax.json.JsonArray;
+import org.apache.http.client.utils.URIBuilder;
+
+import java.net.URI;
+import java.util.Map;
 
 /**
- * Plugins API.
- * @author Boris Kuzmic (boris.kuzmic@gmail.com)
+ * {@link URIBuilder} with filtering.
+ * @author Paulo Lobo (pauloeduardolobo@gmail.com)
+ * @version $Id$
  * @since 0.0.7
- * @todo #232:30min Implement getting plugin privileges. More information
- *  about API method can be found at:
- *  https://docs.docker.com/engine/api/v1.35/#operation/GetPluginPrivileges
  */
-public interface Plugins extends Iterable<Plugin> {
+final class FilteredUriBuilder extends URIBuilder {
 
     /**
-     * Create a plugin.
-     * @param name Name of the plugin.
-     * @param directory Path to plugin's data dir.
-     * @throws IOException If something goes wrong.
-     * @throws UnexpectedResponseException If the status response is not
-     *  the expected one (200 OK).
-     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/PluginCreate">Create a plugin</a>
+     * Wrapped {@link URIBuilder}.
      */
-    void create(final String name, final String directory)
-        throws IOException, UnexpectedResponseException;
+    private final URIBuilder origin;
 
     /**
-     * Pulls and installs a plugin.
-     * @param remote Remote reference for plugin to install.
-     * @param name Local name for the pulled plugin.
-     * @param properties Json Array of plugin key-value properties.
-     * @throws IOException If something goes wrong.
-     * @throws UnexpectedResponseException If the status response is not
-     *  the expected one (200 OK).
-     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/PluginPull">Install a plugin</a>
+     * Filters.
      */
-    void pullAndInstall(final String remote, final String name,
-                          final JsonArray properties)
-        throws IOException, UnexpectedResponseException;
+    private final Map<String, Iterable<String>> filters;
 
+    /**
+     * Constructor.
+     *
+     * @param builder Wrapped builder.
+     * @param filters Filters.
+     */
+    FilteredUriBuilder(final URIBuilder builder,
+        final Map<String, Iterable<String>> filters){
+        this.origin = builder;
+        this.filters = filters;
+    }
+
+    @Override
+    public URI build() {
+        throw new UnsupportedOperationException("filters not implemented yet");
+    }
 }
