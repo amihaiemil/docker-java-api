@@ -25,14 +25,13 @@
  */
 package com.amihaiemil.docker;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 
 /**
  * Listed images, which may have a filter applied.
@@ -75,9 +74,11 @@ final class ListedImages extends RtImages {
 
     @Override
     public Iterator<Image> iterator() {
-        final UncheckedUriBuilder uri = new UncheckedUriBuilder(
-            super.baseUri().toString().concat("/json")
-        ).addFilters(this.filters);
+        final FilteredUriBuilder uri = new FilteredUriBuilder(
+            new UncheckedUriBuilder(
+                super.baseUri().toString().concat("/json")
+            ),
+            this.filters);
         
         return new ResourcesIterator<>(
             super.client(),

@@ -71,10 +71,9 @@ final class ListedVolumes extends RtVolumes {
 
     @Override
     public Iterator<Volume> iterator() {
-        final UncheckedUriBuilder uri = new UncheckedUriBuilder(
-                super.baseUri().toString()
-        ).addFilters(this.filters);
-        
+        final FilteredUriBuilder uri = new FilteredUriBuilder(
+            new UncheckedUriBuilder(super.baseUri().toString()), this.filters
+        );
         return new ResourcesIterator<>(
             super.client(),
             new HttpGet(
