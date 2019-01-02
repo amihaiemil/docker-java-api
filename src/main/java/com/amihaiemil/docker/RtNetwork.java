@@ -27,6 +27,7 @@ package com.amihaiemil.docker;
 
 import java.io.IOException;
 import java.net.URI;
+import javax.json.Json;
 import javax.json.JsonObject;
 
 import org.apache.http.HttpStatus;
@@ -112,7 +113,8 @@ final class RtNetwork extends JsonResource implements Network {
         );
         post.setEntity(
             new StringEntity(
-                String.format("{\"Container\" : \"%s\"}", containerId)
+                Json.createObjectBuilder().add("Container", containerId)
+                .build().toString()
             )
         );
         try {
@@ -136,10 +138,10 @@ final class RtNetwork extends JsonResource implements Network {
         );
         post.setEntity(
             new StringEntity(
-                String.format(
-                    "{\"Container\" : \"%s\", \"Force\": \"true\"}",
-                    containerId
-                )
+                Json.createObjectBuilder()
+                .add("Container", containerId)
+                .add("Force", "true")
+                .build().toString()
             )
         );
         try {
