@@ -86,7 +86,7 @@ public final class RtLogsTestCase {
                 new Condition(
                     "Resource path must be /123/logs?follow=true",
                     req -> req.getRequestLine().getUri().endsWith(
-                        "/123/logs?follow=true"
+                        "/123/logs?follow=true&stdout=true&stderr=true"
                     )
                 )
             ),
@@ -122,7 +122,7 @@ public final class RtLogsTestCase {
                 new Condition(
                     "Resource path must be /123/logs",
                     req -> req.getRequestLine().getUri().endsWith(
-                        "/123/logs"
+                        "/123/logs?stdout=true&stderr=true"
                     )
                 )
             ),
@@ -155,7 +155,7 @@ public final class RtLogsTestCase {
                 new Condition(
                     "Resource path must be /123/logs",
                     req -> req.getRequestLine().getUri().endsWith(
-                        "/123/logs"
+                        "/123/logs?stdout=true&stderr=true"
                     )
                 )
             ),
