@@ -27,7 +27,7 @@ package com.amihaiemil.docker;
 
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
+import org.hamcrest.core.StringStartsWith;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -36,7 +36,7 @@ import java.io.File;
 /**
  * Integration tests for {@link RtLogs}.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- * @version $Id#
+ * @version $Id$
  * @since 0.0.7
  * @todo #256:30min Fix the IT case for follow(), it is currently failing.
  *  We might have to implement the stream decoding (in case TTY is disabled
@@ -57,12 +57,8 @@ public final class RtLogsITCase {
         ).images().pull("hello-world", "latest").run();
         final String logs = container.logs().fetch();
         MatcherAssert.assertThat(
-            logs,
-            Matchers.not(Matchers.isEmptyOrNullString())
-        );
-        MatcherAssert.assertThat(
             logs.trim(),
-            Matchers.startsWith("Hello from Docker!")
+            new StringStartsWith("Hello from Docker!")
         );
     }
 
@@ -78,12 +74,8 @@ public final class RtLogsITCase {
         ).images().pull("hello-world", "latest").run();
         final String logs = IOUtils.toString(container.logs().follow());
         MatcherAssert.assertThat(
-            logs,
-            Matchers.not(Matchers.isEmptyOrNullString())
-        );
-        MatcherAssert.assertThat(
             logs.trim(),
-            Matchers.startsWith("Hello from Docker!")
+            new StringStartsWith("Hello from Docker!")
         );
     }
 }
