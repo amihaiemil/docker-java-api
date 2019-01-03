@@ -42,6 +42,7 @@ final class PlainHttpClient extends HttpClientEnvelope {
         super(() -> HttpClients.custom()
             .setMaxConnPerRoute(10)
             .setMaxConnTotal(10)
+            .addInterceptorFirst(new UserAgentRequestHeader())
             .build()
         );
     }

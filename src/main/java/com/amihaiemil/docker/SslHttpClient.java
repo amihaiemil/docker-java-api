@@ -63,7 +63,9 @@ final class SslHttpClient extends HttpClientEnvelope {
                             .loadTrustMaterial(trust.toFile())
                             .loadKeyMaterial(keys.toFile(), storePwd, keyPwd)
                             .build()
-                    ).build();
+                    )
+                    .addInterceptorFirst(new UserAgentRequestHeader())
+                    .build();
             } catch (final IOException | GeneralSecurityException ex) {
                 throw new IllegalStateException(ex);
             }

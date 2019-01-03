@@ -25,51 +25,42 @@
  */
 package com.amihaiemil.docker;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.impl.client.HttpClientBuilder;
-import java.io.File;
-import java.util.function.Supplier;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import java.util.Collections;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.protocol.RequestDefaultHeaders;
+import org.apache.http.message.BasicHeader;
 
 /**
- * An HttpClient which works over a UnixSocket.
- *
- * @author Mihai Andronache (amihaiemil@gmail.com)
- * @version $Id$
- * @since 0.0.1
- * @checkstyle ParameterNumber (150 lines)
- * @checkstyle AnonInnerLength (150 lines)
+ * User Agent Request Header Interceptor.
+ * @author Boris Kuzmic (boris.kuzmic@gmail.com)
+ * @since 0.0.7
+ * @todo #244:30min Replace hardcoded version with the one loaded from
+ *  properties file. For example, create new version.properties file
+ *  with property: build.version=${project.version}, add to src/main/resources
+ *  and Maven filtering will do the rest.
  */
-final class UnixHttpClient extends HttpClientEnvelope {
+final class UserAgentRequestHeader extends RequestDefaultHeaders {
+
     /**
-     * Ctor.
-     * @param socketFile Unix socket on disk.
+     * Version constant.
      */
-    UnixHttpClient(final File socketFile) {
-        this(() -> {
-            final PoolingHttpClientConnectionManager pool =
-                new PoolingHttpClientConnectionManager(
-                    RegistryBuilder
-                        .<ConnectionSocketFactory>create()
-                        .register("unix", new UnixSocketFactory(socketFile))
-                        .build()
-                );
-            pool.setDefaultMaxPerRoute(10);
-            pool.setMaxTotal(10);
-            return HttpClientBuilder.create()
-                .setConnectionManager(pool)
-                .addInterceptorFirst(new UserAgentRequestHeader())
-                .build();
-        });
-    }
+    private static final String VERSION = "0.0.8-SNAPSHOT";
 
     /**
      * Ctor.
-     * @param client The http client
      */
-    UnixHttpClient(final Supplier<HttpClient> client) {
-        super(client);
+    UserAgentRequestHeader() {
+        super(Collections.singletonList(
+            new BasicHeader(
+                HttpHeaders.USER_AGENT,
+                String.join(
+                    " ",
+                    "docker-java-api /",
+                    VERSION,
+                    "See https://github.com/amihaiemil/docker-java-api"
+                )
+            )
+        ));
     }
+
 }
