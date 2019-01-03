@@ -25,10 +25,15 @@
  */
 package com.amihaiemil.docker;
 
-import org.apache.http.client.utils.URIBuilder;
-
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URIBuilder;
 
 /**
  * {@link URIBuilder} with filtering.
@@ -43,10 +48,6 @@ final class FilteredUriBuilder extends URIBuilder {
      */
     private final URIBuilder origin;
 
-    /**
-     * Filters.
-     */
-    private final Map<String, Iterable<String>> filters;
 
     /**
      * Constructor.
@@ -57,11 +58,42 @@ final class FilteredUriBuilder extends URIBuilder {
     FilteredUriBuilder(final URIBuilder builder,
         final Map<String, Iterable<String>> filters){
         this.origin = builder;
-        this.filters = filters;
+        this.addFilters(filters);
     }
 
     @Override
     public URI build() {
-        throw new UnsupportedOperationException("filters not implemented yet");
+        try {
+            return this.origin.build();
+        } catch (final URISyntaxException ex) {
+            throw new IllegalStateException(
+                "Unexpected error while building a URI!", ex
+            );
+        }
+    }
+
+    @Override
+    public List<NameValuePair> getQueryParams() {
+        return this.origin.getQueryParams();
+    }
+
+    /**
+     * Adds a JSON encoded `filters` parameter.
+     * @param filters Filters.
+     */
+    private void addFilters(final Map<String, Iterable<String>> filters) {
+        if (filters != null && !filters.isEmpty()) {
+            final JsonObjectBuilder json = Json.createObjectBuilder();
+            filters.forEach(
+                (name, values) -> {
+                    final JsonArrayBuilder array = Json.createArrayBuilder();
+                    values.forEach(array::add);
+                    json.add(name, array);
+                }
+            );
+            this.origin.addParameter("filters", json.build().toString());
+        }
+
+
     }
 }

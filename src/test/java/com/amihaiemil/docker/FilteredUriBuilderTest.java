@@ -25,12 +25,13 @@
 */
 package com.amihaiemil.docker;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import org.apache.http.client.utils.URIBuilder;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.collection.IsIterableWithSize;
 import org.hamcrest.core.IsEqual;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -45,17 +46,22 @@ public class FilteredUriBuilderTest {
      * Tests if the {@link FilteredUriBuilder} can add filter parameters.
      */
     @Test
-    @Ignore
     public final void addFilterParameters() {
+        final Map<String, Iterable<String>> filters = new HashMap<>();
+        filters.put(
+            "driver",
+            Arrays.asList(
+                "bridge"
+            )
+        );
         MatcherAssert.assertThat(
             "Did not added filter parameters to URI",
             new FilteredUriBuilder(
-                new URIBuilder(), new HashMap<>()
+                new URIBuilder(), filters
             ).getQueryParams(),
             new IsIterableWithSize<>(
                 new IsEqual<>(1)
             )
         );
-
     }
 }

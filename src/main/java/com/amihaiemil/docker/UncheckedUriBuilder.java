@@ -27,12 +27,6 @@ package com.amihaiemil.docker;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
-
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
-
 import org.apache.http.client.utils.URIBuilder;
 
 /**
@@ -61,33 +55,6 @@ final class UncheckedUriBuilder extends URIBuilder {
         final String name, final String value
     ) {
         super.addParameter(name, value);
-        return this;
-    }
-
-    /**
-     * Adds a JSON encoded `filters` parameter.
-     * 
-     * @param filters Value of the filters.
-     * @return A {@link UncheckedUriBuilder} instance.
-     * 
-     * @todo #240:30min Finish FilteredUriBuilder implementation moving this
-     *  method to that class and uncommenting test in FilteredUriBuilderTests
-     */
-    public UncheckedUriBuilder addFilters(
-        final Map<String, Iterable<String>> filters
-    ) {
-        if (filters != null && !filters.isEmpty()) {
-            final JsonObjectBuilder json = Json.createObjectBuilder();
-            filters.forEach(
-                (name, values) -> {
-                    final JsonArrayBuilder array = Json.createArrayBuilder();
-                    values.forEach(array::add);
-                    json.add(name, array);
-                }
-            );
-            this.addParameter("filters", json.build().toString());
-        }
-        
         return this;
     }
     
