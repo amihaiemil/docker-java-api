@@ -36,8 +36,9 @@ import java.util.Map;
  * @version $Id$
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Image">Docker Images API</a>
  * @since 0.0.1
- * @todo #98:30min Continue implementing the rest of the operations for the
- *  Images interface. See the docs referenced above for more details.
+ * @todo #170:30min Continue implementing the rest of the operations for the
+ *  Images interface. Already made the tests for import an image in
+ *  RtImagesTestCase. See the docs referenced above for more details.
  * @todo #152:30min Add Fake implementations of Images and Image, in order to
  *  unit test method save() and other future methods which may require more
  *  than 1 HTTP request. Currently, the unit testing infrastructure does

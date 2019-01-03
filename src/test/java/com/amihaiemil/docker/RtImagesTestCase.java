@@ -28,14 +28,19 @@ package com.amihaiemil.docker;
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
+import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpStatus;
+import org.apache.http.util.EntityUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import javax.json.Json;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -239,5 +244,46 @@ public final class RtImagesTestCase {
             ).docker(),
             Matchers.is(DOCKER)
         );
+    }
+
+    /**
+     * RtImages can import images successfully.
+     * @throws Exception If something goes wrong
+     */
+    @Test
+    @Ignore
+    public void importImage() throws Exception{
+        new ListedImages(
+            new AssertRequest(
+                new Response(HttpStatus.SC_OK),
+                new Condition(
+                    "import() must send a POST request",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "import() resource URL must be '/images/load'",
+                    req -> req.getRequestLine()
+                        .getUri().endsWith("/images/load")
+                ),
+                new Condition(
+                    "import() body must contain a tar archive containing image",
+                    req -> {
+                        boolean condition = false;
+                        try{
+                            condition =
+                                EntityUtils.toByteArray(
+                                    ((HttpEntityEnclosingRequest) req)
+                                    .getEntity()
+                                ).length > 0;
+                        } catch (final IOException error){
+                            condition = false;
+                        }
+                        return condition;
+                    }
+                )
+            ),
+            URI.create("http://localhost"),
+            DOCKER
+        ).importImage(new URL("http://localhost/images"), "docker-java-api");
     }
 }
