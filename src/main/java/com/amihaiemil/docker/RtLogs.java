@@ -43,10 +43,11 @@ import org.apache.http.client.methods.HttpGet;
  *  Since the class should be immutable, the parameters should come in the ctor
  *  and appended to the requests when they are performed. Let's leave this part
  *  for v0.0.3 or later, it's not urgent now.
- * @todo #130:30min Write some ITCase for the fetch() method. We might have to
- *  implement the stream decoding (in case TTY is disabled when the Container
- *  is created), as explained here, in "Stream format" paragraph:
- *  https://docs.docker.com/engine/api/v1.37/#operation/ContainerAttach
+ * @todo #256:30min Apparently, either stderr or stdout are mandatory params
+ *  when reading the logs. At the moment, we specify both as "true", but we
+ *  should give the user the option to chose. Let's implement Logs.stderr(),
+ *  Logs.stdout() and Logs.all() -- all 3 methods should return Logs. As usual,
+ *  RtLogs should remain immutable.
  */
 final class RtLogs implements Logs {
     
@@ -79,7 +80,12 @@ final class RtLogs implements Logs {
 
     @Override
     public String fetch() throws IOException, UnexpectedResponseException {
-        final HttpGet fetch = new HttpGet(this.baseUri.toString());
+        final HttpGet fetch = new HttpGet(
+            new UncheckedUriBuilder(this.baseUri.toString())
+                .addParameter("stdout", "true")
+                .addParameter("stderr", "true")
+                .build()
+        );
         try {
             return this.client.execute(
                 fetch,
@@ -101,6 +107,8 @@ final class RtLogs implements Logs {
         final HttpGet follow = new HttpGet(
             new UncheckedUriBuilder(this.baseUri.toString())
                 .addParameter("follow", "true")
+                .addParameter("stdout", "true")
+                .addParameter("stderr", "true")
                 .build()
         );
         return this.client.execute(
