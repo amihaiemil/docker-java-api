@@ -43,7 +43,7 @@ import org.apache.http.client.methods.HttpGet;
  *  Since the class should be immutable, the parameters should come in the ctor
  *  and appended to the requests when they are performed. Let's leave this part
  *  for v0.0.3 or later, it's not urgent now.
- * @todo @256:30min Apparently, either stderr or stdout are mandatory params
+ * @todo #256:30min Apparently, either stderr or stdout are mandatory params
  *  when reading the logs. At the moment, we specify both as "true", but we
  *  should give the user the option to chose. Let's implement Logs.stderr(),
  *  Logs.stdout() and Logs.all() -- all 3 methods should return Logs. As usual,
