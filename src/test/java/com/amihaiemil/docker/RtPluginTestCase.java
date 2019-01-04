@@ -151,7 +151,7 @@ public final class RtPluginTestCase {
                     .endsWith("/sshfs/enable")
                 )
             ),
-            URI.create("http://localhost/plugins/sshfs/enable"),
+            URI.create("http://localhost/plugins/sshfs"),
             DOCKER
         );
         plugin.enable();
@@ -180,7 +180,7 @@ public final class RtPluginTestCase {
                     .endsWith("/sshfs/enable")
                 )
             ),
-            URI.create("http://localhost/plugins/sshfs/enable"),
+            URI.create("http://localhost/plugins/sshfs"),
             DOCKER
         );
         plugin.enable();
@@ -227,7 +227,7 @@ public final class RtPluginTestCase {
                     .endsWith("/sshfs/disable")
                 )
             ),
-            URI.create("http://localhost/plugins/sshfs/disable"),
+            URI.create("http://localhost/plugins/sshfs"),
             DOCKER
         );
         plugin.disable();
@@ -256,12 +256,9 @@ public final class RtPluginTestCase {
                     .endsWith("/sshfs/disable")
                 )
             ),
-            URI.create("http://localhost/plugins/sshfs/disable"),
+            URI.create("http://localhost/plugins/sshfs"),
             DOCKER
         );
         plugin.disable();
     }
-
-
-
 }
