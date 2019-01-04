@@ -33,9 +33,6 @@ import javax.json.JsonArray;
  * Plugins API.
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @since 0.0.7
- * @todo #232:30min Implement getting plugin privileges. More information
- *  about API method can be found at:
- *  https://docs.docker.com/engine/api/v1.35/#operation/GetPluginPrivileges
  */
 public interface Plugins extends Iterable<Plugin> {
 
@@ -76,7 +73,6 @@ public interface Plugins extends Iterable<Plugin> {
      */
     Iterator<PluginPrivilege> privileges(final String remote)
         throws IOException, UnexpectedResponseException;
-
 
     /**
      * Return the Docker engine where these Plugins came from.
