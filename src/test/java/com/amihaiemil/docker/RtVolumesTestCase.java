@@ -3,6 +3,7 @@ package com.amihaiemil.docker;
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
+import java.io.IOException;
 import java.net.URI;
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -157,6 +158,21 @@ public final class RtVolumesTestCase {
             volume.getString("Name"),
             new IsEqual<>("testwithparameters")
         );
+    }
+
+    /**
+     * RtVolumes.create() must throw IOException if response is empty.
+     * @throws Exception The IOException.
+     */
+    @Test(expected = IOException.class)
+    public void createThrowsErrorOnEmptyResponse() throws Exception {
+        new ListedVolumes(
+            new AssertRequest(
+                new Response(HttpStatus.SC_CREATED)
+            ),
+            URI.create("http://localhost/volumes"),
+            DOCKER
+        ).create("test");
     }
 
     /**
