@@ -5,6 +5,7 @@ import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
 import java.net.URI;
 import javax.json.Json;
+import javax.json.JsonObject;
 import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
@@ -73,15 +74,20 @@ public final class RtVolumesTestCase {
      */
     @Test
     public void createOk() throws Exception {
-        new ListedVolumes(
+        final Volume volume = new ListedVolumes(
             new AssertRequest(
-                new Response(HttpStatus.SC_CREATED),
+                new Response(
+                    HttpStatus.SC_CREATED,
+                    Json.createObjectBuilder()
+                        .add("Name", "test")
+                        .build().toString()
+                ),
                 new Condition(
-                    "RtVolume.create() must send a POST HTTP request",
+                    "create() must send a POST HTTP request",
                     req -> "POST".equals(req.getRequestLine().getMethod())
                 ),
                 new Condition(
-                    "RtVolume.create() must send the request to the create url",
+                    "create() must send the request to the create url",
                     req -> "http://localhost/volumes/create".equals(
                         req.getRequestLine().getUri()
                     )
@@ -90,6 +96,67 @@ public final class RtVolumesTestCase {
             URI.create("http://localhost/volumes"),
             DOCKER
         ).create("test");
+        MatcherAssert.assertThat(
+            "could not return correct Volume name",
+            volume.getString("Name"),
+            new IsEqual<>("test")
+        );
+    }
+
+    /**
+     * RtVolumes.create() must send a correct POST request sends
+     * and exist successfully on response code 201.
+     * @throws Exception If something goes wrong.
+     * @checkstyle ExecutableStatementCount (100 lines)
+     */
+    @Test
+    public void createWithParametersOk() throws Exception {
+        final JsonObject labels = Json.createObjectBuilder()
+            .add("label1", "label one")
+            .add("label2", "label two").build();
+        final Volume volume =
+            new ListedVolumes(
+                new AssertRequest(
+                    new Response(
+                        HttpStatus.SC_CREATED,
+                        Json.createObjectBuilder()
+                            .add("Name", "testwithparameters")
+                            .build().toString()
+                    ),
+                    new Condition(
+                        "create() must send a POST HTTP request",
+                        req -> "POST".equals(req.getRequestLine().getMethod())
+                    ),
+                    new Condition(
+                        "create() must send the request to the create url",
+                        req -> "http://localhost/volumes/create".equals(
+                            req.getRequestLine().getUri()
+                        )
+                    ),
+                    new Condition(
+                        "create() must send Json body request",
+                        req -> {
+                            final JsonObject payload = new PayloadOf(req);
+                            // @checkstyle LineLength (2 lines)
+                            return payload.getString("Driver").equals("custom")
+                                && payload.getJsonObject("Labels").getString("label1").equals(labels.getString("label1"));
+                        }
+                    )
+                ),
+                URI.create("http://localhost/volumes"),
+                DOCKER
+            ).create(
+                "testwithparameters",
+                Json.createObjectBuilder()
+                    .add("Driver", "custom")
+                    .add("Labels", labels)
+                    .build()
+            );
+        MatcherAssert.assertThat(
+            "could not return correct Volume name",
+            volume.getString("Name"),
+            new IsEqual<>("testwithparameters")
+        );
     }
 
     /**

@@ -28,6 +28,7 @@ package com.amihaiemil.docker;
 import java.io.IOException;
 import java.net.URI;
 import javax.json.Json;
+import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -85,30 +86,18 @@ abstract class RtVolumes implements Volumes {
     }
 
     @Override
-    public void create(final String name)
+    public Volume create(final String name)
+        throws IOException, UnexpectedResponseException {
+        return this.create(name, Json.createObjectBuilder().build());
+    }
+
+    @Override
+    public Volume create(final String name, final JsonObject parameters)
         throws IOException, UnexpectedResponseException {
         JsonObjectBuilder json = Json.createObjectBuilder();
         json.add("Name", name);
-        final HttpPost create =
-            new HttpPost(
-                String.format("%s/%s", this.baseUri.toString(), "create")
-            );
-        try {
-            create.setEntity(
-                new StringEntity(
-                    json.build().toString(), ContentType.APPLICATION_JSON
-                )
-            );
-            this.client.execute(
-                create,
-                new MatchStatus(
-                    create.getURI(),
-                    HttpStatus.SC_CREATED
-                )
-            );
-        } finally {
-            create.releaseConnection();
-        }
+        parameters.forEach(json::add);
+        return this.createVolume(json);
     }
 
     @Override
@@ -130,5 +119,51 @@ abstract class RtVolumes implements Volumes {
      */
     URI baseUri() {
         return this.baseUri;
+    }
+
+    /**
+     * Create Volume using JsonObjectBuilder.
+     * @param json Json Object Builder object.
+     * @return The created Volume.
+     * @throws IOException If something goes wrong.
+     */
+    private Volume createVolume(final JsonObjectBuilder json)
+        throws IOException {
+        final HttpPost create =
+            new HttpPost(
+                String.format("%s/%s", this.baseUri.toString(), "create")
+            );
+        try {
+            create.setEntity(
+                new StringEntity(
+                    json.build().toString(), ContentType.APPLICATION_JSON
+                )
+            );
+            final JsonObject createResult = this.client.execute(
+                create,
+                new ReadJsonObject(
+                    new MatchStatus(
+                        create.getURI(),
+                        HttpStatus.SC_CREATED
+                    )
+                )
+            );
+            if (!createResult.isEmpty()) {
+                return new RtVolume(createResult,
+                    this.client,
+                    URI.create(
+                        String.format("%s/%s", this.baseUri.toString(),
+                            createResult.getString("Name"))
+                    ),
+                    this.docker
+                );
+            } else {
+                throw new IOException(
+                    "Got empty response from Volumes.create() method"
+                );
+            }
+        } finally {
+            create.releaseConnection();
+        }
     }
 }

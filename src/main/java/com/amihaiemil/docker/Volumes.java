@@ -26,6 +26,7 @@
 package com.amihaiemil.docker;
 
 import java.io.IOException;
+import javax.json.JsonObject;
 
 /**
  * Volumes API.
@@ -33,9 +34,6 @@ import java.io.IOException;
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @version $Id$
  * @since 0.0.1
- * @todo #183:30min Extend create with options to specify driver,
- *  driver options and add labels as specified at:
- *  https://docs.docker.com/engine/api/v1.35/#operation/VolumeCreate
  */
 public interface Volumes extends Iterable<Volume> {
 
@@ -45,9 +43,23 @@ public interface Volumes extends Iterable<Volume> {
      * @throws IOException If something goes wrong.
      * @throws UnexpectedResponseException If the status response is not
      *  the expected one (200 OK).
+     * @return The created volume.
      * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/VolumeCreate">Create a volume</a>
      */
-    void create(final String name)
+    Volume create(final String name)
+        throws IOException, UnexpectedResponseException;
+
+    /**
+     * Create a volume with options.
+     * @param name Name of the volume.
+     * @param parameters Volume parameters (driver, driver options, labels).
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (200 OK).
+     * @return The created volume.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/VolumeCreate">Create a volume</a>
+     */
+    Volume create(final String name, final JsonObject parameters)
         throws IOException, UnexpectedResponseException;
 
     /**
