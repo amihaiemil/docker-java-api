@@ -34,8 +34,8 @@ import javax.json.JsonObject;
  * A docker plugin.
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Plugin">Docker Plugin API</a>
- * @todo #251:30min Continue implementing rest of the Plugin methods.
- *  More information about API methods can be found at:
+ * @todo #266:30min Continue implementing rest of the Plugin methods besides
+ *  enable and disable. More information about API methods can be found at:
  *  https://docs.docker.com/engine/api/v1.35/#tag/Plugin
  * @since 0.0.7
  */

@@ -35,6 +35,7 @@ import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.IsEqual;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -43,6 +44,9 @@ import org.mockito.Mockito;
  *
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @since 0.0.8
+ * @todo #266:30min Implement Plugin#enable and Plugin#disable methods. The
+ *  tests are already coded, so after the implementation just remove the
+ *  ignore annotation from these tests
  * @checkstyle MethodName (500 lines)
  */
 public final class RtPluginTestCase {
@@ -105,5 +109,159 @@ public final class RtPluginTestCase {
             new IsEqual<>(true)
         );
     }
+
+    /**
+     * RtPlugin enable itself.
+     * @throws Exception If something goes wrong.
+     */
+    @Ignore
+    @Test
+    public void enablesItself() throws Exception {
+        new ListedPlugins(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NO_CONTENT
+                )
+            ),
+            URI.create("http://localhost/plugins"),
+            DOCKER
+        ).pullAndInstall(
+            "vieus/sshfs",
+            "sshfs",
+            Json.createArrayBuilder().add(
+                Json.createObjectBuilder()
+                .add("Name", "network")
+                .add("Description", "")
+                .add("Value", "host")
+            ).build()
+        );
+        final Plugin plugin = new RtPlugin(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "Resource path must be /{name}/enable",
+                    req -> req.getRequestLine().getUri()
+                    .endsWith("/sshfs/enable")
+                )
+            ),
+            URI.create("http://localhost/plugins/sshfs/enable"),
+            DOCKER
+        );
+        plugin.enable();
+    }
+
+    /**
+     * RtPlugin enable itself.
+     * @throws Exception If something goes wrong.
+     */
+    @Ignore
+    @Test
+    public void failsToEnableItselfWhenNotInstalled() throws Exception {
+        final Plugin plugin = new RtPlugin(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NOT_FOUND
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "Resource path must be /{name}/enable",
+                    req -> req.getRequestLine().getUri()
+                    .endsWith("/sshfs/enable")
+                )
+            ),
+            URI.create("http://localhost/plugins/sshfs/enable"),
+            DOCKER
+        );
+        plugin.enable();
+    }
+
+    /**
+     * RtPlugin disables itself.
+     * @throws Exception If something goes wrong.
+     */
+    @Ignore
+    @Test
+    public void disablesItself() throws Exception {
+        new ListedPlugins(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NO_CONTENT
+                )
+            ),
+            URI.create("http://localhost/plugins"),
+            DOCKER
+        ).pullAndInstall(
+            "vieus/sshfs",
+            "sshfs",
+            Json.createArrayBuilder().add(
+                Json.createObjectBuilder()
+                .add("Name", "network")
+                .add("Description", "")
+                .add("Value", "host")
+            ).build()
+        );
+        final Plugin plugin = new RtPlugin(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "Resource path must be /{name}/disable",
+                    req -> req.getRequestLine().getUri()
+                    .endsWith("/sshfs/disable")
+                )
+            ),
+            URI.create("http://localhost/plugins/sshfs/disable"),
+            DOCKER
+        );
+        plugin.disable();
+    }
+
+    /**
+     * RtPlugin enable itself.
+     * @throws Exception If something goes wrong.
+     */
+    @Ignore
+    @Test
+    public void failsToDisableItselfWhenNotInstalled() throws Exception {
+        final Plugin plugin = new RtPlugin(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NOT_FOUND
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "Resource path must be /{name}/disable",
+                    req -> req.getRequestLine().getUri()
+                    .endsWith("/sshfs/disable")
+                )
+            ),
+            URI.create("http://localhost/plugins/sshfs/disable"),
+            DOCKER
+        );
+        plugin.disable();
+    }
+
+
 
 }
