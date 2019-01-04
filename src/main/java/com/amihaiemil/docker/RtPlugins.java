@@ -96,4 +96,25 @@ abstract class RtPlugins implements Plugins {
             pull.releaseConnection();
         }
     }
+
+    @Override
+    public Docker docker() {
+        return this.docker;
+    }
+
+    /**
+     * Get the (protected) HttpClient for subclasses.
+     * @return HttpClient.
+     */
+    HttpClient client() {
+        return this.client;
+    }
+
+    /**
+     * Get the (protected) base URI for subclasses.
+     * @return URI.
+     */
+    URI baseUri() {
+        return this.baseUri;
+    }
 }

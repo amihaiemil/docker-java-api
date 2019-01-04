@@ -64,4 +64,10 @@ public interface Plugins extends Iterable<Plugin> {
                           final JsonArray properties)
         throws IOException, UnexpectedResponseException;
 
+
+    /**
+     * Return the Docker engine where these Plugins came from.
+     * @return Docker.
+     */
+    Docker docker();
 }

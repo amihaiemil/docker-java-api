@@ -26,8 +26,11 @@
 package com.amihaiemil.docker;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 
 /**
  * Listed plugins.
@@ -39,23 +42,54 @@ import org.apache.http.client.HttpClient;
 final class ListedPlugins extends RtPlugins {
 
     /**
+     * Plugins filters.
+     */
+    private final Map<String, Iterable<String>> filters;
+
+    /**
      * Ctor.
-     *
      * @param client The http client.
      * @param uri The URI for this Network API.
      * @param dkr The docker entry point.
      */
     ListedPlugins(final HttpClient client, final URI uri, final Docker dkr) {
+        this(client, uri, dkr, Collections.emptyMap());
+    }
+
+    /**
+     * Ctor with filters.
+     * @param client The http client.
+     * @param uri The URI for this Network API.
+     * @param dkr The docker entry point.
+     * @param filters The Plugin filter.
+     * @checkstyle ParameterNumber (3 lines)
+     */
+    ListedPlugins(final HttpClient client, final URI uri, final Docker dkr,
+                  final Map<String, Iterable<String>> filters) {
         super(client, uri, dkr);
+        this.filters = filters;
     }
 
     @Override
     public Iterator<Plugin> iterator() {
-        throw new UnsupportedOperationException(
-            String.join(" ",
-                "ListedPlugins.iterator() is not yet implemented.",
-                "If you can contribute please",
-                "do it here: https://www.github.com/amihaiemil/docker-java-api"
+        final FilteredUriBuilder uri = new FilteredUriBuilder(
+            new UncheckedUriBuilder(super.baseUri().toString()), this.filters
+        );
+        return new ResourcesIterator<>(
+            super.client(),
+            new HttpGet(
+                uri.build()
+            ),
+            plugin -> new RtPlugin(
+                plugin,
+                super.client(),
+                URI.create(
+                    String.format("%s/%s",
+                        super.baseUri().toString(),
+                        plugin.getString("Name")
+                    )
+                ),
+                super.docker()
             )
         );
     }
