@@ -115,10 +115,10 @@ public final class ListedPluginsTestCase {
                     //@checkstyle LineLength (1 line)
                     "iterate() query parameters must include the filters provided",
                     req -> {
-                        // @checkstyle LineLength (1 line)
-                        final List<NameValuePair> params = new UncheckedUriBuilder(
-                            req.getRequestLine().getUri()
-                        ).getQueryParams();
+                        final List<NameValuePair> params =
+                            new UncheckedUriBuilder(
+                                req.getRequestLine().getUri()
+                            ).getQueryParams();
                         // @checkstyle BooleanExpressionComplexity (5 lines)
                         return params.size() == 1
                             && "filters".equals(params.get(0).getName())

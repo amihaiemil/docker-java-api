@@ -71,7 +71,7 @@ public final class RtPluginTestCase {
                 ),
                 new Condition(
                     "Method should be a GET",
-                    req -> req.getRequestLine().getMethod().equals("GET")
+                    req -> "GET".equals(req.getRequestLine().getMethod())
                 ),
                 new Condition(
                     "Resource path must be /{name}/json",

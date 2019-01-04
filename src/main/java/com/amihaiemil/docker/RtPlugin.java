@@ -47,7 +47,7 @@ final class RtPlugin extends JsonResource implements Plugin {
     /**
      * Base URI.
      */
-    private final URI baseUri;
+    private final URI uri;
 
     /**
      * Docker API.
@@ -68,7 +68,7 @@ final class RtPlugin extends JsonResource implements Plugin {
     ) {
         super(rep);
         this.client = client;
-        this.baseUri = uri;
+        this.uri = uri;
         this.docker = dkr;
     }
 
@@ -76,7 +76,7 @@ final class RtPlugin extends JsonResource implements Plugin {
     public JsonObject inspect()
         throws IOException, UnexpectedResponseException {
         return new Inspection(this.client,
-            String.format("%s/%s", this.baseUri.toString(), "json"));
+            String.format("%s/%s", this.uri.toString(), "json"));
     }
 
     @Override
