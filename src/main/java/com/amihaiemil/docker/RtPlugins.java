@@ -2,9 +2,11 @@ package com.amihaiemil.docker;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Iterator;
 import javax.json.JsonArray;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 
@@ -95,6 +97,23 @@ abstract class RtPlugins implements Plugins {
         } finally {
             pull.releaseConnection();
         }
+    }
+
+    @Override
+    public Iterator<PluginPrivilege> privileges(final String remote)
+        throws IOException, UnexpectedResponseException {
+        final UncheckedUriBuilder uri =
+            new UncheckedUriBuilder(
+                this.baseUri.toString().concat("/privileges")
+            ).addParameter("remote", remote);
+
+        return new ResourcesIterator<>(
+            this.client,
+            new HttpGet(
+                uri.build()
+            ),
+            PluginPrivilege::new
+        );
     }
 
     @Override

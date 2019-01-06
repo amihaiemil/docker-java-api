@@ -30,6 +30,7 @@ import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Iterator;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -37,6 +38,8 @@ import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpStatus;
 import org.apache.http.util.EntityUtils;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -160,6 +163,49 @@ public final class RtPluginsTestCase {
             DOCKER
         ).pullAndInstall("vieus/sshfs", "sshfs",
             Json.createArrayBuilder().build()
+        );
+    }
+
+    /**
+     * RtPlugins.privileges(remote) must a correct GET request and retrieve
+     * list of plugin privileges.
+     * @throws Exception The UnexpectedResponseException.
+     */
+    @Test
+    public void iteratePluginPrivileges() throws Exception {
+        final Iterator<PluginPrivilege> privileges = new ListedPlugins(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    Json.createArrayBuilder()
+                        .add(Json.createObjectBuilder()
+                            .add("Name", "p1")
+                            .add("Description", "p1 desc")
+                            .add("Value",
+                                Json.createArrayBuilder()
+                                    .add("/data")
+                            )
+                        ).build().toString()
+                )
+            ),
+            URI.create("http://localhost/plugins"),
+            DOCKER
+        ).privileges("test");
+        final PluginPrivilege privilege = privileges.next();
+        MatcherAssert.assertThat(
+            "Name must be 'p1'",
+            privilege.name(),
+            new IsEqual<>("p1")
+        );
+        MatcherAssert.assertThat(
+            "Description must be 'p1 desc'",
+            privilege.description(),
+            new IsEqual<>("p1 desc")
+        );
+        MatcherAssert.assertThat(
+            "First value must be '/data'",
+            privilege.value().iterator().next(),
+            new IsEqual<>("/data")
         );
     }
 

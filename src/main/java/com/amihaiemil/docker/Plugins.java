@@ -26,6 +26,7 @@
 package com.amihaiemil.docker;
 
 import java.io.IOException;
+import java.util.Iterator;
 import javax.json.JsonArray;
 
 /**
@@ -62,6 +63,18 @@ public interface Plugins extends Iterable<Plugin> {
      */
     void pullAndInstall(final String remote, final String name,
                           final JsonArray properties)
+        throws IOException, UnexpectedResponseException;
+
+    /**
+     * Get plugin privileges.
+     * @param remote The name of the plugin.
+     * @return List of Plugin Privileges.
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (200 OK).
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/GetPluginPrivileges">Get plugin privileges</a>
+     */
+    Iterator<PluginPrivilege> privileges(final String remote)
         throws IOException, UnexpectedResponseException;
 
 
