@@ -1,0 +1,1 @@
+This is a dummy text file pretending to be tar. Used for unit tests only.

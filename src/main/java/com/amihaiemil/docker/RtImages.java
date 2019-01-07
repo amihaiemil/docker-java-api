@@ -25,15 +25,21 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URI;
-import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.StringJoiner;
+import javax.json.Json;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import javax.json.Json;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 
 /**
  * Runtime {@link Images}.
@@ -99,13 +105,28 @@ abstract class RtImages implements Images {
     }
 
     @Override
-    public Image importImage(
-        final URL source, final String repo
-    ) throws IOException, UnexpectedResponseException {
-        throw new UnsupportedOperationException(
-            "Not yet implemented. If you can contribute please,"
-            + " do it here: https://www.github.com/amihaiemil/docker-java-api"
+    public void importFromTar(
+        final String file) throws IOException, UnexpectedResponseException {
+        final HttpPost load  = new HttpPost(
+            new UncheckedUriBuilder(this.baseUri.toString().concat("/load"))
+                .build()
         );
+        try {
+            load.setEntity(
+                new StringEntity(
+                    new String(
+                        Files.readAllBytes(Paths.get(file))
+                    ),
+                    ContentType.DEFAULT_BINARY
+                )
+            );
+            this.client.execute(
+                load,
+                new MatchStatus(load.getURI(), HttpStatus.SC_OK)
+            );
+        } finally {
+            load.releaseConnection();
+        }
     }
 
     @Override

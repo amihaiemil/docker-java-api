@@ -27,7 +27,6 @@ package com.amihaiemil.docker;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.net.URL;
 import java.util.Map;
 
 /**
@@ -36,9 +35,6 @@ import java.util.Map;
  * @version $Id$
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Image">Docker Images API</a>
  * @since 0.0.1
- * @todo #170:30min Continue implementing the rest of the operations for the
- *  Images interface. Already made the tests for import an image in
- *  RtImagesTestCase. See the docs referenced above for more details.
  * @todo #152:30min Add Fake implementations of Images and Image, in order to
  *  unit test method save() and other future methods which may require more
  *  than 1 HTTP request. Currently, the unit testing infrastructure does
@@ -61,18 +57,15 @@ public interface Images extends Iterable<Image> {
     ) throws IOException, UnexpectedResponseException;
 
     /**
-     * Import an Image.
-     * @param source The URL from which the image can be retrieved.
-     * @param repo Repository name given to an image when it is imported.
-     *   The repo may include a tag.
-     * @return The imported Image.
+     * Import images from tar file.
+     *
+     * @param file Path to Tar file containing Images.
      * @throws IOException If an I/O error occurs.
      * @throws UnexpectedResponseException If the API responds with an
-     *  undexpected status.
+     *  unexpected status.
      */
-    Image importImage(
-        final URL source, final String repo
-    ) throws IOException, UnexpectedResponseException;
+    void importFromTar(
+        String file) throws IOException, UnexpectedResponseException;
 
     /**
      * Deletes unused images.

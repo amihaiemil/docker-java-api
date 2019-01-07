@@ -28,20 +28,17 @@ package com.amihaiemil.docker;
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
+import java.io.IOException;
+import java.net.URI;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.json.Json;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpStatus;
 import org.apache.http.util.EntityUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import javax.json.Json;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Unit tests for {@link RtImages}.
@@ -247,12 +244,11 @@ public final class RtImagesTestCase {
     }
 
     /**
-     * RtImages can import images successfully.
+     * RtImages can import images from tar successfully.
      * @throws Exception If something goes wrong
      */
     @Test
-    @Ignore
-    public void importImage() throws Exception{
+    public void importFromTar() throws Exception{
         new ListedImages(
             new AssertRequest(
                 new Response(HttpStatus.SC_OK),
@@ -282,8 +278,9 @@ public final class RtImagesTestCase {
                     }
                 )
             ),
-            URI.create("http://localhost"),
+            URI.create("http://localhost/images"),
             DOCKER
-        ).importImage(new URL("http://localhost/images"), "docker-java-api");
+            ).importFromTar(
+                this.getClass().getResource("/images.tar.txt").getFile());
     }
 }
