@@ -53,6 +53,33 @@ public interface Logs {
      *  the expected one.
      */
     Reader follow() throws IOException, UnexpectedResponseException;
+
+    /**
+     * Show both stdout and stderr logs.
+     * @return New Logs instance.
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one.
+     */
+    Logs all() throws IOException, UnexpectedResponseException;
+
+    /**
+     * Show stdout logs only.
+     * @return New Logs instance.
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one.
+     */
+    Logs stdout() throws IOException, UnexpectedResponseException;
+
+    /**
+     * Show stderr logs only.
+     * @return New Logs instance.
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one.
+     */
+    Logs stderr() throws IOException, UnexpectedResponseException;
     
     /**
      * The Container to which these Logs belong.
