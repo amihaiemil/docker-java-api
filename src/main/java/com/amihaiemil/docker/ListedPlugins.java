@@ -36,8 +36,6 @@ import org.apache.http.client.methods.HttpGet;
  * Listed plugins.
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @since 0.0.7
- * @todo #231:30min Implement ListedPlugins iterator with filtering using Map.
- *  See ListedImages or ListedVolumes as examples.
  */
 final class ListedPlugins extends RtPlugins {
 
