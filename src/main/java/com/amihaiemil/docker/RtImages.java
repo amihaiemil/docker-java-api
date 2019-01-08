@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.StringJoiner;
@@ -102,6 +103,18 @@ abstract class RtImages implements Images {
         } finally {
             create.releaseConnection();
         }
+    }
+
+    @Override
+    public Image importImage(
+        final URL source, final String repo
+    ) throws IOException, UnexpectedResponseException {
+        throw new UnsupportedOperationException(
+            String.join(" ",
+                "Not yet implemented. If you can contribute please,",
+                "do it here: https://www.github.com/amihaiemil/docker-java-api"
+            )
+        );
     }
 
     @Override

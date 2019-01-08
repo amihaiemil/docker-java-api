@@ -27,6 +27,7 @@ package com.amihaiemil.docker;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URL;
 import java.util.Map;
 
 /**
@@ -39,6 +40,11 @@ import java.util.Map;
  *  unit test method save() and other future methods which may require more
  *  than 1 HTTP request. Currently, the unit testing infrastructure does
  *  not support more than 1 HTTP request..
+ * @todo #254:30min Implement importImage method and create tests. Please note
+ *  that this method is implemented using Docker API Image Create method.
+ *  See https://docs.docker.com/engine/api/v1.35/#operation/ImageCreate for more
+ *  details.
+ * @todo #254:30mim ImportFromTar method should return Image instead of void.
  */
 public interface Images extends Iterable<Image> {
 
@@ -54,6 +60,20 @@ public interface Images extends Iterable<Image> {
      */
     Image pull(
         final String name, final String tag
+    ) throws IOException, UnexpectedResponseException;
+
+    /**
+     * Import an Image.
+     * @param source The URL from which the image can be retrieved.
+     * @param repo Repository name given to an image when it is imported.
+     *   The repo may include a tag.
+     * @return The imported Image.
+     * @throws IOException If an I/O error occurs.
+     * @throws UnexpectedResponseException If the API responds with an
+     *  undexpected status.
+     */
+    Image importImage(
+        final URL source, final String repo
     ) throws IOException, UnexpectedResponseException;
 
     /**
