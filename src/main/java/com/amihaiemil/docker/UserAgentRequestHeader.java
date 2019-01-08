@@ -25,7 +25,10 @@
  */
 package com.amihaiemil.docker;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
+import java.util.Properties;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.protocol.RequestDefaultHeaders;
 import org.apache.http.message.BasicHeader;
@@ -34,17 +37,18 @@ import org.apache.http.message.BasicHeader;
  * User Agent Request Header Interceptor.
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @since 0.0.7
- * @todo #244:30min Replace hardcoded version with the one loaded from
- *  properties file. For example, create new version.properties file
- *  with property: build.version=${project.version}, add to src/main/resources
- *  and Maven filtering will do the rest.
  */
 final class UserAgentRequestHeader extends RequestDefaultHeaders {
 
     /**
-     * Version constant.
+     * Config properties file.
      */
-    private static final String VERSION = "0.0.8-SNAPSHOT";
+    private static final String CONFIG_FILE = "config.properties";
+
+    /**
+     * Version property key.
+     */
+    private static final String VERSION_KEY = "build.version";
 
     /**
      * Ctor.
@@ -56,11 +60,32 @@ final class UserAgentRequestHeader extends RequestDefaultHeaders {
                 String.join(
                     " ",
                     "docker-java-api /",
-                    VERSION,
+                    version(),
                     "See https://github.com/amihaiemil/docker-java-api"
                 )
             )
         ));
+    }
+
+    /**
+     * Read current version from property file.
+     * @return Build version.
+     */
+    private static String version() {
+        final ClassLoader loader =
+            Thread.currentThread().getContextClassLoader();
+        final String version;
+        final Properties properties = new Properties();
+        try (final InputStream inputStream =
+                 loader.getResourceAsStream(CONFIG_FILE)){
+            properties.load(inputStream);
+            version = properties.getProperty(VERSION_KEY);
+        } catch (final IOException exception) {
+            throw new RuntimeException(
+                String.format("Missing %s file.", CONFIG_FILE)
+            );
+        }
+        return version;
     }
 
 }
