@@ -168,40 +168,6 @@ public final class RtLogsTestCase {
     }
 
     /**
-     * RtLogs.all().fetch() fetches all the logs as String.
-     * @throws Exception If something goes wrong.
-     */
-    @Test
-    public void logAll() throws Exception {
-        final Logs logs = new RtLogs(
-            Mockito.mock(Container.class),
-            new AssertRequest(
-                new Response(
-                    HttpStatus.SC_OK,
-                    Json.createObjectBuilder()
-                        .add("logs", "all logs")
-                        .build().toString()
-                ),
-                new Condition(
-                    "Method should be a GET",
-                    req -> req.getRequestLine().getMethod().equals("GET")
-                ),
-                new Condition(
-                    "Resource path must be /123/logs",
-                    req -> req.getRequestLine().getUri().endsWith(
-                        "/123/logs?stdout=true&stderr=true"
-                    )
-                )
-            ),
-            URI.create("http://localhost:80/1.30/containers/123/logs")
-        );
-        MatcherAssert.assertThat(
-            logs.all().fetch(),
-            Matchers.equalTo("{\"logs\":\"all logs\"}")
-        );
-    }
-
-    /**
      * RtLogs.stdout().fetch() fetches only stdout logs as String.
      * @throws Exception If something goes wrong.
      */

@@ -43,6 +43,9 @@ import org.apache.http.client.methods.HttpGet;
  *  Since the class should be immutable, the parameters should come in the ctor
  *  and appended to the requests when they are performed. Let's leave this part
  *  for v0.0.3 or later, it's not urgent now.
+ * @todo #258:30min Find a way to create more elegant solution for optional
+ *  parameters like stdout and stderr. There are more optional parameters so,
+ *  maybe use a Map instead of separate class attributes.
  */
 final class RtLogs implements Logs {
     
@@ -146,11 +149,6 @@ final class RtLogs implements Logs {
                 )
             )
         );
-    }
-
-    @Override
-    public Logs all() throws IOException, UnexpectedResponseException {
-        return new RtLogs(this.owner, this.client, this.baseUri, true, true);
     }
 
     @Override
