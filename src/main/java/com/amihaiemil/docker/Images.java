@@ -44,9 +44,9 @@ import java.util.Map;
  *  that this method is implemented using Docker API Image Create method.
  *  See https://docs.docker.com/engine/api/v1.35/#operation/ImageCreate for more
  *  details.
- * @todo #254:30mim ImportFromTar method should return Image instead of void. Find a way to
- *  read the imported Image's identifier, maybe add a new implementation of Image for this
- *  case.
+ * @todo #254:30mim ImportFromTar method should return Image instead of void.
+ *  Find a way to read the imported Image's identifier, maybe add a new
+ *  implementation of Image for this case.
  */
 public interface Images extends Iterable<Image> {
 
