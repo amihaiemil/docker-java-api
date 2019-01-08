@@ -43,11 +43,9 @@ import org.apache.http.client.methods.HttpGet;
  *  Since the class should be immutable, the parameters should come in the ctor
  *  and appended to the requests when they are performed. Let's leave this part
  *  for v0.0.3 or later, it's not urgent now.
- * @todo #256:30min Apparently, either stderr or stdout are mandatory params
- *  when reading the logs. At the moment, we specify both as "true", but we
- *  should give the user the option to chose. Let's implement Logs.stderr(),
- *  Logs.stdout() and Logs.all() -- all 3 methods should return Logs. As usual,
- *  RtLogs should remain immutable.
+ * @todo #258:30min Find a way to create more elegant solution for optional
+ *  parameters like stdout and stderr. There are more optional parameters so,
+ *  maybe use a Map instead of separate class attributes.
  */
 final class RtLogs implements Logs {
     
@@ -65,6 +63,16 @@ final class RtLogs implements Logs {
      * Base URI.
      */
     private final URI baseUri;
+
+    /**
+     * Flag for stdout option.
+     */
+    private final boolean stdout;
+
+    /**
+     * Flag for stderr option.
+     */
+    private final boolean stderr;
     
     /**
      * Ctor.
@@ -76,14 +84,35 @@ final class RtLogs implements Logs {
         this.owner = owner;
         this.client = client;
         this.baseUri = baseUri;
+        this.stdout = true;
+        this.stderr = true;
+    }
+
+    /**
+     * Ctor.
+     * @param owner Container which has these logs.
+     * @param client Given HTTP Client.
+     * @param baseUri Base URI of these logs.
+     * @param stdout Flag for stdout option.
+     * @param stderr Flag for stderr option.
+     * @checkstyle ParameterNumber (3 lines)
+     */
+    private RtLogs(final Container owner, final HttpClient client,
+                   final URI baseUri, final boolean stdout,
+                   final boolean stderr) {
+        this.owner = owner;
+        this.client = client;
+        this.baseUri = baseUri;
+        this.stdout = stdout;
+        this.stderr = stderr;
     }
 
     @Override
     public String fetch() throws IOException, UnexpectedResponseException {
         final HttpGet fetch = new HttpGet(
             new UncheckedUriBuilder(this.baseUri.toString())
-                .addParameter("stdout", "true")
-                .addParameter("stderr", "true")
+                .addParameter("stdout", Boolean.toString(this.stdout))
+                .addParameter("stderr", Boolean.toString(this.stderr))
                 .build()
         );
         try {
@@ -107,8 +136,8 @@ final class RtLogs implements Logs {
         final HttpGet follow = new HttpGet(
             new UncheckedUriBuilder(this.baseUri.toString())
                 .addParameter("follow", "true")
-                .addParameter("stdout", "true")
-                .addParameter("stderr", "true")
+                .addParameter("stdout", Boolean.toString(this.stdout))
+                .addParameter("stderr", Boolean.toString(this.stderr))
                 .build()
         );
         return this.client.execute(
@@ -120,6 +149,16 @@ final class RtLogs implements Logs {
                 )
             )
         );
+    }
+
+    @Override
+    public Logs stdout() throws IOException, UnexpectedResponseException {
+        return new RtLogs(this.owner, this.client, this.baseUri, true, false);
+    }
+
+    @Override
+    public Logs stderr() throws IOException, UnexpectedResponseException {
+        return new RtLogs(this.owner, this.client, this.baseUri, false, true);
     }
 
     @Override
