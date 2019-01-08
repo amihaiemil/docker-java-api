@@ -41,9 +41,9 @@ import org.apache.http.message.BasicHeader;
 final class UserAgentRequestHeader extends RequestDefaultHeaders {
 
     /**
-     * Version properties file.
+     * Config properties file.
      */
-    private static final String VERSION_FILE = "version.properties";
+    private static final String CONFIG_FILE = "config.properties";
 
     /**
      * Version property key.
@@ -74,16 +74,15 @@ final class UserAgentRequestHeader extends RequestDefaultHeaders {
     private static String version() {
         final ClassLoader loader =
             Thread.currentThread().getContextClassLoader();
-        final InputStream inputStream =
-            loader.getResourceAsStream(VERSION_FILE);
         final String version;
         final Properties properties = new Properties();
-        try {
+        try (final InputStream inputStream =
+                 loader.getResourceAsStream(CONFIG_FILE)){
             properties.load(inputStream);
             version = properties.getProperty(VERSION_KEY);
         } catch (final IOException exception) {
             throw new RuntimeException(
-                String.format("Missing %s file.", VERSION_FILE)
+                String.format("Missing %s file.", CONFIG_FILE)
             );
         }
         return version;
