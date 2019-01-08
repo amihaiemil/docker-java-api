@@ -34,9 +34,10 @@ import javax.json.JsonObject;
  * A docker plugin.
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @see <a href="https://docs.docker.com/engine/api/v1.35/#tag/Plugin">Docker Plugin API</a>
- * @todo #266:30min Continue implementing rest of the Plugin methods besides
- *  enable and disable. More information about API methods can be found at:
- *  https://docs.docker.com/engine/api/v1.35/#tag/Plugin
+ * @todo #266:30min Implement Plugin#configure method. The tests are already
+ *  coded, so after the implementation just remove the ignore annotation from
+ *  these tests. More information about Configure API method can be found at:
+ *  https://docs.docker.com/engine/api/v1.35/#operation/PluginSet
  * @since 0.0.7
  */
 public interface Plugin extends JsonObject {

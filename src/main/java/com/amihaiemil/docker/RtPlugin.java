@@ -33,6 +33,9 @@ import javax.json.JsonObject;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.client.methods.HttpPost;
 
 /**
  * Runtime {@link Plugin}.
@@ -122,24 +125,47 @@ final class RtPlugin extends JsonResource implements Plugin {
     @Override
     public void upgrade(final String remote, final JsonArray properties)
         throws IOException, UnexpectedResponseException {
-        throw new UnsupportedOperationException(
-            String.join(" ",
-                "RtPlugin.upgrade() is not yet implemented.",
-                "If you can contribute please",
-                "do it here: https://www.github.com/amihaiemil/docker-java-api"
-            )
-        );
+        final HttpPost upgrade =
+            new HttpPost(
+                new UncheckedUriBuilder(this.uri.toString().concat("/upgrade"))
+                    .addParameter("remote", remote)
+                    .build()
+            );
+        try {
+            upgrade.setEntity(
+                new StringEntity(
+                    properties.toString(), ContentType.APPLICATION_JSON
+                )
+            );
+            this.client.execute(
+                upgrade,
+                new MatchStatus(
+                    upgrade.getURI(),
+                    HttpStatus.SC_NO_CONTENT
+                )
+            );
+        } finally {
+            upgrade.releaseConnection();
+        }
     }
 
     @Override
     public void push() throws IOException, UnexpectedResponseException {
-        throw new UnsupportedOperationException(
-            String.join(" ",
-                "RtPlugin.push() is not yet implemented.",
-                "If you can contribute please",
-                "do it here: https://www.github.com/amihaiemil/docker-java-api"
-            )
-        );
+        final HttpPost push =
+            new HttpPost(
+                String.format("%s/%s", this.uri.toString(), "push")
+            );
+        try {
+            this.client.execute(
+                push,
+                new MatchStatus(
+                    push.getURI(),
+                    HttpStatus.SC_OK
+                )
+            );
+        } finally {
+            push.releaseConnection();
+        }
     }
 
     @Override

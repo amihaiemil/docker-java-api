@@ -28,13 +28,21 @@ package com.amihaiemil.docker;
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
+import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpStatus;
+import org.apache.http.util.EntityUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.IsEqual;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -43,6 +51,8 @@ import org.mockito.Mockito;
  *
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @since 0.0.8
+ * @todo #266:30min Extract method stringPayloadOf to class to reuse in
+ *  other test cases (like in RtPluginsTestCase.createOk() method)
  * @checkstyle MethodName (500 lines)
  */
 public final class RtPluginTestCase {
@@ -153,7 +163,7 @@ public final class RtPluginTestCase {
     }
 
     /**
-     * RtPluginenable() must throw UnexpectedResponseException
+     * RtPlugin enable() must throw UnexpectedResponseException
      * if service responds with 404.
      * @throws Exception If something goes wrong.
      */
@@ -254,5 +264,282 @@ public final class RtPluginTestCase {
             DOCKER
         );
         plugin.disable();
+    }
+
+    /**
+     * RtPlugin upgrade with properties ok.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void upgradeOk() throws Exception {
+        new ListedPlugins(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NO_CONTENT
+                )
+            ),
+            URI.create("http://localhost/plugins"),
+            DOCKER
+        ).pullAndInstall(
+            "vieus/sshfs",
+            "sshfs",
+            Json.createArrayBuilder().add(
+                Json.createObjectBuilder()
+                    .add("Name", "network")
+                    .add("Description", "")
+                    .add("Value", "host")
+            ).build()
+        );
+        final JsonArray properties = Json.createArrayBuilder().add(
+            Json.createObjectBuilder()
+                .add("Name", "mount")
+                .add("Description", "")
+                .add("Value", "/data")
+        ).build();
+        final Plugin plugin = new RtPlugin(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NO_CONTENT
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "Resource path must be /{name}/upgrade?remote=test",
+                    req -> req.getRequestLine().getUri()
+                        .endsWith("/sshfs/upgrade?remote=test")
+                ),
+                new Condition(
+                    "upgrade() must send JsonArray request body",
+                    req -> {
+                        JsonObject payload =
+                            new ArrayPayloadOf(req).next();
+                        return "mount".equals(payload.getString("Name"))
+                            && "/data".equals(payload.getString("Value"));
+                    }
+                )
+            ),
+            URI.create("http://localhost/plugins/sshfs"),
+            DOCKER
+        );
+        plugin.upgrade("test", properties);
+    }
+
+    /**
+     * RtPlugin upgrade throws UnexpectedResponseException if service
+     * responds with 404.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void upgradeFailsPluginNotInstalled() throws Exception {
+        final Plugin plugin = new RtPlugin(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NOT_FOUND
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "Resource path must be /{name}/upgrade?remote=test",
+                    req -> req.getRequestLine().getUri()
+                        .endsWith("/sshfs/upgrade?remote=test")
+                )
+            ),
+            URI.create("http://localhost/plugins/sshfs"),
+            DOCKER
+        );
+        final JsonArray properties = Json.createArrayBuilder().add(
+            Json.createObjectBuilder()
+                .add("Name", "mount")
+                .add("Description", "")
+                .add("Value", "/data")
+        ).build();
+        plugin.upgrade("test", properties);
+    }
+
+    /**
+     * RtPlugin push to repository ok.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void pushOk() throws Exception {
+        new ListedPlugins(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NO_CONTENT
+                )
+            ),
+            URI.create("http://localhost/plugins"),
+            DOCKER
+        ).pullAndInstall(
+            "vieus/sshfs",
+            "sshfs",
+            Json.createArrayBuilder().add(
+                Json.createObjectBuilder()
+                    .add("Name", "network")
+                    .add("Description", "")
+                    .add("Value", "host")
+            ).build()
+        );
+        final Plugin plugin = new RtPlugin(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "Resource path must be /{name}/push",
+                    req -> req.getRequestLine().getUri()
+                        .endsWith("/sshfs/push")
+                )
+            ),
+            URI.create("http://localhost/plugins/sshfs"),
+            DOCKER
+        );
+        plugin.push();
+    }
+
+    /**
+     * RtPlugin push throws UnexpectedResponseException if service
+     * responds with 404.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void pushFailsPluginNotInstalled() throws Exception {
+        final Plugin plugin = new RtPlugin(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NOT_FOUND
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "Resource path must be /{name}/push",
+                    req -> req.getRequestLine().getUri()
+                        .endsWith("/sshfs/push")
+                )
+            ),
+            URI.create("http://localhost/plugins/sshfs"),
+            DOCKER
+        );
+        plugin.push();
+    }
+
+    /**
+     * RtPlugin configure plugin.
+     * @throws Exception If something goes wrong.
+     */
+    @Ignore
+    @Test
+    public void configureOk() throws Exception {
+        new ListedPlugins(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NO_CONTENT
+                )
+            ),
+            URI.create("http://localhost/plugins"),
+            DOCKER
+        ).pullAndInstall(
+            "vieus/sshfs",
+            "sshfs",
+            Json.createArrayBuilder().add(
+                Json.createObjectBuilder()
+                    .add("Name", "network")
+                    .add("Description", "")
+                    .add("Value", "host")
+            ).build()
+        );
+        final Map<String, String> options = new HashMap<>();
+        options.put("DEBUG", "1");
+        final Plugin plugin = new RtPlugin(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NO_CONTENT
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "Resource path must be /{name}/set",
+                    req -> req.getRequestLine().getUri()
+                        .endsWith("/sshfs/set")
+                ),
+                new Condition(
+                    "configure() must send String Array as request body",
+                    req -> "[\"DEBUG=1\"]".equals(this.stringPayloadOf(req))
+                )
+            ),
+            URI.create("http://localhost/plugins/sshfs"),
+            DOCKER
+        );
+        plugin.configure(options);
+    }
+
+    /**
+     * RtPlugin configure throws UnexpectedResponseException if service
+     * responds with 404.
+     * @throws Exception If something goes wrong.
+     */
+    @Ignore
+    @Test(expected = UnexpectedResponseException.class)
+    public void configureFailsPluginNotInstalled() throws Exception {
+        final Plugin plugin = new RtPlugin(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NOT_FOUND
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> "POST".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "Resource path must be /{name}/set",
+                    req -> req.getRequestLine().getUri()
+                        .endsWith("/sshfs/set")
+                )
+            ),
+            URI.create("http://localhost/plugins/sshfs"),
+            DOCKER
+        );
+        plugin.configure(new HashMap<>());
+    }
+
+    /**
+     * Extracts request payload as String.
+     * @param request Http Request.
+     * @return Payload as String.
+     */
+    private String stringPayloadOf(final HttpRequest request) {
+        try {
+            final String payload;
+            if (request instanceof HttpEntityEnclosingRequest) {
+                payload = EntityUtils.toString(
+                    ((HttpEntityEnclosingRequest) request).getEntity()
+                );
+            } else {
+                payload = "";
+            }
+            return payload;
+        } catch (final IOException ex) {
+            throw new IllegalStateException(
+                "Cannot read request payload", ex
+            );
+        }
     }
 }

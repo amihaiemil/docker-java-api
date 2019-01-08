@@ -137,7 +137,7 @@ public final class RtPluginsTestCase {
                     "pullAndInstall() must send Json body request",
                     req -> {
                         JsonObject payload =
-                            this.arrayPayloadOf(req).getJsonObject(0);
+                            new ArrayPayloadOf(req).next();
                         return "network".equals(payload.getString("Name"))
                             && "host".equals(payload.getString("Value"));
                     }
@@ -225,30 +225,6 @@ public final class RtPluginsTestCase {
                 payload = "";
             }
             return payload;
-        } catch (final IOException ex) {
-            throw new IllegalStateException(
-                "Cannot read request payload", ex
-            );
-        }
-    }
-
-    /**
-     * Extracts request payload as JsonArray.
-     * @param request Http Request.
-     * @return Payload as Json array.
-     */
-    private JsonArray arrayPayloadOf(final HttpRequest request) {
-        try {
-            final JsonArray body;
-            if (request instanceof HttpEntityEnclosingRequest) {
-                body = Json.createReader(
-                    ((HttpEntityEnclosingRequest) request).getEntity()
-                        .getContent()
-                ).readArray();
-            } else {
-                body =  Json.createArrayBuilder().build();
-            }
-            return body;
         } catch (final IOException ex) {
             throw new IllegalStateException(
                 "Cannot read request payload", ex

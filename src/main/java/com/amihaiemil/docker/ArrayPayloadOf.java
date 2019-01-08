@@ -1,0 +1,84 @@
+/**
+ * Copyright (c) 2019, Mihai Emil Andronache
+ * All rights reserved.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 1)Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ * 2)Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ * 3)Neither the name of docker-java-api nor the names of its
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+package com.amihaiemil.docker;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpRequest;
+
+/**
+ * Json Array payload of an HttpRequest.
+ *
+ * @author Boris Kuzmic (boris.kuzmic@gmail.com)
+ * @since 0.0.8
+ * @todo #266:30min Add tests for ArrayPayloadOf.
+ */
+final class ArrayPayloadOf implements Iterator<JsonObject> {
+
+    /**
+     * List of JsonObjects.
+     */
+    private final Iterator<JsonObject> resources;
+
+    /**
+     * Ctor.
+     *
+     * @param request The http request
+     * @throws IllegalStateException if the request's payload cannot be read
+     */
+    ArrayPayloadOf(final HttpRequest request) {
+        try (JsonReader reader = Json.createReader(
+            ((HttpEntityEnclosingRequest) request).getEntity().getContent())) {
+            final JsonArray body;
+            if (request instanceof HttpEntityEnclosingRequest) {
+                this.resources =
+                    reader.readArray().getValuesAs(JsonObject.class).iterator();
+            } else {
+                this.resources = new ArrayList<JsonObject>().iterator();
+            }
+        } catch (final IOException ex) {
+            throw new IllegalStateException(
+                "Cannot read request payload", ex
+            );
+        }
+    }
+
+    @Override
+    public boolean hasNext() {
+        return this.resources.hasNext();
+    }
+
+    @Override
+    public JsonObject next() {
+        return this.resources.next();
+    }
+}
