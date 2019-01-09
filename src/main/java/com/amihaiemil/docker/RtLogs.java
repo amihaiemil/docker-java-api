@@ -150,6 +150,7 @@ final class RtLogs implements Logs {
     @Override
     public Logs stdout() throws IOException, UnexpectedResponseException {
         final Map<String, String> params = new HashMap<>();
+        params.putAll(this.options);
         params.put("stdout", "true");
         params.put("stderr", "false");
         return new RtLogs(this.owner, this.client, this.baseUri, params);
@@ -158,6 +159,7 @@ final class RtLogs implements Logs {
     @Override
     public Logs stderr() throws IOException, UnexpectedResponseException {
         final Map<String, String> params = new HashMap<>();
+        params.putAll(this.options);
         params.put("stdout", "false");
         params.put("stderr", "true");
         return new RtLogs(this.owner, this.client, this.baseUri, params);
