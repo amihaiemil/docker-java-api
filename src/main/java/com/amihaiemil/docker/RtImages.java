@@ -109,12 +109,28 @@ abstract class RtImages implements Images {
     public Image importImage(
         final URL source, final String repo
     ) throws IOException, UnexpectedResponseException {
-        throw new UnsupportedOperationException(
-            String.join(" ",
-                "Not yet implemented. If you can contribute please,",
-                "do it here: https://www.github.com/amihaiemil/docker-java-api"
-            )
+        final HttpPost create  = new HttpPost(
+            new UncheckedUriBuilder(this.baseUri.toString().concat("/create"))
+                .addParameter("fromSrc", source.toString())
+                .addParameter("repo", repo)
+                .build()
         );
+        try {
+            this.client.execute(
+                create,
+                new MatchStatus(create.getURI(), HttpStatus.SC_OK)
+            );
+            return new RtImage(
+                Json.createObjectBuilder().add("Name", repo).build(),
+                this.client,
+                URI.create(
+                    String.format("%s/%s", this.baseUri.toString(), repo)
+                ),
+                this.docker
+            );
+        } finally {
+            create.releaseConnection();
+        }
     }
 
     @Override

@@ -30,6 +30,7 @@ import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.json.Json;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -37,6 +38,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.util.EntityUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.hamcrest.core.IsEqual;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -282,5 +284,54 @@ public final class RtImagesTestCase {
             DOCKER
             ).importFromTar(
                 this.getClass().getResource("/images.tar.txt").getFile());
+    }
+
+    /**
+     * {@link RtImages#importImage(URL, String)} must construct the
+     * URL with parameters correctly.
+     * <p>
+     * Notice the escaped characters for the 'fromSrc' parameter's value.
+     * @throws Exception If an error occurs.
+     */
+    @Test
+    public void importImageOk() throws Exception {
+        Image image = new ListedImages(
+            new AssertRequest(
+                new Response(HttpStatus.SC_OK),
+                new Condition(
+                    "importImage() failed to correctly build the request URI.",
+                    req -> req.getRequestLine().getUri().endsWith(
+                            // @checkstyle LineLength (1 line)
+                            "/create?fromSrc=http%3A%2F%2Fexample.com%2Fexampleimage.tgz&repo=hello-world")
+                )
+            ),
+            URI.create("http://localhost/images"),
+            DOCKER
+        ).importImage(
+            new URL("http://example.com/exampleimage.tgz"), "hello-world"
+        );
+        MatcherAssert.assertThat(
+            "Image must have correct name",
+            image.getString("Name"),
+            new IsEqual<>("hello-world")
+        );
+    }
+
+    /**
+     * {@link RtImages#importImage(URL, String)} must throw
+     * UnexpectedResponseException if service responds with 404.
+     * @throws Exception If an error occurs.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void failsImportImageNoRepository() throws Exception {
+        new ListedImages(
+            new AssertRequest(
+                new Response(HttpStatus.SC_NOT_FOUND)
+            ),
+            URI.create("http://localhost/images"),
+            DOCKER
+        ).importImage(
+            new URL("http://nonexisting.com/exampleimage.tgz"), "hello-world"
+        );
     }
 }
