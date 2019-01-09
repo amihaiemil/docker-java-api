@@ -30,7 +30,9 @@ import java.net.URI;
 import java.util.Map;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
 
 /**
  * Runtime {@link Plugin}.
@@ -81,24 +83,40 @@ final class RtPlugin extends JsonResource implements Plugin {
 
     @Override
     public void enable() throws IOException, UnexpectedResponseException {
-        throw new UnsupportedOperationException(
-            String.join(" ",
-                "RtPlugin.enable() is not yet implemented.",
-                "If you can contribute please",
-                "do it here: https://www.github.com/amihaiemil/docker-java-api"
-            )
-        );
+        final HttpPost enable =
+            new HttpPost(
+                String.format("%s/%s", this.uri.toString(), "enable")
+            );
+        try {
+            this.client.execute(
+                enable,
+                new MatchStatus(
+                    enable.getURI(),
+                    HttpStatus.SC_OK
+                )
+            );
+        } finally {
+            enable.releaseConnection();
+        }
     }
 
     @Override
     public void disable() throws IOException, UnexpectedResponseException {
-        throw new UnsupportedOperationException(
-            String.join(" ",
-                "RtPlugin.disable() is not yet implemented.",
-                "If you can contribute please",
-                "do it here: https://www.github.com/amihaiemil/docker-java-api"
-            )
-        );
+        final HttpPost disable =
+            new HttpPost(
+                String.format("%s/%s", this.uri.toString(), "disable")
+            );
+        try {
+            this.client.execute(
+                disable,
+                new MatchStatus(
+                    disable.getURI(),
+                    HttpStatus.SC_OK
+                )
+            );
+        } finally {
+            disable.releaseConnection();
+        }
     }
 
     @Override

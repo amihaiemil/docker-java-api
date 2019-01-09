@@ -35,7 +35,6 @@ import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.IsEqual;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -44,9 +43,6 @@ import org.mockito.Mockito;
  *
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @since 0.0.8
- * @todo #266:30min Implement Plugin#enable and Plugin#disable methods. The
- *  tests are already coded, so after the implementation just remove the
- *  ignore annotation from these tests
  * @checkstyle MethodName (500 lines)
  */
 public final class RtPluginTestCase {
@@ -114,7 +110,6 @@ public final class RtPluginTestCase {
      * RtPlugin enable itself.
      * @throws Exception If something goes wrong.
      */
-    @Ignore
     @Test
     public void enablesItself() throws Exception {
         new ListedPlugins(
@@ -158,11 +153,11 @@ public final class RtPluginTestCase {
     }
 
     /**
-     * RtPlugin enable itself.
+     * RtPluginenable() must throw UnexpectedResponseException
+     * if service responds with 404.
      * @throws Exception If something goes wrong.
      */
-    @Ignore
-    @Test
+    @Test(expected = UnexpectedResponseException.class)
     public void failsToEnableItselfWhenNotInstalled() throws Exception {
         final Plugin plugin = new RtPlugin(
             Json.createObjectBuilder().build(),
@@ -190,7 +185,6 @@ public final class RtPluginTestCase {
      * RtPlugin disables itself.
      * @throws Exception If something goes wrong.
      */
-    @Ignore
     @Test
     public void disablesItself() throws Exception {
         new ListedPlugins(
@@ -234,11 +228,11 @@ public final class RtPluginTestCase {
     }
 
     /**
-     * RtPlugin enable itself.
+     * RtPlugin.disable() must throw UnexpectedResponseException
+     * if service responds with 404.
      * @throws Exception If something goes wrong.
      */
-    @Ignore
-    @Test
+    @Test(expected = UnexpectedResponseException.class)
     public void failsToDisableItselfWhenNotInstalled() throws Exception {
         final Plugin plugin = new RtPlugin(
             Json.createObjectBuilder().build(),
