@@ -234,5 +234,5 @@ public final class RtLogsTestCase {
             Matchers.equalTo("{\"logs\":\"stderr logs\"}")
         );
     }
-    
+
 }

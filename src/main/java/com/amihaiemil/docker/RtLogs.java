@@ -28,6 +28,9 @@ package com.amihaiemil.docker;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -43,12 +46,9 @@ import org.apache.http.client.methods.HttpGet;
  *  Since the class should be immutable, the parameters should come in the ctor
  *  and appended to the requests when they are performed. Let's leave this part
  *  for v0.0.3 or later, it's not urgent now.
- * @todo #258:30min Find a way to create more elegant solution for optional
- *  parameters like stdout and stderr. There are more optional parameters so,
- *  maybe use a Map instead of separate class attributes.
  */
 final class RtLogs implements Logs {
-    
+
     /**
      * Container which owns these logs.
      */
@@ -65,14 +65,9 @@ final class RtLogs implements Logs {
     private final URI baseUri;
 
     /**
-     * Flag for stdout option.
+     * Map of additional parameters.
      */
-    private final boolean stdout;
-
-    /**
-     * Flag for stderr option.
-     */
-    private final boolean stderr;
+    private final Map<String, String> options;
     
     /**
      * Ctor.
@@ -81,11 +76,7 @@ final class RtLogs implements Logs {
      * @param baseUri Base URI of these logs.
      */
     RtLogs(final Container owner, final HttpClient client, final URI baseUri) {
-        this.owner = owner;
-        this.client = client;
-        this.baseUri = baseUri;
-        this.stdout = true;
-        this.stderr = true;
+        this(owner, client, baseUri, Collections.emptyMap());
     }
 
     /**
@@ -93,26 +84,27 @@ final class RtLogs implements Logs {
      * @param owner Container which has these logs.
      * @param client Given HTTP Client.
      * @param baseUri Base URI of these logs.
-     * @param stdout Flag for stdout option.
-     * @param stderr Flag for stderr option.
+     * @param options Map of additional Http parameters.
      * @checkstyle ParameterNumber (3 lines)
      */
     private RtLogs(final Container owner, final HttpClient client,
-                   final URI baseUri, final boolean stdout,
-                   final boolean stderr) {
+                   final URI baseUri, final Map<String, String> options) {
         this.owner = owner;
         this.client = client;
         this.baseUri = baseUri;
-        this.stdout = stdout;
-        this.stderr = stderr;
+        this.options = options;
     }
 
     @Override
     public String fetch() throws IOException, UnexpectedResponseException {
         final HttpGet fetch = new HttpGet(
             new UncheckedUriBuilder(this.baseUri.toString())
-                .addParameter("stdout", Boolean.toString(this.stdout))
-                .addParameter("stderr", Boolean.toString(this.stderr))
+                .addParameter("stdout",
+                    this.options.getOrDefault("stdout", "true")
+                )
+                .addParameter("stderr",
+                    this.options.getOrDefault("stderr", "true")
+                )
                 .build()
         );
         try {
@@ -136,8 +128,12 @@ final class RtLogs implements Logs {
         final HttpGet follow = new HttpGet(
             new UncheckedUriBuilder(this.baseUri.toString())
                 .addParameter("follow", "true")
-                .addParameter("stdout", Boolean.toString(this.stdout))
-                .addParameter("stderr", Boolean.toString(this.stderr))
+                .addParameter("stdout",
+                    this.options.getOrDefault("stdout", "true")
+                )
+                .addParameter("stderr",
+                    this.options.getOrDefault("stderr", "true")
+                )
                 .build()
         );
         return this.client.execute(
@@ -153,12 +149,20 @@ final class RtLogs implements Logs {
 
     @Override
     public Logs stdout() throws IOException, UnexpectedResponseException {
-        return new RtLogs(this.owner, this.client, this.baseUri, true, false);
+        final Map<String, String> params = new HashMap<>();
+        params.putAll(this.options);
+        params.put("stdout", "true");
+        params.put("stderr", "false");
+        return new RtLogs(this.owner, this.client, this.baseUri, params);
     }
 
     @Override
     public Logs stderr() throws IOException, UnexpectedResponseException {
-        return new RtLogs(this.owner, this.client, this.baseUri, false, true);
+        final Map<String, String> params = new HashMap<>();
+        params.putAll(this.options);
+        params.put("stdout", "false");
+        params.put("stderr", "true");
+        return new RtLogs(this.owner, this.client, this.baseUri, params);
     }
 
     @Override
@@ -178,5 +182,5 @@ final class RtLogs implements Logs {
             );
         }
     }
-    
+
 }
