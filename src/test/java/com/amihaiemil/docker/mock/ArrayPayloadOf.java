@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2019, Mihai Emil Andronache
+ * Copyright (c) 2018-2019, Mihai Emil Andronache
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -23,13 +23,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.docker;
+package com.amihaiemil.docker.mock;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -40,9 +39,8 @@ import org.apache.http.HttpRequest;
  *
  * @author Boris Kuzmic (boris.kuzmic@gmail.com)
  * @since 0.0.8
- * @todo #266:30min Add tests for ArrayPayloadOf.
  */
-final class ArrayPayloadOf implements Iterator<JsonObject> {
+public final class ArrayPayloadOf implements Iterator<JsonObject> {
 
     /**
      * List of JsonObjects.
@@ -55,10 +53,9 @@ final class ArrayPayloadOf implements Iterator<JsonObject> {
      * @param request The http request
      * @throws IllegalStateException if the request's payload cannot be read
      */
-    ArrayPayloadOf(final HttpRequest request) {
+    public ArrayPayloadOf(final HttpRequest request) {
         try (JsonReader reader = Json.createReader(
             ((HttpEntityEnclosingRequest) request).getEntity().getContent())) {
-            final JsonArray body;
             if (request instanceof HttpEntityEnclosingRequest) {
                 this.resources =
                     reader.readArray().getValuesAs(JsonObject.class).iterator();

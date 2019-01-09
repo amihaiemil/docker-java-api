@@ -25,6 +25,7 @@
  */
 package com.amihaiemil.docker;
 
+import com.amihaiemil.docker.mock.ArrayPayloadOf;
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
