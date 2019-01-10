@@ -29,16 +29,13 @@ import com.amihaiemil.docker.mock.ArrayPayloadOf;
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
-import java.io.IOException;
+import com.amihaiemil.docker.mock.StringPayloadOf;
 import java.net.URI;
 import java.util.Iterator;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
-import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpStatus;
-import org.apache.http.util.EntityUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.junit.Test;
@@ -80,7 +77,9 @@ public final class RtPluginsTestCase {
                 ),
                 new Condition(
                     "create() must send String body request",
-                    req -> "/home/pluginDir".equals(this.stringPayloadOf(req))
+                    req -> "/home/pluginDir".equals(
+                        new StringPayloadOf(req).value()
+                    )
                 )
             ),
             URI.create("http://localhost/plugins"),
@@ -208,29 +207,6 @@ public final class RtPluginsTestCase {
             privilege.value().iterator().next(),
             new IsEqual<>("/data")
         );
-    }
-
-    /**
-     * Extracts request payload as String.
-     * @param request Http Request.
-     * @return Payload as String.
-     */
-    private String stringPayloadOf(final HttpRequest request) {
-        try {
-            final String payload;
-            if (request instanceof HttpEntityEnclosingRequest) {
-                payload = EntityUtils.toString(
-                    ((HttpEntityEnclosingRequest) request).getEntity()
-                );
-            } else {
-                payload = "";
-            }
-            return payload;
-        } catch (final IOException ex) {
-            throw new IllegalStateException(
-                "Cannot read request payload", ex
-            );
-        }
     }
 
 }
