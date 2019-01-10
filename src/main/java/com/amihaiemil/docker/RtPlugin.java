@@ -28,7 +28,9 @@ package com.amihaiemil.docker;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
+import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -170,12 +172,31 @@ final class RtPlugin extends JsonResource implements Plugin {
     @Override
     public void configure(final Map<String, String> options)
         throws IOException, UnexpectedResponseException {
-        throw new UnsupportedOperationException(
-            String.join(" ",
-                "RtPlugin.configure() is not yet implemented.",
-                "If you can contribute please",
-                "do it here: https://www.github.com/amihaiemil/docker-java-api"
-            )
-        );
+        final JsonArrayBuilder json = Json.createArrayBuilder();
+        if (options != null) {
+            options.forEach(
+                (key, value) -> json.add(String.format("%s=%s", key, value))
+            );
+        }
+        final HttpPost upgrade =
+            new HttpPost(
+                String.format("%s/%s", this.uri.toString(), "set")
+            );
+        try {
+            upgrade.setEntity(
+                new StringEntity(
+                    json.build().toString(), ContentType.APPLICATION_JSON
+                )
+            );
+            this.client.execute(
+                upgrade,
+                new MatchStatus(
+                    upgrade.getURI(),
+                    HttpStatus.SC_NO_CONTENT
+                )
+            );
+        } finally {
+            upgrade.releaseConnection();
+        }
     }
 }
