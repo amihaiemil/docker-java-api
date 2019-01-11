@@ -40,7 +40,6 @@ import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.IsEqual;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -437,7 +436,6 @@ public final class RtPluginTestCase {
      * RtPlugin configure plugin.
      * @throws Exception If something goes wrong.
      */
-    @Ignore
     @Test
     public void configureOk() throws Exception {
         new ListedPlugins(
@@ -493,7 +491,6 @@ public final class RtPluginTestCase {
      * responds with 404.
      * @throws Exception If something goes wrong.
      */
-    @Ignore
     @Test(expected = UnexpectedResponseException.class)
     public void configureFailsPluginNotInstalled() throws Exception {
         final Plugin plugin = new RtPlugin(
