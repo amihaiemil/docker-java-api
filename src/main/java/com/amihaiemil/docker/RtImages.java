@@ -134,7 +134,7 @@ abstract class RtImages implements Images {
     }
 
     @Override
-    public void importFromTar(
+    public Images importFromTar(
         final String file) throws IOException, UnexpectedResponseException {
         final HttpPost load  = new HttpPost(
             new UncheckedUriBuilder(this.baseUri.toString().concat("/load"))
@@ -156,6 +156,7 @@ abstract class RtImages implements Images {
         } finally {
             load.releaseConnection();
         }
+        return this;
     }
 
     @Override

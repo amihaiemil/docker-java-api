@@ -78,11 +78,12 @@ public interface Images extends Iterable<Image> {
      * Import images from tar file.
      *
      * @param file Path to Tar file containing Images.
+     * @return Images All images, including the newly imported ones.
      * @throws IOException If an I/O error occurs.
      * @throws UnexpectedResponseException If the API responds with an
      *  unexpected status.
      */
-    void importFromTar(
+    Images importFromTar(
         String file) throws IOException, UnexpectedResponseException;
 
     /**
