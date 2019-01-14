@@ -40,9 +40,6 @@ import java.util.Map;
  *  unit test method save() and other future methods which may require more
  *  than 1 HTTP request. Currently, the unit testing infrastructure does
  *  not support more than 1 HTTP request..
- * @todo #254:30mim ImportFromTar method should return Image instead of void.
- *  Find a way to read the imported Image's identifier, maybe add a new
- *  implementation of Image for this case.
  */
 public interface Images extends Iterable<Image> {
 
