@@ -59,7 +59,7 @@ public final class ListedVolumesTestCase {
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_OK,
-                    "[{\"Name\": \"abc1\"}, {\"Name\":\"cde2\"}]"
+                    "{\"Volumes\":[{\"Name\": \"abc1\"}, {\"Name\":\"cde2\"}]}"
                 ),
                 new Condition(
                     "iterate() must send a GET request",
@@ -105,7 +105,7 @@ public final class ListedVolumesTestCase {
                 new Response(
                     HttpStatus.SC_OK,
                     //@checkstyle LineLength (1 line)
-                    "[{\"Name\": \"abc1\"}, {\"Name\": \"def2\"}, {\"Name\": \"ghi3\"}, {\"Name\":\"jkl4\"}]"
+                    "{\"Volumes\":[{\"Name\": \"abc1\"}, {\"Name\": \"def2\"}, {\"Name\": \"ghi3\"}, {\"Name\":\"jkl4\"}]}"
                 ),
                 new Condition(
                     "iterate() must send a GET request",

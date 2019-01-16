@@ -25,25 +25,18 @@
  */
 package com.amihaiemil.docker;
 
+import java.io.File;
+import java.nio.file.Paths;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableWithSize;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.internal.matchers.GreaterOrEqual;
-
-import java.io.File;
-import java.nio.file.Paths;
 
 /**
  * Integration tests for LocalDocker.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @todo #241:30min Fix Volumes object return problem. Volumes is returning an
- *  JsonObject instead of JsonArray. Its return must be according its
- *  documentation:
- *  https://docs.docker.com/engine/api/v1.30/#operation/VolumeList and what is
- *  defined in #241.
  * @since 0.0.1
  */
 public final class LocalDockerITCase {
@@ -65,7 +58,6 @@ public final class LocalDockerITCase {
      * @throws Exception If something goes wrong.
      */
     @Test
-    @Ignore
     public void listVolumes() throws Exception {
         final Docker docker = new LocalDocker(
             Paths.get("/var/run/docker.sock").toFile()
