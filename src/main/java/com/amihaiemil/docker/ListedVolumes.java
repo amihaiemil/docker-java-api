@@ -80,13 +80,12 @@ final class ListedVolumes extends RtVolumes {
         );
         final HttpGet get = new HttpGet(uri.build());
         try {
-            final JsonObject obj = super.client().execute(
+            return super.client().execute(
                 get,
                 new ReadJsonObject(
                     new MatchStatus(get.getURI(), HttpStatus.SC_OK)
                 )
-            );
-            return obj.getJsonArray("Volumes").stream()
+            ).getJsonArray("Volumes").stream()
                 .map(json -> (JsonObject) json)
                 .map(
                     volume -> (Volume) new RtVolume(
