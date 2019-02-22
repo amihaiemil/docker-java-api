@@ -30,6 +30,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.net.URI;
 
 /**
@@ -89,6 +90,22 @@ final class RtDockerSystem implements DockerSystem {
         } finally {
             init.releaseConnection();
         }
+    }
+
+    @Override
+    public Reader events() throws IOException, UnexpectedResponseException {
+        final HttpGet monitor = new HttpGet(
+            this.baseUri.toString() + "/events"
+        );
+        return this.client.execute(
+            monitor,
+            new ReadStream(
+                new MatchStatus(
+                    monitor.getURI(),
+                    HttpStatus.SC_OK
+                )
+            )
+        );
     }
 
 }

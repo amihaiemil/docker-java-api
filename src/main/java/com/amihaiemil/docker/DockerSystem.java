@@ -26,6 +26,7 @@
 package com.amihaiemil.docker;
 
 import java.io.IOException;
+import java.io.Reader;
 
 /**
  * Docker System API entry point.
@@ -45,4 +46,13 @@ public interface DockerSystem {
     DiskSpaceInfo diskUsage()
         throws IOException, UnexpectedResponseException;
 
+    /**
+     * Follow the events on the server in real time.
+     * @return The events {@link Reader}.
+     * @throws IOException If an I/O error occurs.
+     * @throws UnexpectedResponseException If the API responds with an
+     *  unexpected status.
+     */
+    Reader events()
+        throws IOException, UnexpectedResponseException;
 }
