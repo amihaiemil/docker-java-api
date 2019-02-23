@@ -55,7 +55,6 @@ public final class LocalDockerITCase {
         );
         MatcherAssert.assertThat(docker.ping(), Matchers.is(Boolean.TRUE));
     }
-
     /**
      * Docker can follow the events stream.
      * @throws Exception If something goes wrong.
@@ -71,7 +70,6 @@ public final class LocalDockerITCase {
                 Matchers.notNullValue()
         );
     }
-    
     /**
      * LocalDocker can list {@link Volumes}.
      * @throws Exception If something goes wrong.

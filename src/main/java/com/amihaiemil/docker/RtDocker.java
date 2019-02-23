@@ -72,7 +72,7 @@ abstract class RtDocker implements Docker {
     @Override
     public Reader events() throws IOException, UnexpectedResponseException {
         final HttpGet monitor = new HttpGet(
-                this.baseUri.toString() + "/events"
+            this.baseUri.toString() + "/events"
         );
         return this.client.execute(
             monitor,
