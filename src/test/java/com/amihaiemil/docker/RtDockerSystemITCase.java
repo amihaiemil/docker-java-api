@@ -25,13 +25,11 @@
  */
 package com.amihaiemil.docker;
 
-import org.apache.commons.io.IOUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.Reader;
 
 /**
  * Integration tests for RtDockerSystem.
@@ -53,21 +51,5 @@ public final class RtDockerSystemITCase {
         DiskSpaceInfo info = docker.system().diskUsage();
         MatcherAssert.assertThat(info.totalSpace(),
                 Matchers.greaterThanOrEqualTo(0L));
-    }
-
-    /**
-     * Docker can follow the events stream.
-     * @throws Exception If something goes wrong.
-     */
-    @Test
-    public void followsEvents() throws Exception {
-        final Reader reader =  new LocalDocker(
-            new File("/var/run/docker.sock")
-        ).system().events();
-        final String events = IOUtils.toString(reader);
-        MatcherAssert.assertThat(
-            events.trim(),
-            Matchers.notNullValue()
-        );
     }
 }

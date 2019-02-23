@@ -26,6 +26,7 @@
 package com.amihaiemil.docker;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.net.URI;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -66,6 +67,22 @@ abstract class RtDocker implements Docker {
         final HttpResponse response = this.client.execute(ping);
         ping.releaseConnection();
         return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
+    }
+
+    @Override
+    public Reader events() throws IOException, UnexpectedResponseException {
+        final HttpGet monitor = new HttpGet(
+                this.baseUri.toString() + "/events"
+        );
+        return this.client.execute(
+            monitor,
+            new ReadStream(
+                new MatchStatus(
+                    monitor.getURI(),
+                    HttpStatus.SC_OK
+                )
+            )
+        );
     }
 
     @Override

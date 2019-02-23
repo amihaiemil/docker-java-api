@@ -92,20 +92,4 @@ final class RtDockerSystem implements DockerSystem {
         }
     }
 
-    @Override
-    public Reader events() throws IOException, UnexpectedResponseException {
-        final HttpGet monitor = new HttpGet(
-            this.baseUri.toString() + "/events"
-        );
-        return this.client.execute(
-            monitor,
-            new ReadStream(
-                new MatchStatus(
-                    monitor.getURI(),
-                    HttpStatus.SC_OK
-                )
-            )
-        );
-    }
-
 }

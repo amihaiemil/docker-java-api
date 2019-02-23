@@ -26,7 +26,10 @@
 package com.amihaiemil.docker;
 
 import java.io.File;
+import java.io.Reader;
 import java.nio.file.Paths;
+
+import org.apache.commons.io.IOUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableWithSize;
@@ -53,6 +56,22 @@ public final class LocalDockerITCase {
         MatcherAssert.assertThat(docker.ping(), Matchers.is(Boolean.TRUE));
     }
 
+    /**
+     * Docker can follow the events stream.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void followsEvents() throws Exception {
+        final Reader reader =  new LocalDocker(
+            new File("/var/run/docker.sock")
+        ).events();
+        final String events = IOUtils.toString(reader);
+        MatcherAssert.assertThat(
+                events.trim(),
+                Matchers.notNullValue()
+        );
+    }
+    
     /**
      * LocalDocker can list {@link Volumes}.
      * @throws Exception If something goes wrong.
