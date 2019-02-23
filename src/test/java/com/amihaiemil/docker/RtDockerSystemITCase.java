@@ -28,7 +28,6 @@ package com.amihaiemil.docker;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.hamcrest.core.StringStartsWith;
 import org.junit.Test;
 
 import java.io.File;
