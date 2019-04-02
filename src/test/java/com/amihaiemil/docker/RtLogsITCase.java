@@ -78,7 +78,7 @@ public final class RtLogsITCase {
         int value;
         String target = "";
         while ((value = reader.read()) != -1) {
-            target += (char) value);
+            target += (char) value;
         }
         reader.close();
         System.out.println(target);
