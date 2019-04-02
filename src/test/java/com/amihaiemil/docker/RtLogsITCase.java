@@ -29,8 +29,8 @@ import org.apache.commons.io.IOUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.StringStartsWith;
 import org.junit.Test;
-
 import java.io.File;
+import java.io.Reader;
 
 /**
  * Integration tests for {@link RtLogs}.
