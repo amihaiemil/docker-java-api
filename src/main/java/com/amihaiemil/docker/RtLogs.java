@@ -125,6 +125,7 @@ final class RtLogs implements Logs {
     @Override
     public Reader follow()
         throws IOException, UnexpectedResponseException {
+        System.out.println("Before Request instantiation!");
         final HttpGet follow = new HttpGet(
             new UncheckedUriBuilder(this.baseUri.toString())
                 .addParameter("follow", "true")
@@ -136,6 +137,8 @@ final class RtLogs implements Logs {
                 )
                 .build()
         );
+        System.out.println("After Request instantiation!");
+        System.out.println("Where is JsonParsingException?");
         return this.client.execute(
             follow,
             new ReadStream(
