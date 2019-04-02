@@ -75,15 +75,15 @@ public final class RtLogsITCase {
         System.out.println("****END SIMPLE LOGS");
         //final String logs = IOUtils.toString(container.logs().follow());
         final Reader reader = container.logs().follow();
-        int value;
-        String targetString = "";
-        while ((value = reader.read()) != -1) {
-            targetString += (char) value;
-        }
-        reader.close();
-        System.out.println(targetString);
+        int value;
+        String target = "";
+        while ((value = reader.read()) != -1) {
+            target += (char) value);
+        }
+        reader.close();
+        System.out.println(target);
         MatcherAssert.assertThat(
-            targetString.trim(),
+            target.trim(),
             new StringStartsWith("Hello from Docker!")
         );
     }
