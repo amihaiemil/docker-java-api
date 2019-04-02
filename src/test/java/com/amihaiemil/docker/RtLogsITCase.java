@@ -70,7 +70,11 @@ public final class RtLogsITCase {
         final Container container =  new LocalDocker(
             new File("/var/run/docker.sock")
         ).images().pull("hello-world", "latest").run();
+        System.out.println("****SIMPLE LOGS");
+        System.out.println(container.logs());
+        System.out.println("****END SIMPLE LOGS");
         final String logs = IOUtils.toString(container.logs().follow());
+        System.out.println(logs);
         MatcherAssert.assertThat(
             logs.trim(),
             new StringStartsWith("Hello from Docker!")
