@@ -75,10 +75,10 @@ public final class RtLogsITCase {
         System.out.println("****END SIMPLE LOGS");
         //final String logs = IOUtils.toString(container.logs().follow());
         final Reader reader = container.logs().follow();
-        int intValueOfChar;
+        int value;
         String targetString = "";
-        while ((intValueOfChar = reader.read()) != -1) {
-            targetString += (char) intValueOfChar;
+        while ((value = reader.read()) != -1) {
+            targetString += (char) value;
         }
         reader.close();
         System.out.println(targetString);
