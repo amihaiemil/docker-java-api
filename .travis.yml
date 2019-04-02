@@ -13,4 +13,4 @@ script:
   - docker pull hello-world #for some IT cases
   - docker pull ubuntu # for container IT cases
   - docker run -d --privileged -p 12375:2375 docker:dind
-  - mvn clean install -Pcheckstyle,itcases jacoco:report coveralls:report
+  - mvn clean install -Pitcases jacoco:report coveralls:report
