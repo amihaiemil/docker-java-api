@@ -141,7 +141,7 @@ final class RtLogs implements Logs {
             new ReadStream(
                 new MatchStatus(
                     follow.getURI(),
-                    HttpStatus.SC_SWITCHING_PROTOCOLS
+                    HttpStatus.SC_OK
                 )
             )
         );
