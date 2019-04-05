@@ -28,7 +28,6 @@ package com.amihaiemil.docker;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.StringStartsWith;
-import org.junit.Ignore;
 import org.junit.Test;
 import java.io.File;
 
@@ -66,11 +65,10 @@ public final class RtLogsITCase {
      * @throws Exception If something goes wrong.
      */
     @Test
-    @Ignore
     public void followsLogs() throws Exception {
         final Container container =  new LocalDocker(
             new File("/var/run/docker.sock")
-        ).images().pull("hello-world", "latest").run();
+        ).images().pull("ubuntu", "latest").run();
         final String logs = IOUtils.toString(container.logs().follow());
         MatcherAssert.assertThat(
             logs.trim(),
