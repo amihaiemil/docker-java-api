@@ -74,7 +74,7 @@ public final class RtLogsTestCase {
             Mockito.mock(Container.class),
             new AssertRequest(
                 new Response(
-                    HttpStatus.SC_SWITCHING_PROTOCOLS,
+                    HttpStatus.SC_OK,
                     Json.createObjectBuilder()
                         .add("logs", "...some logs...")
                         .build().toString()
