@@ -29,6 +29,7 @@ import org.apache.commons.io.IOUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.StringStartsWith;
 import org.junit.Test;
+import org.junit.Ignore;
 import java.io.File;
 
 /**
@@ -65,6 +66,7 @@ public final class RtLogsITCase {
      * @throws Exception If something goes wrong.
      */
     @Test
+    @Ignore
     public void followsLogs() throws Exception {
         final Container container =  new LocalDocker(
             new File("/var/run/docker.sock")
