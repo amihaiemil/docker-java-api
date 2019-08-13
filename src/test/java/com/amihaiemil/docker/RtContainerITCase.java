@@ -169,6 +169,7 @@ public final class RtContainerITCase {
         ).containers().create("TestUnpause", this.containerJsonObject());
         container.start();
         container.pause();
+        
         MatcherAssert.assertThat(
                 this.pausedState(container),
                 new IsEqual<>(true)
