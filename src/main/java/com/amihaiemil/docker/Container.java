@@ -135,5 +135,21 @@ public interface Container extends JsonObject {
      * @return Docker.
      */
     Docker docker();
+
+    /**
+     * Pause this container.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ContainerPause">Pause Container</a>
+     * @throws IOException If something goes wrong.
+     *  the expected one (204 NO CONTENT).
+     */
+    void pause() throws IOException;
+
+    /**
+     * Unpause this container.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ContainerUnpause">Unpause Container</a>
+     * @throws IOException If something goes wrong.
+     *  the expected one (204 NO CONTENT).
+     */
+    void unpause() throws IOException;
     
 }

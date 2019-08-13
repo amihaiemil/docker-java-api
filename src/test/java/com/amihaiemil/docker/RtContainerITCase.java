@@ -42,7 +42,7 @@ import org.junit.Test;
  * @since 0.0.1
  */
 public final class RtContainerITCase {
-    
+
     /**
      * {@link RtContainer} can rename the Docker container it represents.
      * @throws Exception If something goes wrong.
@@ -140,6 +140,49 @@ public final class RtContainerITCase {
     }
 
     /**
+     * {@link RtContainer} can pause Docker container it represents.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void pauseContainer() throws Exception {
+        final Container container = new LocalDocker(
+                new File("/var/run/docker.sock")
+        ).containers().create("TestPause", this.containerJsonObject());
+        container.start();
+        container.pause();
+        MatcherAssert.assertThat(
+                this.pausedState(container),
+                new IsEqual<>(true)
+        );
+        container.stop();
+        container.remove();
+    }
+
+    /**
+     * {@link RtContainer} can unpause Docker container it represents.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void unpauseContainer() throws Exception {
+        final Container container = new LocalDocker(
+                new File("/var/run/docker.sock")
+        ).containers().create("TestUnpause", this.containerJsonObject());
+        container.start();
+        container.pause();
+        MatcherAssert.assertThat(
+                this.pausedState(container),
+                new IsEqual<>(true)
+        );
+        container.unpause();
+        MatcherAssert.assertThat(
+                this.runningState(container),
+                new IsEqual<>(true)
+        );
+        container.stop();
+        container.remove();
+    }
+
+    /**
      * Inspect Container and check running state.
      * @param container Docker Container.
      * @return Running state.
@@ -148,6 +191,17 @@ public final class RtContainerITCase {
     private boolean runningState(final Container container) throws IOException {
         return container.inspect().getJsonObject("State")
             .getBoolean("Running");
+    }
+
+    /**
+     * Inspect Container and check paused state.
+     * @param container Docker Container.
+     * @return Running state.
+     * @throws IOException If something goes wrong.
+     */
+    private boolean pausedState(final Container container) throws IOException {
+        return container.inspect().getJsonObject("State")
+                .getBoolean("Paused");
     }
 
 }

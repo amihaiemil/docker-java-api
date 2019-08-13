@@ -58,7 +58,7 @@ final class RtContainer extends JsonResource implements Container {
      * Docker API.
      */
     private final Docker docker;
-    
+
     /**
      * Ctor.
      * @param rep JsonObject representation of this Container.
@@ -188,16 +188,46 @@ final class RtContainer extends JsonResource implements Container {
             remove.releaseConnection();
         }
     }
-    
+
     @Override
     public Logs logs() {
         return new RtLogs(
             this, this.client, URI.create(this.baseUri.toString() + "/logs")
         );
     }
-    
+
     @Override
     public Docker docker() {
         return this.docker;
+    }
+
+    @Override
+    public void pause() throws IOException {
+        final HttpPost pause = new HttpPost(
+                this.baseUri.toString() + "/pause"
+        );
+        try {
+            this.client.execute(
+                    pause,
+                    new MatchStatus(pause.getURI(), HttpStatus.SC_NO_CONTENT)
+            );
+        } finally {
+            pause.releaseConnection();
+        }
+    }
+
+    @Override
+    public void unpause() throws IOException {
+        final HttpPost unpause = new HttpPost(
+                this.baseUri.toString() + "/unpause"
+        );
+        try {
+            this.client.execute(
+                    unpause,
+                    new MatchStatus(unpause.getURI(), HttpStatus.SC_NO_CONTENT)
+            );
+        } finally {
+            unpause.releaseConnection();
+        }
     }
 }
