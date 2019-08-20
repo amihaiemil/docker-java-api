@@ -28,7 +28,11 @@ package com.amihaiemil.docker;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Integration tests for {@link RtImages}.
@@ -54,6 +58,36 @@ public final class RtImagesITCase {
             );
             MatcherAssert.assertThat(
                 img.getString("Id"), Matchers.startsWith("sha256:")
+            );
+        }
+    }
+
+
+    /**
+     * {@link RtImages} can filter Images and return filtered Images.
+     * @throws Exception If an error occurs.
+     * @todo #187:30min To have multiple controlled images for filtering and
+     * not the ubuntu image dependency for this test will be nice to have
+     * the build Images implemented as described here:
+     * https://docs.docker.com/engine/api/v1.37/#operation/ImageBuild.
+     */
+    @Test
+    public void filterImage() throws Exception {
+        final Map<String, Iterable<String>> filters = new HashMap<>();
+        filters.put(
+            "reference",
+            Arrays.asList(
+                "ubuntu"
+            )
+        );
+        final Images images = new LocalDocker(
+            new File("/var/run/docker.sock")
+        ).images();
+        Images filtered = images.filter(filters);
+        for(final Image img : filtered) {
+            MatcherAssert.assertThat(
+                img.getJsonArray("RepoTags").getString(0),
+                    Matchers.is("ubuntu:latest")
             );
         }
     }
