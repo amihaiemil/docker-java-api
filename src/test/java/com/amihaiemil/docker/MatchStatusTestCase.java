@@ -66,5 +66,21 @@ public final class MatchStatusTestCase {
             Matchers.is(resp)
         );
     }
+
+    /**
+     * {@link MatchStatus} returns the HttpResponse if one of the status
+     * code match.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void returnsResponseOnMatchOne() throws Exception {
+        final HttpResponse resp = new Response(HttpStatus.SC_NO_CONTENT);
+        MatcherAssert.assertThat(
+            new MatchStatus(URI.create("/test/ur"),
+                HttpStatus.SC_OK, HttpStatus.SC_NO_CONTENT)
+                .handleResponse(resp),
+            Matchers.is(resp)
+        );
+    }
     
 }

@@ -25,9 +25,13 @@
  */
 package com.amihaiemil.docker;
 
-import java.net.URI;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
+
+import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * An Apache ResponseHandler that tries to match the Response's status code
@@ -42,32 +46,54 @@ final class MatchStatus implements ResponseHandler<HttpResponse> {
      * Called URI.
      */
     private final URI called;
-    
+
     /**
      * Expected status.
      */
-    private final int expected;
-    
+    private final List<Integer> expected;
+
     /**
      * Ctor.
      * @param called Called URI.
      * @param expected Expected Http status code.
      */
     MatchStatus(final URI called, final int expected) {
+        this(called, Arrays.asList(expected));
+    }
+
+    /**
+     * Ctor.
+     * @param called Called URI.
+     * @param expected Expected a iterable Http status code.
+     */
+    MatchStatus(final URI called, final Integer... expected) {
+       this(called, Arrays.asList(expected));
+    }
+
+    /**
+     * Primary Ctor.
+     * @param called Called URI.
+     * @param expected Expected a iterable Http status code.
+     */
+    MatchStatus(final URI called, final List<Integer> expected) {
         this.called = called;
         this.expected = expected;
     }
-    
+
     @Override
     public HttpResponse handleResponse(final HttpResponse response) {
         final int actual = response.getStatusLine().getStatusCode();
-        if(actual != this.expected) {
-            throw new UnexpectedResponseException(
-                this.called.toString(), actual,
-                this.expected, new PayloadOf(response)
-            );
+        for(final Integer statusCode: this.expected){
+            if(statusCode == actual) {
+                return response;
+            }
         }
-        return response;
+        String codes = this.expected.stream()
+            .map(Object::toString)
+            .collect(Collectors.joining(" "));
+        throw new UnexpectedResponseException(
+            this.called.toString(), actual,
+            codes, new PayloadOf(response)
+        );
     }
-    
 }

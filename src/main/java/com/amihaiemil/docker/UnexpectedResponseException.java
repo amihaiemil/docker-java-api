@@ -50,7 +50,7 @@ public final class UnexpectedResponseException extends RuntimeException {
     /**
      * Expected response status.
      */
-    private final int expectedStatus;
+    private final String expectedStatus;
 
     /**
      * The response's body.
@@ -68,6 +68,21 @@ public final class UnexpectedResponseException extends RuntimeException {
     public UnexpectedResponseException(
         final String endpoint, final int actualStatus,
         final int expectedStatus, final JsonObject body
+    ) {
+        this(endpoint, actualStatus, String.valueOf(expectedStatus), body);
+    }
+
+    /**
+     * Primary Ctor.
+     * @param endpoint Endpoint that was called.
+     * @param actualStatus Received status.
+     * @param expectedStatus Expected status.
+     * @param body The response's body.
+     */
+    // @checkstyle ParameterNumber (3 lines)
+    public UnexpectedResponseException(
+        final String endpoint, final int actualStatus,
+        final String expectedStatus, final JsonObject body
     ) {
         super(String.format(
             // @checkstyle LineLength (1 line)
@@ -100,7 +115,7 @@ public final class UnexpectedResponseException extends RuntimeException {
      * Expected status.
      * @return Integer HTTP status.
      */
-    public int expectedStatus() {
+    public String expectedStatus() {
         return this.expectedStatus;
     }
 

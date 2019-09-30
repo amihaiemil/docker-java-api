@@ -64,7 +64,7 @@ public final class UnexpectedResponseExceptionTestCase {
                 "/uri", HttpStatus.SC_NOT_FOUND,
                 HttpStatus.SC_OK, Json.createObjectBuilder().build()
             ).expectedStatus(),
-            Matchers.equalTo(HttpStatus.SC_OK)
+            Matchers.equalTo(String.valueOf(HttpStatus.SC_OK))
         );
     }
 
@@ -91,6 +91,24 @@ public final class UnexpectedResponseExceptionTestCase {
             new UnexpectedResponseException(
                 "/uri", HttpStatus.SC_NOT_FOUND,
                 HttpStatus.SC_OK, Json.createObjectBuilder().build()
+            ).getMessage(),
+            Matchers.startsWith(
+                // @checkstyle LineLength (1 line)
+                "Expected status 200 but got 404 when calling /uri. Response body was"
+            )
+        );
+    }
+
+    /**
+     * UnexpectedResponseException has a proper message.
+     */
+    @Test
+    public void returnsMessages() {
+        MatcherAssert.assertThat(
+            new UnexpectedResponseException(
+                "/uri", HttpStatus.SC_NOT_FOUND,
+                String.valueOf(HttpStatus.SC_OK),
+                Json.createObjectBuilder().build()
             ).getMessage(),
             Matchers.startsWith(
                 // @checkstyle LineLength (1 line)
