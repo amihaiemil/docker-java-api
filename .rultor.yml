@@ -10,6 +10,7 @@ merge:
 deploy:
   script:
    - echo "Some deployment script"
+   - gradle -v
 decrypt:
   settings.xml: "repo/rcfg/settings.xml.asc"
   pubring.gpg: "repo/rcfg/pubring.gpg.asc"
