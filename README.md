@@ -22,7 +22,7 @@ Another target is that this library should be a true API, not an SDK. Read [this
 
 The library comes as a maven dependency:
 
-```
+```xml
 <dependency>
     <groupId>com.amihaiemil.web</groupId>
     <artifactId>docker-java-api</artifactId>
