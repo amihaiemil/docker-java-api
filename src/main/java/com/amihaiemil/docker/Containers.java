@@ -28,6 +28,7 @@ package com.amihaiemil.docker;
 import javax.json.JsonObject;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Containers API. This is also an Iterable over the running containers.
@@ -75,10 +76,25 @@ public interface Containers extends Iterable<Container> {
     Container create(final JsonObject container) throws IOException;
     
     /**
-     * Return all the Containers, not only the running ones.
+     * Return all Containers, not only the running ones.
      * @return Iterator over all the containers.
      */
     Iterator<Container> all();
+
+    /**
+     * Whether to request the size of containers (fields SizeRw and SizeRootFs).
+     * @param withSize Return the size of containers (SizeRw and SizeRootFs).
+     * @return Containers with modified size flag.
+     */
+    Containers withSize(final boolean withSize);
+
+    /**
+     * Filter these Containers.
+     * @param filters Filters to apply.
+     * @return Filtered containers.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ContainerList">Docker API Docs</a>
+     */
+    Containers filter(Map<String, Iterable<String>> filters);
     
     /**
      * Return the Docker engine where these Containers came from.

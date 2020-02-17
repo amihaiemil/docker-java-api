@@ -27,7 +27,6 @@ package com.amihaiemil.docker;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
@@ -35,7 +34,6 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Iterator;
 
 /**
  * Containers API.
@@ -43,7 +41,7 @@ import java.util.Iterator;
  * @version $Id$
  * @since 0.0.1
  */
-final class RtContainers implements Containers {
+abstract class RtContainers implements Containers {
 
     /**
      * Apache HttpClient which sends the requests.
@@ -138,41 +136,26 @@ final class RtContainers implements Containers {
             post.releaseConnection();
         }
     }
-
-    @Override
-    public Iterator<Container> all() {
-        return new ResourcesIterator<>(
-            this.client,
-            new HttpGet(this.baseUri.toString().concat("/json?all=true")),
-            json -> new RtContainer(
-                json,
-                this.client,
-                URI.create(
-                    this.baseUri.toString() + "/" + json.getString("Id")
-                ),
-                this.docker
-            )
-        );
-    }
-    
-    @Override
-    public Iterator<Container> iterator() {
-        return new ResourcesIterator<>(
-            this.client,
-            new HttpGet(this.baseUri.toString().concat("/json")),
-            json -> new RtContainer(
-                json,
-                this.client,
-                URI.create(
-                    this.baseUri.toString() + "/" + json.getString("Id")
-                ),
-                this.docker
-            )
-        );
-    }
     
     @Override
     public Docker docker() {
         return this.docker;
+    }
+
+
+    /**
+     * Get the (protected) HttpClient for subclasses.
+     * @return HttpClient.
+     */
+    HttpClient client() {
+        return this.client;
+    }
+
+    /**
+     * Get the (protected) base URI for subclasses.
+     * @return URI.
+     */
+    URI baseUri() {
+        return this.baseUri;
     }
 }
