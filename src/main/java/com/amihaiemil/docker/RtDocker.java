@@ -33,6 +33,8 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 
+import javax.json.JsonObject;
+
 /**
  * Restful Docker.
  * @author Mihai Andronache (amihaiemil@gmail.com)
@@ -155,6 +157,24 @@ abstract class RtDocker implements Docker {
                 "If you can contribute please",
                 "do it here: https://www.github.com/amihaiemil/docker-java-api"
             )
+        );
+    }
+
+    @Override
+    public Version version() throws IOException {
+        final String versionUri = this.baseUri.toString() + "/version";
+        final HttpGet version = new HttpGet(versionUri);
+        final JsonObject json = this.client.execute(
+            version,
+            new ReadJsonObject(
+                new MatchStatus(version.getURI(), HttpStatus.SC_OK)
+            )
+        );
+        return new RtVersion(
+            json,
+            this.client,
+            URI.create(versionUri),
+            this
         );
     }
 

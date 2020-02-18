@@ -104,6 +104,13 @@ public interface Docker {
     Plugins plugins();
 
     /**
+     * Entry point for Version API.
+     * @return Version.
+     * @throws IOException If an I/O error occurs.
+     */
+    Version version() throws IOException;
+
+    /**
      * The underlying, immutable, Apache HttpClient.<br><br>
      *
      * Use this method to fetch the underlying HttpClient and perform your own
