@@ -76,6 +76,7 @@ final class RtVersion extends JsonResource implements Version {
      * Returns the version of the connected docker engine.
      * @return Version of connected docker engine
      */
+    @Override
     public String getVersion() {
         return this.getString("Version");
     }
@@ -84,6 +85,7 @@ final class RtVersion extends JsonResource implements Version {
      * Returns the name of the connected docker platform.
      * @return Name of the docker platform
      */
+    @Override
     public String getPlatformName() {
         return this.getJsonObject("Platform").getString("Name");
     }
@@ -92,6 +94,7 @@ final class RtVersion extends JsonResource implements Version {
      * Returns the API version of the docker engine.
      * @return API version
      */
+    @Override
     public String getApiVersion() {
         return this.getString("ApiVersion");
     }
@@ -100,6 +103,7 @@ final class RtVersion extends JsonResource implements Version {
      * Returns the minimum API version of the docker engine.
      * @return Minimum API version
      */
+    @Override
     public String getMinApiVersion() {
         return this.getString("MinAPIVersion");
     }
@@ -108,6 +112,7 @@ final class RtVersion extends JsonResource implements Version {
      * Returns the OS docker is running on.
      * @return Name of the OS docker is running on
      */
+    @Override
     public String getOs() {
         return this.getString("Os");
     }
@@ -116,6 +121,7 @@ final class RtVersion extends JsonResource implements Version {
      * Returns the (CPU) architecture docker is running on.
      * @return The (CPU) architecture docker is running on
      */
+    @Override
     public String getArch() {
         return this.getString("Arch");
     }
@@ -124,6 +130,7 @@ final class RtVersion extends JsonResource implements Version {
      * Reports whether experimental docker features are enabled.
      * @return Whether experimental docker features are enabled
      */
+    @Override
     public boolean isExperimental() {
         return this.getBoolean("Experimental");
     }
