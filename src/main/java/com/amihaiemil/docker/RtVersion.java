@@ -25,9 +25,12 @@
  */
 package com.amihaiemil.docker;
 
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 
 import javax.json.JsonObject;
+import java.io.IOException;
 import java.net.URI;
 
 /**
@@ -37,35 +40,91 @@ import java.net.URI;
  */
 final class RtVersion extends JsonResource implements Version {
     /**
-     * Apache HttpClient which sends the requests.
-     */
-    private final HttpClient client;
-
-    /**
-     * Base URI.
-     */
-    private final URI baseUri;
-
-    /**
-     * Docker API.
-     */
-    private final Docker docker;
-
-    /**
      * Ctor.
-     * @param rep JsonObject representation of this Version.
      * @param client The http client.
      * @param uri The URI for this version.
-     * @param dkr The docker entry point.
-     * @checkstyle ParameterNumber (5 lines)
+     * @throws IOException If an I/O error occurs.
      */
-    RtVersion(
-        final JsonObject rep, final HttpClient client,
-        final URI uri, final Docker dkr
-    ) {
-        super(rep);
-        this.client = client;
-        this.baseUri = uri;
-        this.docker = dkr;
+    RtVersion(final HttpClient client, final URI uri) throws IOException {
+        super(fetch(client, uri));
+    }
+
+    /**
+     * Fetch the JsonObject resource.
+     * @param client The Http client.
+     * @param uri The request URL.
+     * @return The fetched JsonObject.
+     * @throws UnexpectedResponseException If Docker's response code is not 200.
+     * @throws IOException If an I/O error occurs.
+     */
+    private static JsonObject fetch(final HttpClient client, final URI uri)
+        throws UnexpectedResponseException, IOException {
+        final HttpGet version = new HttpGet(uri);
+        try {
+            return client.execute(
+                version,
+                new ReadJsonObject(
+                    new MatchStatus(version.getURI(), HttpStatus.SC_OK)
+                )
+            );
+        } finally {
+            version.releaseConnection();
+        }
+    }
+
+    /**
+     * Returns the version of the connected docker engine.
+     * @return Version of connected docker engine
+     */
+    public String getVersion() {
+        return this.getString("Version");
+    }
+
+    /**
+     * Returns the name of the connected docker platform.
+     * @return Name of the docker platform
+     */
+    public String getPlatformName() {
+        return this.getJsonObject("Platform").getString("Name");
+    }
+
+    /**
+     * Returns the API version of the docker engine.
+     * @return API version
+     */
+    public String getApiVersion() {
+        return this.getString("ApiVersion");
+    }
+
+    /**
+     * Returns the minimum API version of the docker engine.
+     * @return Minimum API version
+     */
+    public String getMinApiVersion() {
+        return this.getString("MinAPIVersion");
+    }
+
+    /**
+     * Returns the OS docker is running on.
+     * @return Name of the OS docker is running on
+     */
+    public String getOs() {
+        return this.getString("Os");
+    }
+
+    /**
+     * Returns the (CPU) architecture docker is running on.
+     * @return The (CPU) architecture docker is running on
+     */
+    public String getArch() {
+        return this.getString("Arch");
+    }
+
+    /**
+     * Reports whether experimental docker features are enabled.
+     * @return Whether experimental docker features are enabled
+     */
+    public boolean isExperimental() {
+        return this.getBoolean("Experimental");
     }
 }
