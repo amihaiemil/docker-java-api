@@ -77,7 +77,7 @@ final class RtVersion extends JsonResource implements Version {
      * @return Version of connected docker engine
      */
     @Override
-    public String getVersion() {
+    public String version() {
         return this.getString("Version");
     }
 
@@ -86,7 +86,7 @@ final class RtVersion extends JsonResource implements Version {
      * @return Name of the docker platform
      */
     @Override
-    public String getPlatformName() {
+    public String platformName() {
         return this.getJsonObject("Platform").getString("Name");
     }
 
@@ -95,7 +95,7 @@ final class RtVersion extends JsonResource implements Version {
      * @return API version
      */
     @Override
-    public String getApiVersion() {
+    public String apiVersion() {
         return this.getString("ApiVersion");
     }
 
@@ -104,7 +104,7 @@ final class RtVersion extends JsonResource implements Version {
      * @return Minimum API version
      */
     @Override
-    public String getMinApiVersion() {
+    public String minApiVersion() {
         return this.getString("MinAPIVersion");
     }
 
@@ -113,7 +113,7 @@ final class RtVersion extends JsonResource implements Version {
      * @return Name of the OS docker is running on
      */
     @Override
-    public String getOs() {
+    public String os() {
         return this.getString("Os");
     }
 
@@ -122,7 +122,7 @@ final class RtVersion extends JsonResource implements Version {
      * @return The (CPU) architecture docker is running on
      */
     @Override
-    public String getArch() {
+    public String arch() {
         return this.getString("Arch");
     }
 
@@ -131,7 +131,7 @@ final class RtVersion extends JsonResource implements Version {
      * @return Whether experimental docker features are enabled
      */
     @Override
-    public boolean isExperimental() {
+    public boolean experimental() {
         return this.getBoolean("Experimental");
     }
 }

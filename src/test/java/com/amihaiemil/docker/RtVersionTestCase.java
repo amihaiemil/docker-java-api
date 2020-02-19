@@ -47,13 +47,13 @@ public class RtVersionTestCase {
             });
         Docker docker = new LocalDocker(client, "v1.35");
         Version version = docker.version();
-        assertEquals("19.03.3", version.getVersion());
-        assertEquals("Docker Engine - Community", version.getPlatformName());
-        assertEquals("1.40", version.getApiVersion());
-        assertEquals("1.12", version.getMinApiVersion());
-        assertEquals("linux", version.getOs());
-        assertEquals("amd64", version.getArch());
-        assertTrue(version.isExperimental());
+        assertEquals("19.03.3", version.version());
+        assertEquals("Docker Engine - Community", version.platformName());
+        assertEquals("1.40", version.apiVersion());
+        assertEquals("1.12", version.minApiVersion());
+        assertEquals("linux", version.os());
+        assertEquals("amd64", version.arch());
+        assertTrue(version.experimental());
     }
 
 }

@@ -12,41 +12,41 @@ public interface Version extends JsonObject {
      * Returns the version of the connected docker engine.
      * @return Version of connected docker engine
      */
-    String getVersion();
+    String version();
 
     /**
      * Returns the name of the connected docker platform.
      * @return Name of the docker platform
      */
-    String getPlatformName();
+    String platformName();
 
     /**
      * Returns the API version of the docker engine.
      * @return API version
      */
-    String getApiVersion();
+    String apiVersion();
 
     /**
      * Returns the minimum API version of the docker engine.
      * @return Minimum API version
      */
-    String getMinApiVersion();
+    String minApiVersion();
 
     /**
      * Returns the OS docker is running on.
      * @return Name of the OS docker is running on
      */
-    String getOs();
+    String os();
 
     /**
      * Returns the (CPU) architecture docker is running on.
      * @return The (CPU) architecture docker is running on
      */
-    String getArch();
+    String arch();
 
     /**
      * Reports whether experimental docker features are enabled.
      * @return Whether experimental docker features are enabled
      */
-    boolean isExperimental();
+    boolean experimental();
 }
