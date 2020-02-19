@@ -159,6 +159,15 @@ abstract class RtDocker implements Docker {
     }
 
     @Override
+    public Version version() throws IOException {
+        final String versionUri = this.baseUri.toString() + "/version";
+        return new RtVersion(
+            this.client,
+            URI.create(versionUri)
+        );
+    }
+
+    @Override
     public HttpClient httpClient() {
         return this.client;
     }
