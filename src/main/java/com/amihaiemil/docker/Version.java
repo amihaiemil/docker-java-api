@@ -36,7 +36,7 @@ public interface Version extends JsonObject {
      * Returns the OS docker is running on.
      * @return Name of the OS docker is running on
      */
-    String os();
+    String osName();
 
     /**
      * Returns the (CPU) architecture docker is running on.

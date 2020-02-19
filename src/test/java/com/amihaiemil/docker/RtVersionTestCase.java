@@ -51,7 +51,7 @@ public class RtVersionTestCase {
         assertEquals("Docker Engine - Community", version.platformName());
         assertEquals("1.40", version.apiVersion());
         assertEquals("1.12", version.minApiVersion());
-        assertEquals("linux", version.os());
+        assertEquals("linux", version.osName());
         assertEquals("amd64", version.arch());
         assertTrue(version.experimental());
     }

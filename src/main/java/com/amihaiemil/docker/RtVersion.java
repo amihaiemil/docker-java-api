@@ -113,7 +113,7 @@ final class RtVersion extends JsonResource implements Version {
      * @return Name of the OS docker is running on
      */
     @Override
-    public String os() {
+    public String osName() {
         return this.getString("Os");
     }
 
