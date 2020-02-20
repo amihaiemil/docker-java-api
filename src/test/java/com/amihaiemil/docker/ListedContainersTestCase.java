@@ -45,7 +45,7 @@ import java.util.*;
 public final class ListedContainersTestCase {
 
     /**
-     * {@link ListedImages} can iterate over them without filters.
+     * {@link ListedImages} can iterate over all containers with size.
      */
     @Test
     public void iterateAll() {
@@ -66,7 +66,7 @@ public final class ListedContainersTestCase {
                     ).getPath().endsWith("/containers/json")
                 ),
                 new Condition(
-                    "URI query param must be 'all=true'",
+                    "URI query param must contain all=true",
                     req -> {
                         NameValuePair queryParam = new UncheckedUriBuilder(
                             req.getRequestLine().getUri()
@@ -74,10 +74,21 @@ public final class ListedContainersTestCase {
                         return "all".equals(queryParam.getName())
                             && "true".equals(queryParam.getValue());
                     }
+                ),
+                new Condition(
+                    "URI query param must contain size=true",
+                    req -> {
+                        NameValuePair queryParam = new UncheckedUriBuilder(
+                            req.getRequestLine().getUri()
+                        ).getQueryParams().get(1);
+                        return "size".equals(queryParam.getName())
+                            && "true".equals(queryParam.getValue());
+                    }
                 )
             ),
             "v1.35");
-        final Iterator<Container> all = docker.containers().all();
+        final Iterator<Container> all = docker.containers()
+            .withSize(true).all();
         MatcherAssert.assertThat(
             all.next().getString("Id"),
             Matchers.equalTo("abc1")
