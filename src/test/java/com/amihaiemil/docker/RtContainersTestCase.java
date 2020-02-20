@@ -56,7 +56,7 @@ public final class RtContainersTestCase {
     public void returnsDocker() {
         final Docker parent = Mockito.mock(Docker.class);
         MatcherAssert.assertThat(
-            new RtContainers(
+            new ListedContainers(
                 new AssertRequest(
                     new Response(
                         HttpStatus.SC_OK,
@@ -78,7 +78,7 @@ public final class RtContainersTestCase {
     @Test
     public void returnsAllContainers() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        new RtContainers(
+        new ListedContainers(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_OK,
@@ -115,7 +115,7 @@ public final class RtContainersTestCase {
     @Test
     public void iteratesRunningContainers() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        new RtContainers(
+        new ListedContainers(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_OK,
@@ -149,7 +149,7 @@ public final class RtContainersTestCase {
     @Test
     public void iteratesZeroContainers() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        new RtContainers(
+        new ListedContainers(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_OK,
@@ -169,7 +169,7 @@ public final class RtContainersTestCase {
      */
     @Test(expected = UnexpectedResponseException.class)
     public void iterateFailsIfResponseIs500() throws Exception {
-        new RtContainers(
+        new ListedContainers(
             new AssertRequest(
                 new Response(HttpStatus.SC_INTERNAL_SERVER_ERROR)
             ),
@@ -184,7 +184,7 @@ public final class RtContainersTestCase {
      */
     @Test(expected = UnexpectedResponseException.class)
     public void iterateFailsIfResponseIs400() throws Exception {
-        new RtContainers(
+        new ListedContainers(
             new AssertRequest(
                 new Response(HttpStatus.SC_BAD_REQUEST)
             ),
@@ -200,7 +200,7 @@ public final class RtContainersTestCase {
     @Test
     public void createsContainerOk()
         throws Exception {
-        new RtContainers(
+        new ListedContainers(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_CREATED,
@@ -236,7 +236,7 @@ public final class RtContainersTestCase {
     @Test
     public void returnsCreatedContainer() throws Exception {
         MatcherAssert.assertThat(
-            new RtContainers(
+            new ListedContainers(
                 new AssertRequest(
                     new Response(
                         HttpStatus.SC_CREATED,
@@ -256,7 +256,7 @@ public final class RtContainersTestCase {
      */
     @Test(expected = UnexpectedResponseException.class)
     public void createsWith400() throws IOException {
-        new RtContainers(
+        new ListedContainers(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_BAD_REQUEST
@@ -273,7 +273,7 @@ public final class RtContainersTestCase {
      */
     @Test(expected = UnexpectedResponseException.class)
     public void createsWith404() throws IOException {
-        new RtContainers(
+        new ListedContainers(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NOT_FOUND
@@ -290,7 +290,7 @@ public final class RtContainersTestCase {
      */
     @Test(expected = UnexpectedResponseException.class)
     public void createsWith406() throws IOException {
-        new RtContainers(
+        new ListedContainers(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_NOT_ACCEPTABLE
@@ -307,7 +307,7 @@ public final class RtContainersTestCase {
      */
     @Test(expected = UnexpectedResponseException.class)
     public void createsWithConflict() throws IOException {
-        new RtContainers(
+        new ListedContainers(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_CONFLICT
@@ -324,7 +324,7 @@ public final class RtContainersTestCase {
      */
     @Test(expected = UnexpectedResponseException.class)
     public void createsWithServerErrpr() throws IOException {
-        new RtContainers(
+        new ListedContainers(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_INTERNAL_SERVER_ERROR
@@ -343,7 +343,7 @@ public final class RtContainersTestCase {
      */
     @Test
     public void createsWithImageName() throws Exception {
-        new RtContainers(
+        new ListedContainers(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_CREATED,
@@ -372,7 +372,7 @@ public final class RtContainersTestCase {
             .add("Entrypoint", "script.sh")
             .add("StopSignal", "SIGTERM")
             .build();
-        new RtContainers(
+        new ListedContainers(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_CREATED,
@@ -410,7 +410,7 @@ public final class RtContainersTestCase {
             .add("Entrypoint", "script.sh")
             .add("StopSignal", "SIGTERM")
             .build();
-        new RtContainers(
+        new ListedContainers(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_CREATED,
@@ -443,7 +443,7 @@ public final class RtContainersTestCase {
      */
     @Test
     public void createEscapesNameParameter() throws Exception {
-        new RtContainers(
+        new ListedContainers(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_CREATED,
@@ -467,7 +467,7 @@ public final class RtContainersTestCase {
     @Test
     public void createsContainerWithGivenParameters() throws Exception {
         MatcherAssert.assertThat(
-            new RtContainers(
+            new ListedContainers(
                 new AssertRequest(
                     new Response(
                         HttpStatus.SC_CREATED,
@@ -491,7 +491,7 @@ public final class RtContainersTestCase {
     @Test
     public void createsContainerWithId() throws Exception {
         MatcherAssert.assertThat(
-            new RtContainers(
+            new ListedContainers(
                 new AssertRequest(
                     new Response(
                         HttpStatus.SC_CREATED,

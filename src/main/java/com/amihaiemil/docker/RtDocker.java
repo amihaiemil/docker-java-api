@@ -87,7 +87,7 @@ abstract class RtDocker implements Docker {
 
     @Override
     public final Containers containers() {
-        return new RtContainers(
+        return new ListedContainers(
             this.client,
             URI.create(this.baseUri.toString() + "/containers"),
             this
