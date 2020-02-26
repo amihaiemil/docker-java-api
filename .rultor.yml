@@ -1,5 +1,6 @@
 docker:
-  image: g4s8/rultor:alpine3.10
+  # image: g4s8/rultor:alpine3.10
+  image: yegor256/rultor-image
 architect:
   - amihaiemil
 env:
