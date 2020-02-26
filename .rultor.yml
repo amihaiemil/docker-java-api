@@ -1,5 +1,5 @@
 docker:
-  image: maven:3.6.3-jdk-8
+  image: g4s8/rultor
 architect:
   - amihaiemil
 env:
