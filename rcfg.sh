@@ -33,7 +33,8 @@ echo $NEXT_VERSION
 
 whereis java
 java --version
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+
+export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
 
 echo "************** JAVA HOME ***************"
 echo $JAVA_HOME
