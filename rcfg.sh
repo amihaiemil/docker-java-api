@@ -31,6 +31,8 @@ echo $tag
 echo "NEXT VERSION IS"
 echo $NEXT_VERSION
 
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+
 echo "************** JAVA HOME ***************"
 echo $JAVA_HOME
 echo "************** END JAVA HOME ***********"
