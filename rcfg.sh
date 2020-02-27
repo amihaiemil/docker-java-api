@@ -31,6 +31,10 @@ echo $tag
 echo "NEXT VERSION IS"
 echo $NEXT_VERSION
 
+echo "************** JAVA HOME ***************"
+echo $JAVA_HOME
+echo "************** END JAVA HOME ***********"
+
 #Right after the project's <version> tag there has to be the comment <!--rrv-sed-flag--> which simplifies the sed regex bellow. 
 #If the flag comment wouldn't be there, we'd have to write a more complicated regex to catch the artifactif from a row up.
 #This is because only a regex for version tag would change all the matching version tags in the file.
