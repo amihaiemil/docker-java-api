@@ -31,10 +31,14 @@ echo $tag
 echo "NEXT VERSION IS"
 echo $NEXT_VERSION
 
+whereis java
+java --version
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
 echo "************** JAVA HOME ***************"
 echo $JAVA_HOME
+whereis java
+java --version
 echo "************** END JAVA HOME ***********"
 
 #Right after the project's <version> tag there has to be the comment <!--rrv-sed-flag--> which simplifies the sed regex bellow. 
