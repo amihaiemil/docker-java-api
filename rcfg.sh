@@ -31,14 +31,16 @@ echo $tag
 echo "NEXT VERSION IS"
 echo $NEXT_VERSION
 
-whereis java
-java --version
+#whereis java
+#java --version
 
-export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
+#export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
 
 echo "************** JAVA HOME ***************"
 echo $JAVA_HOME
+echo ">>>><<<<"
 whereis java
+echo ">>>><<<<"
 java --version
 echo "************** END JAVA HOME ***********"
 
