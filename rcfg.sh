@@ -36,13 +36,13 @@ echo $NEXT_VERSION
 
 #export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
 
-echo "************** JAVA HOME ***************"
-echo $JAVA_HOME
-echo ">>>><<<<"
-whereis java
-echo ">>>><<<<"
-java --version
-echo "************** END JAVA HOME ***********"
+#echo "************** JAVA HOME ***************"
+#echo $JAVA_HOME
+#echo ">>>><<<<"
+#whereis java
+#echo ">>>><<<<"
+#java --version
+#echo "************** END JAVA HOME ***********"
 
 #Right after the project's <version> tag there has to be the comment <!--rrv-sed-flag--> which simplifies the sed regex bellow. 
 #If the flag comment wouldn't be there, we'd have to write a more complicated regex to catch the artifactif from a row up.
