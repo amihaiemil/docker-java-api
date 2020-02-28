@@ -16,6 +16,8 @@
 set -e
 set -o pipefail
 
+export GPG_TTY=/dev/console
+
 CURRENT_VERSION=$(grep -o '[0-9]*\.[0-9]*\.[0-9]*-SNAPSHOT' -m 1 pom.xml)
 
 NUMBERS=($(echo $tag | grep -o -E '[0-9]+'))
