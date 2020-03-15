@@ -33,18 +33,24 @@ import org.apache.http.client.HttpClient;
  * Local Docker API. Use this when you want to communicate with the local
  * Docker engine.
  *
+ * @deprecated Please use UnixDocker instead. It does
+ * exactly the same thing, it's just a change for a more suitable
+ * name. This class will be removed in one of the future releases.
+ *  
  * <pre>
  *     final Docker docker = new LocalDocker("unix:///var/run/dicker.sock");
  * </pre>
  * 
  * This implementation manages an internal pool of 10 http connections. Users
  * who wish to alter this behaviour may provide their own {@link HttpClient}
- * via {@link #LocalDocker(HttpClient, String)}.
+ * via {@link #LocalUnixDocker(HttpClient, String)}.
  *
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
  */
+
+@Deprecated
 public final class LocalDocker extends RtDocker {
 
     /**

@@ -34,7 +34,7 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
- * Unit tests for LocalDocker.
+ * Unit tests for LocalUnixDocker.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
@@ -47,7 +47,7 @@ public final class LocalDockerTestCase {
     @Test
     public void canBeInstantiate() {
         MatcherAssert.assertThat(
-            new LocalDocker(
+            new UnixDocker(
                 new File("/var/run/docker.sock")
             ),
             Matchers.notNullValue()
@@ -61,7 +61,7 @@ public final class LocalDockerTestCase {
     @Test
     public void pingTrueIfResponseIsOk() throws Exception {
         MatcherAssert.assertThat(
-            new LocalDocker(
+            new UnixDocker(
                 new AssertRequest(
                     new Response(HttpStatus.SC_OK, "")
                 ),
@@ -78,7 +78,7 @@ public final class LocalDockerTestCase {
     @Test
     public void pingFalseIfResponseIsNotOk() throws Exception {
         MatcherAssert.assertThat(
-            new LocalDocker(
+            new UnixDocker(
                 new AssertRequest(
                     new Response(HttpStatus.SC_NOT_FOUND, "")
                 ),
@@ -94,7 +94,7 @@ public final class LocalDockerTestCase {
     @Test
     public void getsContainers() {
         MatcherAssert.assertThat(
-            new LocalDocker(
+            new UnixDocker(
                 new File("/var/run/docker.sock")
             ).containers(),
             Matchers.notNullValue()
@@ -107,7 +107,7 @@ public final class LocalDockerTestCase {
     @Test
     public void returnsSwarm() {
         MatcherAssert.assertThat(
-            new LocalDocker(
+            new UnixDocker(
                 new File("/var/run/docker.sock")
             ).swarm(),
             Matchers.notNullValue()
@@ -120,7 +120,7 @@ public final class LocalDockerTestCase {
     @Test
     public void returnsImages() {
         MatcherAssert.assertThat(
-            new LocalDocker(
+            new UnixDocker(
                 new File("/var/run/docker.sock")
             ).images(),
             Matchers.notNullValue()
@@ -133,7 +133,7 @@ public final class LocalDockerTestCase {
     @Test
     public void returnsHttpClient() {
         MatcherAssert.assertThat(
-            new LocalDocker(
+            new UnixDocker(
                 new File("/var/run/docker.sock")
             ).httpClient(),
             Matchers.allOf(
@@ -149,7 +149,7 @@ public final class LocalDockerTestCase {
     @Test
     public void returnsVolumes() {
         MatcherAssert.assertThat(
-            new LocalDocker(
+            new UnixDocker(
                 new File("/var/run/docker.sock")
             ).volumes(),
             Matchers.notNullValue()
@@ -161,7 +161,7 @@ public final class LocalDockerTestCase {
      */
     @Test(expected = UnsupportedOperationException.class)
     public void unsupportedOperationNetworks() {
-        new LocalDocker(
+        new UnixDocker(
             new File("/var/run/docker.sock")
         ).networks();
     }
@@ -171,7 +171,7 @@ public final class LocalDockerTestCase {
      */
     @Test(expected = UnsupportedOperationException.class)
     public void unsupportedOperationExec() {
-        new LocalDocker(
+        new UnixDocker(
             new File("/var/run/docker.sock")
         ).exec();
     }
@@ -181,7 +181,7 @@ public final class LocalDockerTestCase {
      */
     @Test(expected = UnsupportedOperationException.class)
     public void unsupportedOperationPlugins() {
-        new LocalDocker(
+        new UnixDocker(
             new File("/var/run/docker.sock")
         ).plugins();
     }

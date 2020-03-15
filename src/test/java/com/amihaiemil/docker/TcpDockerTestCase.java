@@ -44,7 +44,7 @@ import org.mockito.Mockito;
  * @checkstyle MethodName (500 lines)
  */
 
-public final class RemoteDockerTestCase {
+public final class TcpDockerTestCase {
 
     /**
      * Ping must be TRUE if response is OK.
@@ -81,7 +81,7 @@ public final class RemoteDockerTestCase {
     }
 
     /**
-     * RemoteDocker can return the Containers.
+     * TcpDocker can return the Containers.
      */
     @Test
     public void getsContainers() {
@@ -95,7 +95,7 @@ public final class RemoteDockerTestCase {
     }
 
     /**
-     * RemoteDocker can return the Swarm.
+     * TcpDocker can return the Swarm.
      */
     @Test
     public void returnsSwarm() {
@@ -110,7 +110,7 @@ public final class RemoteDockerTestCase {
     
     
     /**
-     * RemoteDocker can return Images.
+     * TcpDocker can return Images.
      */
     @Test
     public void returnsImages() {
@@ -124,7 +124,7 @@ public final class RemoteDockerTestCase {
     }
 
     /**
-     * LocalDocker can return its HttpClient.
+     * UnixDocker can return its HttpClient.
      */
     @Test
     public void returnsHttpClient() {
@@ -142,7 +142,7 @@ public final class RemoteDockerTestCase {
     }
 
     /**
-     * LocalDocker should have AuthHttpClient.
+     * UnixDocker should have AuthHttpClient.
      */
     @Test
     public void returnsAuthHttpClient() {
@@ -159,7 +159,7 @@ public final class RemoteDockerTestCase {
     }    
     
     /**
-     * RemoteDocker can return Volumes.
+     * TcpDocker can return Volumes.
      */
     @Test
     public void returnsVolumes() {

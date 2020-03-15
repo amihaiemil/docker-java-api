@@ -51,7 +51,7 @@ public final class RtLogsITCase {
      */
     @Test
     public void fetchesLogs() throws Exception {
-        final Container container =  new LocalDocker(
+        final Container container =  new UnixDocker(
             new File("/var/run/docker.sock")
         ).images().pull("hello-world", "latest").run();
         final String logs = container.logs().fetch();
@@ -68,7 +68,7 @@ public final class RtLogsITCase {
     @Test
     @Ignore
     public void followsLogs() throws Exception {
-        final Container container =  new LocalDocker(
+        final Container container =  new UnixDocker(
             new File("/var/run/docker.sock")
         ).images().pull("ubuntu", "latest").run();
         final String logs = IOUtils.toString(container.logs().follow());

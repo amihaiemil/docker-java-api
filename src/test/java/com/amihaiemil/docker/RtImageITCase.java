@@ -45,7 +45,7 @@ public final class RtImageITCase {
      */
     @Test
     public void returnsHistory() throws Exception {
-        final Image img =  new LocalDocker(
+        final Image img =  new UnixDocker(
             new File("/var/run/docker.sock")
         ).images().pull("hello-world", "latest");
         for(final Image parent:img.history()) {

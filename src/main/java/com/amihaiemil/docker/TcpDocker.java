@@ -32,35 +32,30 @@ import org.apache.http.client.HttpClient;
 
 /**
  * Use this to communicate with a remote Docker API.
- * @deprecated Please use TcpDocker instead. It does
- * exactly the same thing, it's just a change for a more suitable
- * name. This class will be removed in one of the future releases.
- *  
+ *
  * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
  * @checkstyle ParameterNumber (150 lines)
  */
-
-@Deprecated
-public final class RemoteDocker extends RtDocker {
+public final class TcpDocker extends RtDocker {
 
     /**
-     * Remote Docker engine. API version is 1.35 by default.
+     * Tcp Docker engine. API version is 1.35 by default.
      * @param uri Remote Docker URI.
      * @param keys Path to the keystore.
      * @param trust Path to the truststore.
      * @param storePwd Password for the keystore.
      * @param keyPwd Passphrase for the key.
      */
-    RemoteDocker(
+    TcpDocker(
         final URI uri, final Path keys, final Path trust,
         final char[] storePwd, final char[] keyPwd) {
         this(uri, "v1.35", keys, trust, storePwd, keyPwd);
     }
 
     /**
-     * Remote Docker engine.
+     * Tcp Docker engine.
      * @param uri Remote Docker URI.
      * @param version API version (eg. v1.35).
      * @param keys Path to the keystore.
@@ -68,7 +63,7 @@ public final class RemoteDocker extends RtDocker {
      * @param storePwd Password for the keystore.
      * @param keyPwd Passphrase for the key.
      */
-    RemoteDocker(
+    TcpDocker(
         final URI uri, final String version,
         final Path keys, final Path trust,
         final char[] storePwd, final char[] keyPwd) {
@@ -79,30 +74,30 @@ public final class RemoteDocker extends RtDocker {
     }
 
     /**
-     * Remote Docker engine.
+     * Tcp Docker engine.
      * 
      * An insecure docker API v1.35 endpoint is assumed.
      * 
      * @param uri Remote Docker URI.
      */
-    public RemoteDocker(final URI uri) {
+    public TcpDocker(final URI uri) {
         this(new PlainHttpClient(), uri);
     }    
     
     /**
-     * Remote Docker engine.
+     * Tcp Docker engine.
      * 
      * An insecure docker API v1.35 endpoint is assumed.
      * 
      * @param uri Remote Docker URI.
      * @param auth Remote Docker {@link Auth}
      */
-    public RemoteDocker(final URI uri, final Auth auth) {
+    public TcpDocker(final URI uri, final Auth auth) {
         this(new AuthHttpClient(new PlainHttpClient(), auth), uri);
     }
 
     /**
-     * Remote Docker engine. You have to configure your own HttpClient,
+     * Tcp Docker engine. You have to configure your own HttpClient,
      * most likely with some authentication mechanism, depending on where
      * the Docker engine is on the Network. <br><br>
      *
@@ -111,12 +106,12 @@ public final class RemoteDocker extends RtDocker {
      * @param client The http client to use.
      * @param uri Remote Docker URI.
      */
-    public RemoteDocker(final HttpClient client, final URI uri) {
+    public TcpDocker(final HttpClient client, final URI uri) {
         this(client, uri, "v1.35");
     }
 
     /**
-     * Remote Docker engine. You have to configure your own HttpClient,
+     * Tcp Docker engine. You have to configure your own HttpClient,
      * most likely with some authentication mechanism, depending on where
      * the Docker engine is on the Network.
      *
@@ -124,7 +119,7 @@ public final class RemoteDocker extends RtDocker {
      * @param uri Remote Docker URI.
      * @param version API version (eg. v1.35).
      */
-    public RemoteDocker(
+    public TcpDocker(
         final HttpClient client, final URI uri, final String version
     ) {
         super(client, URI.create(uri.toString() + "/" + version));

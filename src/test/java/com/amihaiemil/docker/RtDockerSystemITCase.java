@@ -45,7 +45,7 @@ public final class RtDockerSystemITCase {
      */
     @Test
     public void showDiskSpaceInfo() throws Exception {
-        final Docker docker = new LocalDocker(
+        final Docker docker = new UnixDocker(
             new File("/var/run/docker.sock")
         );
         DiskSpaceInfo info = docker.system().diskUsage();

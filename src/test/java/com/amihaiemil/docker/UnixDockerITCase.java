@@ -25,36 +25,67 @@
  */
 package com.amihaiemil.docker;
 
+import java.io.File;
+import java.io.Reader;
+import java.nio.file.Paths;
+
+import org.apache.commons.io.IOUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.hamcrest.collection.IsIterableWithSize;
 import org.junit.Test;
-import java.io.File;
+import org.junit.Ignore;
+import org.mockito.internal.matchers.GreaterOrEqual;
 
 /**
- * Integration tests for {@link RtContainers}.
+ * Integration tests for LocalUnixDocker.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
  */
-public final class RtContainersITCase {
+public final class UnixDockerITCase {
 
     /**
-     * {@link RtContainers} can iterate over the containers
-     * with the default filter.
+     * UnixDocker can ping the Docker Engine.
+     * @throws Exception If something goes wrong.
      */
     @Test
-    public void iteratesContainers() {
-        final Containers containers = new UnixDocker(
+    public void pingsDocker() throws Exception {
+        final Docker docker = new UnixDocker(
             new File("/var/run/docker.sock")
-        ).containers();
-        for(final Container container : containers) {
-            MatcherAssert.assertThat(
-                container.getString("Id").isEmpty(), Matchers.is(Boolean.FALSE)
-            );
-            MatcherAssert.assertThat(
-                container.getString("ImageID"), Matchers.startsWith("sha256")
-            );
-        }
+        );
+        MatcherAssert.assertThat(docker.ping(), Matchers.is(Boolean.TRUE));
+    }
+    /**
+     * Docker can follow the events stream. Ignored for now,
+     * doesn't work yet.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    @Ignore
+    public void followsEvents() throws Exception {
+        final Reader reader =  new UnixDocker(
+            new File("/var/run/docker.sock")
+        ).events();
+        final String events = IOUtils.toString(reader);
+        MatcherAssert.assertThat(
+                events.trim(),
+                Matchers.notNullValue()
+        );
+    }
+    /**
+     * UnixDocker can list {@link Volumes}.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void listVolumes() throws Exception {
+        final Docker docker = new UnixDocker(
+            Paths.get("/var/run/docker.sock").toFile()
+        );
+        MatcherAssert.assertThat(
+            docker.volumes(),
+            new IsIterableWithSize<>(new GreaterOrEqual<>(0))
+        );
     }
 
 }

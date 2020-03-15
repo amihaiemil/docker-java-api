@@ -25,36 +25,57 @@
  */
 package com.amihaiemil.docker;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.Test;
 import java.io.File;
+import java.net.URI;
+import org.apache.http.client.HttpClient;
 
 /**
- * Integration tests for {@link RtContainers}.
+ * Local Docker API. Use this when you want to communicate with the local
+ * Docker engine.
+ *
+ * <pre>
+ *     final Docker docker = new LocalUnixDocker("unix:///var/run/dicker.sock");
+ * </pre>
+ * 
+ * This implementation manages an internal pool of 10 http connections. Users
+ * who wish to alter this behaviour may provide their own {@link HttpClient}
+ * via {@link #LocalUnixDocker(HttpClient, String)}.
+ *
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
  */
-public final class RtContainersITCase {
+public final class UnixDocker extends RtDocker {
 
     /**
-     * {@link RtContainers} can iterate over the containers
-     * with the default filter.
+     * Unix Docker engine.
+     * @param unixSocket Unix socket File on disk.
+     *     (most likely /var/run/docker.sock).
      */
-    @Test
-    public void iteratesContainers() {
-        final Containers containers = new UnixDocker(
-            new File("/var/run/docker.sock")
-        ).containers();
-        for(final Container container : containers) {
-            MatcherAssert.assertThat(
-                container.getString("Id").isEmpty(), Matchers.is(Boolean.FALSE)
-            );
-            MatcherAssert.assertThat(
-                container.getString("ImageID"), Matchers.startsWith("sha256")
-            );
-        }
+    public UnixDocker(final File unixSocket){
+        this(unixSocket, "v1.35");
+    }
+
+    /**
+     * Unix Docker engine.
+     * @param unixSocket Unix socket File on disk.
+     *     (most likely /var/run/docker.sock).
+     * @param version API version (e.g. v1.30).
+     */
+    public UnixDocker(final File unixSocket, final String version){
+        this(new UnixHttpClient(unixSocket), version);
+    }
+
+    /**
+     * Unix Docker engine.
+     * <p>
+     * Users may supply their own {@link HttpClient} that must register a
+     * {@link UnixSocketFactory}.
+     * @param client The http client to use.
+     * @param version API version (e.g. v1.30).
+     */
+    public UnixDocker(final HttpClient client, final String version) {
+        super(client, URI.create("unix://localhost:80/" + version));
     }
 
 }
