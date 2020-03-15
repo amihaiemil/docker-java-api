@@ -38,7 +38,7 @@ import org.apache.http.client.HttpClient;
  * @since 0.0.1
  * @checkstyle ParameterNumber (150 lines)
  */
-public final class RemoteDocker extends RtDocker {
+public final class RemoteTcpDocker extends RtDocker {
 
     /**
      * Remote Docker engine. API version is 1.35 by default.
@@ -48,7 +48,7 @@ public final class RemoteDocker extends RtDocker {
      * @param storePwd Password for the keystore.
      * @param keyPwd Passphrase for the key.
      */
-    RemoteDocker(
+    RemoteTcpDocker(
         final URI uri, final Path keys, final Path trust,
         final char[] storePwd, final char[] keyPwd) {
         this(uri, "v1.35", keys, trust, storePwd, keyPwd);
@@ -63,7 +63,7 @@ public final class RemoteDocker extends RtDocker {
      * @param storePwd Password for the keystore.
      * @param keyPwd Passphrase for the key.
      */
-    RemoteDocker(
+    RemoteTcpDocker(
         final URI uri, final String version,
         final Path keys, final Path trust,
         final char[] storePwd, final char[] keyPwd) {
@@ -80,7 +80,7 @@ public final class RemoteDocker extends RtDocker {
      * 
      * @param uri Remote Docker URI.
      */
-    public RemoteDocker(final URI uri) {
+    public RemoteTcpDocker(final URI uri) {
         this(new PlainHttpClient(), uri);
     }    
     
@@ -92,7 +92,7 @@ public final class RemoteDocker extends RtDocker {
      * @param uri Remote Docker URI.
      * @param auth Remote Docker {@link Auth}
      */
-    public RemoteDocker(final URI uri, final Auth auth) {
+    public RemoteTcpDocker(final URI uri, final Auth auth) {
         this(new AuthHttpClient(new PlainHttpClient(), auth), uri);
     }
 
@@ -106,7 +106,7 @@ public final class RemoteDocker extends RtDocker {
      * @param client The http client to use.
      * @param uri Remote Docker URI.
      */
-    public RemoteDocker(final HttpClient client, final URI uri) {
+    public RemoteTcpDocker(final HttpClient client, final URI uri) {
         this(client, uri, "v1.35");
     }
 
@@ -119,7 +119,7 @@ public final class RemoteDocker extends RtDocker {
      * @param uri Remote Docker URI.
      * @param version API version (eg. v1.35).
      */
-    public RemoteDocker(
+    public RemoteTcpDocker(
         final HttpClient client, final URI uri, final String version
     ) {
         super(client, URI.create(uri.toString() + "/" + version));

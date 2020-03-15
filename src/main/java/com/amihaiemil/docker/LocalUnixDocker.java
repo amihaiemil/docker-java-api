@@ -34,25 +34,25 @@ import org.apache.http.client.HttpClient;
  * Docker engine.
  *
  * <pre>
- *     final Docker docker = new LocalDocker("unix:///var/run/dicker.sock");
+ *     final Docker docker = new LocalUnixDocker("unix:///var/run/dicker.sock");
  * </pre>
  * 
  * This implementation manages an internal pool of 10 http connections. Users
  * who wish to alter this behaviour may provide their own {@link HttpClient}
- * via {@link #LocalDocker(HttpClient, String)}.
+ * via {@link #LocalUnixDocker(HttpClient, String)}.
  *
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.1
  */
-public final class LocalDocker extends RtDocker {
+public final class LocalUnixDocker extends RtDocker {
 
     /**
      * Local Docker engine.
      * @param unixSocket Unix socket File on disk.
      *     (most likely /var/run/docker.sock).
      */
-    public LocalDocker(final File unixSocket){
+    public LocalUnixDocker(final File unixSocket){
         this(unixSocket, "v1.35");
     }
 
@@ -62,7 +62,7 @@ public final class LocalDocker extends RtDocker {
      *     (most likely /var/run/docker.sock).
      * @param version API version (e.g. v1.30).
      */
-    public LocalDocker(final File unixSocket, final String version){
+    public LocalUnixDocker(final File unixSocket, final String version){
         this(new UnixHttpClient(unixSocket), version);
     }
 
@@ -74,7 +74,7 @@ public final class LocalDocker extends RtDocker {
      * @param client The http client to use.
      * @param version API version (e.g. v1.30).
      */
-    public LocalDocker(final HttpClient client, final String version) {
+    public LocalUnixDocker(final HttpClient client, final String version) {
         super(client, URI.create("unix://localhost:80/" + version));
     }
 

@@ -45,7 +45,7 @@ public class RtVersionTestCase {
                 return ((ReadJsonObject) invocation.getArguments()[1])
                     .handleResponse(response);
             });
-        Docker docker = new LocalDocker(client, "v1.35");
+        Docker docker = new LocalUnixDocker(client, "v1.35");
         Version version = docker.version();
         assertEquals("19.03.3", version.version());
         assertEquals("Docker Engine - Community", version.platformName());

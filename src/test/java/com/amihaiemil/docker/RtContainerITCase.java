@@ -49,7 +49,7 @@ public final class RtContainerITCase {
      */
     @Test
     public void renamesContainer() throws Exception {
-        final Container container = new LocalDocker(
+        final Container container = new LocalUnixDocker(
             new File("/var/run/docker.sock")
         ).containers().create("Toomes", "hello-world");
         MatcherAssert.assertThat(
@@ -70,7 +70,7 @@ public final class RtContainerITCase {
      */
     @Test
     public void startStopContainer() throws Exception {
-        final Container container = new LocalDocker(
+        final Container container = new LocalUnixDocker(
             new File("/var/run/docker.sock")
         ).containers().create("TestStart", this.containerJsonObject());
         container.start();
@@ -88,7 +88,7 @@ public final class RtContainerITCase {
      */
     @Test
     public void killContainer() throws Exception {
-        final Container container = new LocalDocker(
+        final Container container = new LocalUnixDocker(
             new File("/var/run/docker.sock")
         ).containers().create("TestKill", this.containerJsonObject());
         container.start();
@@ -110,7 +110,7 @@ public final class RtContainerITCase {
      */
     @Test
     public void restartContainer() throws Exception {
-        final Container container = new LocalDocker(
+        final Container container = new LocalUnixDocker(
             new File("/var/run/docker.sock")
         ).containers().create("TestRestart", this.containerJsonObject());
         container.start();
@@ -145,7 +145,7 @@ public final class RtContainerITCase {
      */
     @Test
     public void pauseContainer() throws Exception {
-        final Container container = new LocalDocker(
+        final Container container = new LocalUnixDocker(
                 new File("/var/run/docker.sock")
         ).containers().create("TestPause", this.containerJsonObject());
         container.start();
@@ -164,7 +164,7 @@ public final class RtContainerITCase {
      */
     @Test
     public void unpauseContainer() throws Exception {
-        final Container container = new LocalDocker(
+        final Container container = new LocalUnixDocker(
                 new File("/var/run/docker.sock")
         ).containers().create("TestUnpause", this.containerJsonObject());
         container.start();

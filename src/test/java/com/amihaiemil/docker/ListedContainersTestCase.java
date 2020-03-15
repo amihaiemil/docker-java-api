@@ -49,7 +49,7 @@ public final class ListedContainersTestCase {
      */
     @Test
     public void iterateAll() {
-        Docker docker = new LocalDocker(
+        Docker docker = new LocalUnixDocker(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_OK,
@@ -116,7 +116,7 @@ public final class ListedContainersTestCase {
                 "randomLabel=test"
             )
         );
-        new LocalDocker(
+        new LocalUnixDocker(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_OK,
@@ -159,7 +159,7 @@ public final class ListedContainersTestCase {
         );
         final Map<String, Iterable<String>> added = new HashMap<>();
         added.put("dangling", Collections.singletonList("true"));
-        new LocalDocker(
+        new LocalUnixDocker(
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_OK,
