@@ -43,7 +43,7 @@ import org.mockito.internal.matchers.GreaterOrEqual;
  * @version $Id$
  * @since 0.0.1
  */
-public final class LocalUnixDockerITCase {
+public final class LocalDockerITCase {
 
     /**
      * LocalUnixDocker can ping the Docker Engine.
