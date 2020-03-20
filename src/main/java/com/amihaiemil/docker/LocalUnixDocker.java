@@ -38,7 +38,7 @@ import org.apache.http.client.HttpClient;
  * name. This class will be removed in one of the future releases.
  *  
  * <pre>
- *     final Docker docker = new LocalDocker("unix:///var/run/dicker.sock");
+ *     final Docker docker = new LocalUnixDocker("unix:///var/run/dicker.sock");
  * </pre>
  * 
  * This implementation manages an internal pool of 10 http connections. Users
@@ -52,9 +52,9 @@ import org.apache.http.client.HttpClient;
 
 @Deprecated
 public final class LocalDocker extends RtDocker {
-
+	
     /**
-     * Local Docker engine.
+     * Unix Docker engine.
      * @param unixSocket Unix socket File on disk.
      *     (most likely /var/run/docker.sock).
      */
@@ -63,7 +63,7 @@ public final class LocalDocker extends RtDocker {
     }
 
     /**
-     * Local Docker engine.
+     * Unix Docker engine.
      * @param unixSocket Unix socket File on disk.
      *     (most likely /var/run/docker.sock).
      * @param version API version (e.g. v1.30).
@@ -73,7 +73,7 @@ public final class LocalDocker extends RtDocker {
     }
 
     /**
-     * Local Docker engine.
+     * Unix Docker engine.
      * <p>
      * Users may supply their own {@link HttpClient} that must register a
      * {@link UnixSocketFactory}.

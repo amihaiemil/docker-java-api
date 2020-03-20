@@ -44,7 +44,7 @@ public final class RtContainersITCase {
      */
     @Test
     public void iteratesContainers() {
-        final Containers containers = new UnixDocker(
+        final Containers containers = new LocalDocker(
             new File("/var/run/docker.sock")
         ).containers();
         for(final Container container : containers) {

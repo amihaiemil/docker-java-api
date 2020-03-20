@@ -51,7 +51,7 @@ public final class UnixDockerITCase {
      */
     @Test
     public void pingsDocker() throws Exception {
-        final Docker docker = new UnixDocker(
+        final Docker docker = new LocalDocker(
             new File("/var/run/docker.sock")
         );
         MatcherAssert.assertThat(docker.ping(), Matchers.is(Boolean.TRUE));
@@ -64,7 +64,7 @@ public final class UnixDockerITCase {
     @Test
     @Ignore
     public void followsEvents() throws Exception {
-        final Reader reader =  new UnixDocker(
+        final Reader reader =  new LocalDocker(
             new File("/var/run/docker.sock")
         ).events();
         final String events = IOUtils.toString(reader);
@@ -79,7 +79,7 @@ public final class UnixDockerITCase {
      */
     @Test
     public void listVolumes() throws Exception {
-        final Docker docker = new UnixDocker(
+        final Docker docker = new LocalDocker(
             Paths.get("/var/run/docker.sock").toFile()
         );
         MatcherAssert.assertThat(

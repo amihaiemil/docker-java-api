@@ -27,32 +27,28 @@ package com.amihaiemil.docker;
 
 import com.amihaiemil.docker.mock.AssertRequest;
 import com.amihaiemil.docker.mock.Response;
-import java.io.File;
+
+import java.net.URI;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
- * Unit tests for LocalUnixDocker.
- * @author Mihai Andronache (amihaiemil@gmail.com)
+<<<<<<< HEAD:src/test/java/com/amihaiemil/docker/RemoteDockerTestCase.java
+ * Unit tests for {@link TcpDocker}.
+=======
+ * Unit tests for {@link RemoteTcpDocker}.
+>>>>>>> e464b1a151c7ee5bb102fd9e5034724e7458b29d:src/test/java/com/amihaiemil/docker/RemoteTcpDockerTestCase.java
+ * @author George Aristy (george.aristy@gmail.com)
  * @version $Id$
  * @since 0.0.1
+ * @checkstyle MethodName (500 lines)
  */
-public final class LocalDockerTestCase {
 
-    /**
-     * LocalDocker can be instantiated.
-     */
-    @Test
-    public void canBeInstantiate() {
-        MatcherAssert.assertThat(
-            new UnixDocker(
-                new File("/var/run/docker.sock")
-            ),
-            Matchers.notNullValue()
-        );
-    }
+public final class RemoteTcpDockerTestCase {
 
     /**
      * Ping must be TRUE if response is OK.
@@ -61,11 +57,11 @@ public final class LocalDockerTestCase {
     @Test
     public void pingTrueIfResponseIsOk() throws Exception {
         MatcherAssert.assertThat(
-            new UnixDocker(
+            new TcpDocker(
                 new AssertRequest(
                     new Response(HttpStatus.SC_OK, "")
                 ),
-                "v1.35"
+                URI.create("http://remotedocker")
             ).ping(),
             Matchers.is(true)
         );
@@ -78,111 +74,105 @@ public final class LocalDockerTestCase {
     @Test
     public void pingFalseIfResponseIsNotOk() throws Exception {
         MatcherAssert.assertThat(
-            new UnixDocker(
+            new TcpDocker(
                 new AssertRequest(
                     new Response(HttpStatus.SC_NOT_FOUND, "")
                 ),
-                "v1.35"
+                URI.create("http://remotedocker")
             ).ping(),
             Matchers.is(false)
         );
     }
-    
+
     /**
-     * LocalDocker can return the Containers.
+     * RemoteTcpDockercan return the Containers.
      */
     @Test
     public void getsContainers() {
         MatcherAssert.assertThat(
-            new UnixDocker(
-                new File("/var/run/docker.sock")
+            new TcpDocker(
+                Mockito.mock(HttpClient.class),
+                URI.create("http://localhost")
             ).containers(),
             Matchers.notNullValue()
         );
     }
 
     /**
-     * LocalDocker can return the Swarm.
+     * RemoteTcpDockercan return the Swarm.
      */
     @Test
     public void returnsSwarm() {
         MatcherAssert.assertThat(
-            new UnixDocker(
-                new File("/var/run/docker.sock")
+            new TcpDocker(
+                Mockito.mock(HttpClient.class),
+                URI.create("http://localhost")
             ).swarm(),
             Matchers.notNullValue()
         );
     }
-
+    
+    
     /**
-     * LocalDocker can return Images.
+     * RemoteTcpDockercan return Images.
      */
     @Test
     public void returnsImages() {
         MatcherAssert.assertThat(
-            new UnixDocker(
-                new File("/var/run/docker.sock")
+            new TcpDocker(
+                Mockito.mock(HttpClient.class),
+                URI.create("http://localhost")
             ).images(),
             Matchers.notNullValue()
         );
     }
 
     /**
-     * LocalDocker can return its HttpClient.
+     * LocalUnixDocker can return its HttpClient.
      */
     @Test
     public void returnsHttpClient() {
+        final HttpClient client = Mockito.mock(HttpClient.class);
         MatcherAssert.assertThat(
-            new UnixDocker(
-                new File("/var/run/docker.sock")
+            new TcpDocker(
+                client,
+                URI.create("http://localhost")
             ).httpClient(),
             Matchers.allOf(
                 Matchers.notNullValue(),
-                Matchers.instanceOf(UnixHttpClient.class)
+                Matchers.sameInstance(client)
             )
         );
     }
 
     /**
-     * LocalDocker can return Volumes.
+     * LocalUnixDocker should have AuthHttpClient.
+     */
+    @Test
+    public void returnsAuthHttpClient() {
+        MatcherAssert.assertThat(
+            new TcpDocker(
+                URI.create("http://localhost"),
+                new Credentials("user", "pwd", "user@email.com", "server.com")
+            ).httpClient(),
+            Matchers.allOf(
+                Matchers.notNullValue(),
+                Matchers.instanceOf(AuthHttpClient.class)
+            )
+        );
+    }    
+    
+    /**
+     * RemoteTcpDockercan return Volumes.
      */
     @Test
     public void returnsVolumes() {
         MatcherAssert.assertThat(
-            new UnixDocker(
-                new File("/var/run/docker.sock")
+            new TcpDocker(
+                Mockito.mock(HttpClient.class),
+                URI.create("http://localhost")
             ).volumes(),
             Matchers.notNullValue()
         );
-    }
-
-    /**
-     * LocalDocker throws UnsupportedOperationException for Networks.
-     */
-    @Test(expected = UnsupportedOperationException.class)
-    public void unsupportedOperationNetworks() {
-        new UnixDocker(
-            new File("/var/run/docker.sock")
-        ).networks();
-    }
-
-    /**
-     * LocalDocker throws UnsupportedOperationException for Exec.
-     */
-    @Test(expected = UnsupportedOperationException.class)
-    public void unsupportedOperationExec() {
-        new UnixDocker(
-            new File("/var/run/docker.sock")
-        ).exec();
-    }
-
-    /**
-     * LocalDocker throws UnsupportedOperationException for Plugins.
-     */
-    @Test(expected = UnsupportedOperationException.class)
-    public void unsupportedOperationPlugins() {
-        new UnixDocker(
-            new File("/var/run/docker.sock")
-        ).plugins();
     }
 }

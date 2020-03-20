@@ -111,6 +111,7 @@ public final class RtContainerITCase {
     @Test
     public void restartContainer() throws Exception {
         final Container container = new UnixDocker(
+  
             new File("/var/run/docker.sock")
         ).containers().create("TestRestart", this.containerJsonObject());
         container.start();
@@ -165,6 +166,7 @@ public final class RtContainerITCase {
     @Test
     public void unpauseContainer() throws Exception {
         final Container container = new UnixDocker(
+
                 new File("/var/run/docker.sock")
         ).containers().create("TestUnpause", this.containerJsonObject());
         container.start();

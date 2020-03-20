@@ -43,15 +43,15 @@ import org.mockito.internal.matchers.GreaterOrEqual;
  * @version $Id$
  * @since 0.0.1
  */
-public final class LocalDockerITCase {
+public final class LocalUnixDockerITCase {
 
     /**
-     * LocalDocker can ping the Docker Engine.
+     * LocalUnixDocker can ping the Docker Engine.
      * @throws Exception If something goes wrong.
      */
     @Test
     public void pingsDocker() throws Exception {
-        final Docker docker = new UnixDocker(
+        final Docker docker = new LocalDocker(
             new File("/var/run/docker.sock")
         );
         MatcherAssert.assertThat(docker.ping(), Matchers.is(Boolean.TRUE));
@@ -64,7 +64,7 @@ public final class LocalDockerITCase {
     @Test
     @Ignore
     public void followsEvents() throws Exception {
-        final Reader reader =  new UnixDocker(
+        final Reader reader =  new LocalDocker(
             new File("/var/run/docker.sock")
         ).events();
         final String events = IOUtils.toString(reader);
@@ -74,12 +74,12 @@ public final class LocalDockerITCase {
         );
     }
     /**
-     * LocalDocker can list {@link Volumes}.
+     * LocalUnixDocker can list {@link Volumes}.
      * @throws Exception If something goes wrong.
      */
     @Test
     public void listVolumes() throws Exception {
-        final Docker docker = new UnixDocker(
+        final Docker docker = new LocalDocker(
             Paths.get("/var/run/docker.sock").toFile()
         );
         MatcherAssert.assertThat(
