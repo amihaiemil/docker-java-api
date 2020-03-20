@@ -54,7 +54,7 @@ import org.apache.http.client.HttpClient;
 public final class LocalDocker extends RtDocker {
 	
     /**
-     * Unix Docker engine.
+     * Local Docker engine.
      * @param unixSocket Unix socket File on disk.
      *     (most likely /var/run/docker.sock).
      */
@@ -63,7 +63,7 @@ public final class LocalDocker extends RtDocker {
     }
 
     /**
-     * Unix Docker engine.
+     * Local Docker engine.
      * @param unixSocket Unix socket File on disk.
      *     (most likely /var/run/docker.sock).
      * @param version API version (e.g. v1.30).
@@ -73,7 +73,7 @@ public final class LocalDocker extends RtDocker {
     }
 
     /**
-     * Unix Docker engine.
+     * Local Docker engine.
      * <p>
      * Users may supply their own {@link HttpClient} that must register a
      * {@link UnixSocketFactory}.

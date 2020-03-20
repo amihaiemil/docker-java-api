@@ -49,7 +49,7 @@ public final class RtImagesITCase {
      */
     @Test
     public void iteratesImages() throws Exception {
-        final Images images = new LocalDocker(
+        final Images images = new UnixDocker(
             new File("/var/run/docker.sock")
         ).images();
         for(final Image img : images) {
@@ -81,7 +81,7 @@ public final class RtImagesITCase {
             )
         );
         
-        final Images images = new LocalDocker(
+        final Images images = new UnixDocker(
             new File("/var/run/docker.sock")
         ).images();
         Images filtered = images.filter(filters);
