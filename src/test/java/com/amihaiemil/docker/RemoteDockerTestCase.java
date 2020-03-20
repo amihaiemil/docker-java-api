@@ -53,7 +53,7 @@ public final class RemoteDockerTestCase {
     @Test
     public void pingTrueIfResponseIsOk() throws Exception {
         MatcherAssert.assertThat(
-            new TcpDocker(
+            new RemoteDocker(
                 new AssertRequest(
                     new Response(HttpStatus.SC_OK, "")
                 ),
@@ -70,7 +70,7 @@ public final class RemoteDockerTestCase {
     @Test
     public void pingFalseIfResponseIsNotOk() throws Exception {
         MatcherAssert.assertThat(
-            new TcpDocker(
+            new RemoteDocker(
                 new AssertRequest(
                     new Response(HttpStatus.SC_NOT_FOUND, "")
                 ),
@@ -86,7 +86,7 @@ public final class RemoteDockerTestCase {
     @Test
     public void getsContainers() {
         MatcherAssert.assertThat(
-            new TcpDocker(
+            new RemoteDocker(
                 Mockito.mock(HttpClient.class),
                 URI.create("http://localhost")
             ).containers(),
@@ -100,7 +100,7 @@ public final class RemoteDockerTestCase {
     @Test
     public void returnsSwarm() {
         MatcherAssert.assertThat(
-            new TcpDocker(
+            new RemoteDocker(
                 Mockito.mock(HttpClient.class),
                 URI.create("http://localhost")
             ).swarm(),
@@ -115,7 +115,7 @@ public final class RemoteDockerTestCase {
     @Test
     public void returnsImages() {
         MatcherAssert.assertThat(
-            new TcpDocker(
+            new RemoteDocker(
                 Mockito.mock(HttpClient.class),
                 URI.create("http://localhost")
             ).images(),
@@ -130,7 +130,7 @@ public final class RemoteDockerTestCase {
     public void returnsHttpClient() {
         final HttpClient client = Mockito.mock(HttpClient.class);
         MatcherAssert.assertThat(
-            new TcpDocker(
+            new RemoteDocker(
                 client,
                 URI.create("http://localhost")
             ).httpClient(),
@@ -147,7 +147,7 @@ public final class RemoteDockerTestCase {
     @Test
     public void returnsAuthHttpClient() {
         MatcherAssert.assertThat(
-            new TcpDocker(
+            new RemoteDocker(
                 URI.create("http://localhost"),
                 new Credentials("user", "pwd", "user@email.com", "server.com")
             ).httpClient(),
@@ -164,7 +164,7 @@ public final class RemoteDockerTestCase {
     @Test
     public void returnsVolumes() {
         MatcherAssert.assertThat(
-            new TcpDocker(
+            new RemoteDocker(
                 Mockito.mock(HttpClient.class),
                 URI.create("http://localhost")
             ).volumes(),
