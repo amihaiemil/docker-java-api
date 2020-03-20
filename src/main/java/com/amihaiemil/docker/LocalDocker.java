@@ -52,7 +52,7 @@ import org.apache.http.client.HttpClient;
 
 @Deprecated
 public final class LocalDocker extends RtDocker {
-	
+
     /**
      * Local Docker engine.
      * @param unixSocket Unix socket File on disk.
