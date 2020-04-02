@@ -32,7 +32,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicHeader;
 
 /**
  * Restful Container.
@@ -242,8 +241,6 @@ final class RtContainer extends JsonResource implements Container {
         }
 
         final HttpPost waiter = new HttpPost(urib.build());
-        waiter.setHeader(new BasicHeader("Content-Type", "application/json"));
-
         try {
             final JsonObject json = this.client.execute(
                 waiter,
