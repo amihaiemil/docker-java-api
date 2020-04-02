@@ -161,7 +161,8 @@ public interface Container extends JsonObject {
      * Wait Container</a>.
      * @throws IOException If something goes wrong.
      *  the expected one (200).
+     * @return the exit code of the container
      */
-    void waitOn(String state) throws IOException;
+    int waitOn(String state) throws IOException;
 
 }

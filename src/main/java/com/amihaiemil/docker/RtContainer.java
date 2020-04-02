@@ -32,6 +32,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicHeader;
 
 /**
  * Restful Container.
@@ -232,19 +233,25 @@ final class RtContainer extends JsonResource implements Container {
     }
 
     @Override
-    public void waitOn(final String state) throws IOException {
-        String end = "";
-        if(null == state || state.isEmpty()){
-            end = String.format("?condition=%s", state);
-        }
-        final HttpPost waiter = new HttpPost(
-            this.baseUri.toString() + "/wait" + end
+    public int waitOn(final String state) throws IOException {
+        UncheckedUriBuilder urib = new UncheckedUriBuilder(
+            this.baseUri.toString().concat("/wait")
         );
+        if(null == state || state.isEmpty()){
+            urib.addParameter("condition", state);
+        }
+
+        final HttpPost waiter = new HttpPost(urib.build());
+        waiter.setHeader(new BasicHeader("Content-Type", "application/json"));
+
         try {
-            this.client.execute(
+            final JsonObject json = this.client.execute(
                 waiter,
-                new MatchStatus(waiter.getURI(), HttpStatus.SC_OK)
+                new ReadJsonObject(
+                    new MatchStatus(waiter.getURI(), HttpStatus.SC_OK)
+                )
             );
+            return json.getInt("StatusCode");
         } finally {
             waiter.releaseConnection();
         }
