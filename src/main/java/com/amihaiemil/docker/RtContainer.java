@@ -237,7 +237,7 @@ final class RtContainer extends JsonResource implements Container {
         UncheckedUriBuilder urib = new UncheckedUriBuilder(
             this.baseUri.toString().concat("/wait")
         );
-        if(null == state || state.isEmpty()){
+        if(!(null == state || state.isEmpty())){
             urib.addParameter("condition", state);
         }
 

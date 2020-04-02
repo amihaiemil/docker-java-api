@@ -37,6 +37,7 @@ import org.mockito.Mockito;
 import javax.json.Json;
 import javax.json.JsonObject;
 import java.net.URI;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Unit tests for RtContainer.
@@ -626,5 +627,83 @@ public final class RtContainerTestCase {
             ).logs(),
             Matchers.notNullValue()
         );
+    }
+
+    /**
+     * RtContainer can wait with no problem.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void waitsOk() throws Exception {
+        int retval = new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    Json.createObjectBuilder()
+                        .add("StatusCode", 0)
+                        .build().toString()
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> req.getRequestLine().getMethod().equals("POST")
+                ),
+            new Condition(
+                "Resource path must be /123/wait",
+                req ->  req.getRequestLine().getUri().endsWith("/wait")
+            )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
+        ).waitOn(null);
+        assertEquals(0, retval);
+    }
+
+    /**
+     * RtContainer can wait with a condition.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void waitsOkWithCondition() throws Exception {
+        int retval = new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    Json.createObjectBuilder()
+                        .add("StatusCode", 0)
+                        .build().toString()
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> req.getRequestLine().getMethod().equals("POST")
+                ),
+            new Condition(
+                "Resource path must be /123/wait",
+                req -> req.getRequestLine().getUri().endsWith("ition=next-exit")
+            )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
+        ).waitOn("next-exit");
+        assertEquals(0, retval);
+    }
+
+    /**
+     * RtContainer throws URE if it receives a server error on remove.
+     * @throws Exception If something goes wrong.
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void waitWithServerError() throws Exception {
+        new RtContainer(
+            Json.createObjectBuilder().build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
+        ).waitOn(null);
     }
 }
