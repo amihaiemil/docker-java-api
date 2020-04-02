@@ -230,4 +230,23 @@ final class RtContainer extends JsonResource implements Container {
             unpause.releaseConnection();
         }
     }
+
+    @Override
+    public void waitOn(final String state) throws IOException {
+        String end = "";
+        if(null == state || state.isEmpty()){
+            end = String.format("?condition=%s", state);
+        }
+        final HttpPost waiter = new HttpPost(
+            this.baseUri.toString() + "/wait" + end
+        );
+        try {
+            this.client.execute(
+                waiter,
+                new MatchStatus(waiter.getURI(), HttpStatus.SC_OK)
+            );
+        } finally {
+            waiter.releaseConnection();
+        }
+    }
 }

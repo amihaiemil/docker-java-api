@@ -34,7 +34,7 @@ import org.apache.http.client.HttpClient;
  * Docker engine.
  *
  * <pre>
- *     final Docker docker = new LocalUnixDocker("unix:///var/run/dicker.sock");
+ *     final Docker docker = new LocalUnixDocker("unix:///var/run/docker.sock");
  * </pre>
  * 
  * This implementation manages an internal pool of 10 http connections. Users
