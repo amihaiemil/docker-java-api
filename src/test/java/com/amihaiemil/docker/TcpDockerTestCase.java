@@ -171,4 +171,18 @@ public final class TcpDockerTestCase {
             Matchers.notNullValue()
         );
     }
+
+    /**
+     * TcpDocker can return Networks.
+     */
+    @Test
+    public void returnsNetworks() {
+        MatcherAssert.assertThat(
+            new TcpDocker(
+                Mockito.mock(HttpClient.class),
+                URI.create("http://localhost")
+            ).networks(),
+            Matchers.notNullValue()
+        );
+    }
 }

@@ -105,9 +105,10 @@ abstract class RtDocker implements Docker {
 
     @Override
     public final Networks networks() {
-        throw new UnsupportedOperationException(
-            "Networks API is not yet implemented. If you can contribute please,"
-            + " do it here: https://www.github.com/amihaiemil/docker-java-api"
+        return new ListedNetworks(
+            this.client,
+            URI.create(this.baseUri.toString() + "/networks"),
+            this
         );
     }
 

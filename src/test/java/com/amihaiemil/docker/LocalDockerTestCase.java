@@ -157,13 +157,16 @@ public final class LocalDockerTestCase {
     }
 
     /**
-     * LocalUnixDocker throws UnsupportedOperationException for Networks.
+     * LocalUnixDocker can return Networks.
      */
-    @Test(expected = UnsupportedOperationException.class)
-    public void unsupportedOperationNetworks() {
-        new LocalDocker(
-            new File("/var/run/docker.sock")
-        ).networks();
+    @Test
+    public void returnsNetworks() {
+        MatcherAssert.assertThat(
+            new LocalDocker(
+                new File("/var/run/docker.sock")
+            ).networks(),
+            Matchers.notNullValue()
+        );
     }
 
     /**

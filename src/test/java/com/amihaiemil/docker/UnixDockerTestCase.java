@@ -157,13 +157,16 @@ public final class UnixDockerTestCase {
     }
 
     /**
-     * UnixDocker throws UnsupportedOperationException for Networks.
+     * UnixDocker can return Networks.
      */
-    @Test(expected = UnsupportedOperationException.class)
-    public void unsupportedOperationNetworks() {
-        new UnixDocker(
-            new File("/var/run/docker.sock")
-        ).networks();
+    @Test
+    public void returnsNetworks() {
+        MatcherAssert.assertThat(
+            new UnixDocker(
+                new File("/var/run/docker.sock")
+            ).networks(),
+            Matchers.notNullValue()
+        );
     }
 
     /**
