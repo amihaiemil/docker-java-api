@@ -123,9 +123,9 @@ abstract class RtDocker implements Docker {
 
     @Override
     public final Execs execs() {
-        throw new UnsupportedOperationException(
-            "Exec API is not yet implemented. If you can contribute please,"
-            + " do it here: https://www.github.com/amihaiemil/docker-java-api"
+        return new RtExecs(
+            URI.create(this.baseUri.toString() + "/exec"),
+            this
         );
     }
 

@@ -25,26 +25,44 @@
  */
 package com.amihaiemil.docker;
 
+import java.net.URI;
+
 /**
- * The Exec API. More about it here:<br>
- * https://docs.docker.com/engine/api/v1.40/#tag/Exec
+ * RESTful Execs API.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 0.0.12
  */
-public interface Execs {
+final class RtExecs implements Execs {
 
     /**
-     * Get the Exec with the specified ID.
-     * @param execId The ID of the searched Exec.
-     * @return Exec.
+     * Base URI for Images API.
      */
-    Exec get(final String execId);
+    private final URI baseUri;
 
     /**
-     * Return the Docker engine where these Execs came from.
-     * @return Docker.
+     * Docker API.
      */
-    Docker docker();
+    private final Docker docker;
 
+    /**
+     * Ctor.
+     * @param uri The URI for this Images API.
+     * @param dkr The docker entry point.
+     * @checkstyle ParameterNumber (10 lines)
+     */
+    RtExecs(final URI uri, final Docker dkr) {
+        this.baseUri = uri;
+        this.docker = dkr;
+    }
+
+    @Override
+    public Exec get(final String execId) {
+        return null;
+    }
+
+    @Override
+    public Docker docker() {
+        return this.docker;
+    }
 }

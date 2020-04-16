@@ -170,13 +170,16 @@ public final class LocalDockerTestCase {
     }
 
     /**
-     * LocalUnixDocker throws UnsupportedOperationException for Exec.
+     * LocalUnixDocker can return Execs.
      */
-    @Test(expected = UnsupportedOperationException.class)
-    public void unsupportedOperationExec() {
-        new LocalDocker(
-            new File("/var/run/docker.sock")
-        ).execs();
+    @Test
+    public void returnsExecs() {
+        MatcherAssert.assertThat(
+            new LocalDocker(
+                new File("/var/run/docker.sock")
+            ).execs(),
+            Matchers.notNullValue()
+        );
     }
 
     /**

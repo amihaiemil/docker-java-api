@@ -170,14 +170,16 @@ public final class UnixDockerTestCase {
     }
 
     /**
-     * UnixDocker throws UnsupportedOperationException for Exec.
+     * UnixDocker can return Execs.
      */
-    @Test(expected = UnsupportedOperationException.class)
-    public void unsupportedOperationExec() {
-        new UnixDocker(
-            new File(
-                    "/var/run/docker.sock")
-        ).execs();
+    @Test
+    public void returnsExecs() {
+        MatcherAssert.assertThat(
+            new UnixDocker(
+                new File("/var/run/docker.sock")
+            ).execs(),
+            Matchers.notNullValue()
+        );
     }
 
     /**
