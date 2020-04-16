@@ -26,10 +26,11 @@
 package com.amihaiemil.docker;
 
 /**
- * Exec containing the commands to be run within a Container.
+ * The Exec API. More about it here:<br>
+ * https://docs.docker.com/engine/api/v1.40/#tag/Exec
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 0.0.1
+ * @since 0.0.12
  */
-public interface Exec {
+public interface Execs extends Iterable<Exec> {
 }

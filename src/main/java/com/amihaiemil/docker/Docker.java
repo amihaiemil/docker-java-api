@@ -81,9 +81,9 @@ public interface Docker {
 
     /**
      * Entry point for the Exec API.
-     * @return Exec.
+     * @return Execs.
      */
-    Exec exec();
+    Execs execs();
 
     /**
      * Entry point for the Swarm API.

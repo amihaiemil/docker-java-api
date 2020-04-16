@@ -175,8 +175,9 @@ public final class UnixDockerTestCase {
     @Test(expected = UnsupportedOperationException.class)
     public void unsupportedOperationExec() {
         new UnixDocker(
-            new File("/var/run/docker.sock")
-        ).exec();
+            new File(
+                    "/var/run/docker.sock")
+        ).execs();
     }
 
     /**

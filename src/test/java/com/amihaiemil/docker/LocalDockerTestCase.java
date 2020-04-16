@@ -176,7 +176,7 @@ public final class LocalDockerTestCase {
     public void unsupportedOperationExec() {
         new LocalDocker(
             new File("/var/run/docker.sock")
-        ).exec();
+        ).execs();
     }
 
     /**
