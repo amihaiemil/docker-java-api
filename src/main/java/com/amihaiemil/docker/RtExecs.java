@@ -42,7 +42,7 @@ final class RtExecs implements Execs {
     private final HttpClient client;
 
     /**
-     * Base URI for Images API.
+     * Base URI for the Exec API.
      */
     private final URI baseUri;
 
