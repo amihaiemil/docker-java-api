@@ -150,74 +150,24 @@
             <id>testCoverage</id>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.5</version>
-                        <executions>
-                            <execution>
-                                <id>jacoco-initialize</id>
-                                <goals>
-                                    <goal>prepare-agent</goal>
-                                </goals>
-                            </execution>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>0.8.5</version>
+						<executions>
 							<execution>
-								<id>jacoco-check</id>
-								<phase>test</phase>
+								<id>prepare-agent</id>
 								<goals>
-									<goal>check</goal>
-								</goals>
-								<configuration>
-									<rules>
-										<rule>
-											<element>BUNDLE</element>
-											<limits>
-												<limit>
-													<counter>INSTRUCTION
-													</counter>
-													<value>COVEREDRATIO</value>
-													<minimum>0.85</minimum>
-												</limit>
-												<limit>
-													<counter>LINE</counter>
-													<value>COVEREDRATIO</value>
-													<minimum>0.87</minimum>
-												</limit>
-												<limit>
-													<counter>BRANCH</counter>
-													<value>COVEREDRATIO</value>
-													<minimum>0.75</minimum>
-												</limit>
-												<limit>
-													<counter>COMPLEXITY
-													</counter>
-													<value>COVEREDRATIO</value>
-													<minimum>0.80</minimum>
-												</limit>
-												<limit>
-													<counter>METHOD</counter>
-													<value>COVEREDRATIO</value>
-													<minimum>0.85</minimum>
-												</limit>
-												<limit>
-													<counter>CLASS</counter>
-													<value>MISSEDCOUNT</value>
-													<maximum>0</maximum>
-												</limit>
-											</limits>
-										</rule>
-									</rules>
-								</configuration>
-							</execution>
-							<execution>
-								<id>report</id>
-								<phase>test</phase>
-								<goals>
-									<goal>report</goal>
+									<goal>prepare-agent</goal>
 								</goals>
 							</execution>
-                        </executions>
-                    </plugin>
+						</executions>
+						<configuration>
+							<excludes>
+								<exclude>**/YamlStream.*</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
                     <plugin>
                         <groupId>org.eluder.coveralls</groupId>
                         <artifactId>coveralls-maven-plugin</artifactId>
