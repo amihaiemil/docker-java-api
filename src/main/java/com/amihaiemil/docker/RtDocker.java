@@ -124,6 +124,7 @@ abstract class RtDocker implements Docker {
     @Override
     public final Execs execs() {
         return new RtExecs(
+            this.client,
             URI.create(this.baseUri.toString() + "/exec"),
             this
         );

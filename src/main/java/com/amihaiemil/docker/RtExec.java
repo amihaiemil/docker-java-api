@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018-2019, Mihai Emil Andronache
+ * Copyright (c) 2018-2020, Mihai Emil Andronache
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,52 +25,51 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.IOException;
-import javax.json.JsonObject;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
+
+import javax.json.JsonObject;
+import java.io.IOException;
+import java.net.URI;
 
 /**
- * An inspection upon any of the Docker resources.
- * @author George Aristy (george.aristy@gmail.com)
+ * Exec. A batch of commands that are running inside a Container.
+ * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 0.0.1
+ * @since 0.0.12
  */
-final class Inspection extends JsonResource {
+final class RtExec implements Exec {
+    /**
+     * Apache HttpClient which sends the requests.
+     */
+    private final HttpClient client;
+
+    /**
+     * Base URI for Images API.
+     */
+    private final URI baseUri;
+
+    /**
+     * Docker API.
+     */
+    private final Docker docker;
 
     /**
      * Ctor.
-     * @param client The Http client.
-     * @param url The request URL.
-     * @throws UnexpectedResponseException If Docker's response code is not 200.
-     * @throws IOException If an I/O error occurs.
+     * @param client HTTP Client used to send the requests.
+     * @param uri The URI for this Images API.
+     * @param dkr The docker entry point.
+     * @checkstyle ParameterNumber (10 lines)
      */
-    Inspection(final HttpClient client, final String url)
-        throws UnexpectedResponseException, IOException {
-        super(fetch(client, url));
+    RtExec(final HttpClient client, final URI uri, final Docker dkr) {
+        this.client = client;
+        this.baseUri = uri;
+        this.docker = dkr;
     }
-    
-    /**
-     * Fetch the JsonObject resource.
-     * @param client The Http client.
-     * @param url The request URL.
-     * @return The fetched JsonObject.
-     * @throws UnexpectedResponseException If Docker's response code is not 200.
-     * @throws IOException If an I/O error occurs.
-     */
-    private static JsonObject fetch(final HttpClient client, final String url)
-        throws UnexpectedResponseException, IOException {
-        final HttpGet inspect = new HttpGet(url);
-        try {
-            return client.execute(
-                inspect,
-                new ReadJsonObject(
-                    new MatchStatus(inspect.getURI(), HttpStatus.SC_OK)
-                )
-            );
-        } finally {
-            inspect.releaseConnection();
-        }
+
+    @Override
+    public JsonObject inspect()
+        throws IOException, UnexpectedResponseException {
+        return new Inspection(this.client, this.baseUri.toString() + "/json");
     }
+
 }

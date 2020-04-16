@@ -25,25 +25,61 @@
  */
 package com.amihaiemil.docker;
 
-import javax.json.JsonObject;
-import java.io.IOException;
+import com.amihaiemil.docker.mock.AssertRequest;
+import com.amihaiemil.docker.mock.Condition;
+import com.amihaiemil.docker.mock.Response;
+import org.apache.http.HttpStatus;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import javax.json.Json;
+import java.net.URI;
 
 /**
- * Exec containing the commands to be run within a Container.
+ * Unit tests for {@link RtExecs}.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 0.0.1
+ * @since 0.0.12
  */
-public interface Exec {
+public final class RtExecsTestCase {
 
     /**
-     * Return JSON information about this Ezec.
-     * @return JsonObject information.
-     * @see <a href="https://docs.docker.com/engine/api/v1.40/#operation/ExecInspect">Inspect Exec</a>
-     * @throws IOException If something goes wrong.
-     * @throws UnexpectedResponseException If the status response is not
-     *  the expected one (200 OK).
+     * An Exec can return its JSON inspection.
+     * @throws Exception If something goes wrong.
      */
-    JsonObject inspect() throws IOException, UnexpectedResponseException;
+    @Test
+    public void execReturnsItsInspection() throws Exception {
+        final Execs all = new RtExecs(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    "{\"Id\": \"exec123\"}"
+                ),
+                new Condition(
+                    "inspect() must send a GET request",
+                    req -> "GET".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "inspect() resource URL should end with '/exec123/json'",
+                    req -> req.getRequestLine()
+                            .getUri().endsWith("/exec123/json")
+                )
+            ),
+            URI.create("http://localhost/exec"),
+            Mockito.mock(Docker.class)
+        );
+        final Exec exec = all.get("exec123");
+        MatcherAssert.assertThat(exec, Matchers.notNullValue());
+        MatcherAssert.assertThat(
+            exec.inspect(),
+            Matchers.equalTo(
+                Json.createObjectBuilder()
+                    .add("Id", "exec123")
+                    .build()
+            )
+        );
+    }
 
 }

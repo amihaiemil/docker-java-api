@@ -25,6 +25,8 @@
  */
 package com.amihaiemil.docker;
 
+import org.apache.http.client.HttpClient;
+
 import java.net.URI;
 
 /**
@@ -34,6 +36,10 @@ import java.net.URI;
  * @since 0.0.12
  */
 final class RtExecs implements Execs {
+    /**
+     * Apache HttpClient which sends the requests.
+     */
+    private final HttpClient client;
 
     /**
      * Base URI for Images API.
@@ -47,18 +53,24 @@ final class RtExecs implements Execs {
 
     /**
      * Ctor.
+     * @param client HTTP Client used to send the requests.
      * @param uri The URI for this Images API.
      * @param dkr The docker entry point.
      * @checkstyle ParameterNumber (10 lines)
      */
-    RtExecs(final URI uri, final Docker dkr) {
+    RtExecs(final HttpClient client, final URI uri, final Docker dkr) {
+        this.client = client;
         this.baseUri = uri;
         this.docker = dkr;
     }
 
     @Override
     public Exec get(final String execId) {
-        return null;
+        return new RtExec(
+            this.client,
+            URI.create(this.baseUri.toString() + "/" + execId),
+            this.docker
+        );
     }
 
     @Override
