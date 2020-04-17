@@ -26,6 +26,7 @@
 package com.amihaiemil.docker;
 
 import java.io.IOException;
+import java.util.Map;
 import javax.json.JsonObject;
 
 /**
@@ -68,6 +69,14 @@ public interface Networks extends Iterable<Network> {
      *  unexpected status.
      */
     void prune() throws IOException, UnexpectedResponseException;
+
+    /**
+     * Filter these networks.
+     * @param filters Filters to apply.
+     * @return Filtered networks.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/NetworkList">Docker API Docs</a>
+     */
+    Networks filter(Map<String, Iterable<String>> filters);
 
     /**
      * Return the Docker engine where these Networks came from.

@@ -97,4 +97,18 @@ final class ListedNetworks extends RtNetworks {
             )
         );
     }
+
+    @Override
+    public Networks filter(final Map<String, Iterable<String>> fltrs) {
+        final Map<String, Iterable<String>> merged = new HashMap<>(
+            this.filters
+        );
+        merged.putAll(fltrs);
+        return new ListedNetworks(
+            super.client(),
+            this.baseUri(),
+            this.docker(),
+            merged
+        );
+    }
 }
