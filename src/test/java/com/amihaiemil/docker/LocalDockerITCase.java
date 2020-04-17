@@ -62,15 +62,16 @@ public final class LocalDockerITCase {
      * @throws Exception If something goes wrong.
      */
     @Test
-    @Ignore
+    //@Ignore
     public void followsEvents() throws Exception {
         final Reader reader =  new LocalDocker(
             new File("/var/run/docker.sock")
         ).events();
         final String events = IOUtils.toString(reader);
+        System.out.println(events);
         MatcherAssert.assertThat(
-                events.trim(),
-                Matchers.notNullValue()
+            events.trim(),
+            Matchers.notNullValue()
         );
     }
     /**
