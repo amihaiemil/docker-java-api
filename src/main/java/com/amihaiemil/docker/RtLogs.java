@@ -110,7 +110,7 @@ final class RtLogs implements Logs {
         try {
             return this.client.execute(
                 fetch,
-                new ReadString(
+                new ReadLogString(
                     new MatchStatus(
                         fetch.getURI(),
                         HttpStatus.SC_OK

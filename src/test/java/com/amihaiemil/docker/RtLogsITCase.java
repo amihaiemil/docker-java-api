@@ -56,8 +56,8 @@ public final class RtLogsITCase {
         ).images().pull("hello-world", "latest").run();
         final String logs = container.logs().fetch();
         MatcherAssert.assertThat(
-            logs.trim(),
-            new StringStartsWith("Hello from Docker!")
+            logs,
+            new StringStartsWith("\nHello from Docker!")
         );
     }
 

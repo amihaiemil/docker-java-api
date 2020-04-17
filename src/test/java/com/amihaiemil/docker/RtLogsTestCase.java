@@ -99,7 +99,7 @@ public final class RtLogsTestCase {
             );
         }
     }
-    
+
     /**
      * RtLogs can fetch the Container's logs (return them as a String).
      * @throws Exception If something goes wrong.
@@ -109,12 +109,8 @@ public final class RtLogsTestCase {
         final Logs logs = new RtLogs(
             Mockito.mock(Container.class),
             new AssertRequest(
-                new Response(
-                    HttpStatus.SC_OK,
-                    Json.createObjectBuilder()
-                        .add("logs", "...fetched logs...")
-                        .build().toString()
-                ),
+                new Response(HttpStatus.SC_OK,
+                    this.prepareMessage("...fetched logs...")),
                 new Condition(
                     "Method should be a GET",
                     req -> req.getRequestLine().getMethod().equals("GET")
@@ -130,10 +126,37 @@ public final class RtLogsTestCase {
         );
         MatcherAssert.assertThat(
             logs.fetch(),
-            Matchers.equalTo("{\"logs\":\"...fetched logs...\"}")
+            Matchers.equalTo("...fetched logs...")
         );
     }
-    
+
+    /**
+     * Docker logs contains header -
+     * header := [8]byte{STREAM_TYPE, 0, 0, 0, SIZE1, SIZE2, SIZE3, SIZE4}
+     * STREAM_TYPE
+     * 0: stdin (is written on stdout)
+     * 1: stdout
+     * 2: stderr
+     *
+     * SIZE1, SIZE2, SIZE3, SIZE4 are the four bytes of the uint32 size
+     * encoded as big endian.
+     *
+     * @param message Message from container
+     * @return String with header.
+     */
+    private String prepareMessage(final String message) {
+        char[] chars = new char[8];
+        chars[0] = 1;
+        chars[1] = 0;
+        chars[2] = 0;
+        chars[3] = 0;
+        chars[4] = 0;
+        chars[5] = 0;
+        chars[6] = 0;
+        chars[7] = (char) message.length();
+        return new String(chars) + message;
+    }
+
     /**
      * RtLogs.toString() fetches the logs as String.
      */
@@ -144,9 +167,7 @@ public final class RtLogsTestCase {
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_OK,
-                    Json.createObjectBuilder()
-                        .add("logs", "toString logs")
-                        .build().toString()
+                    this.prepareMessage("toString logs")
                 ),
                 new Condition(
                     "Method should be a GET",
@@ -163,7 +184,7 @@ public final class RtLogsTestCase {
         );
         MatcherAssert.assertThat(
             logs.toString(),
-            Matchers.equalTo("{\"logs\":\"toString logs\"}")
+            Matchers.equalTo("toString logs")
         );
     }
 
@@ -178,9 +199,7 @@ public final class RtLogsTestCase {
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_OK,
-                    Json.createObjectBuilder()
-                        .add("logs", "stdout logs")
-                        .build().toString()
+                    this.prepareMessage("stdout logs")
                 ),
                 new Condition(
                     "Method should be a GET",
@@ -197,7 +216,7 @@ public final class RtLogsTestCase {
         );
         MatcherAssert.assertThat(
             logs.stdout().fetch(),
-            Matchers.equalTo("{\"logs\":\"stdout logs\"}")
+            Matchers.equalTo("stdout logs")
         );
     }
 
@@ -212,9 +231,7 @@ public final class RtLogsTestCase {
             new AssertRequest(
                 new Response(
                     HttpStatus.SC_OK,
-                    Json.createObjectBuilder()
-                        .add("logs", "stderr logs")
-                        .build().toString()
+                    this.prepareMessage("stderr logs")
                 ),
                 new Condition(
                     "Method should be a GET",
@@ -231,7 +248,7 @@ public final class RtLogsTestCase {
         );
         MatcherAssert.assertThat(
             logs.stderr().fetch(),
-            Matchers.equalTo("{\"logs\":\"stderr logs\"}")
+            Matchers.equalTo("stderr logs")
         );
     }
 
