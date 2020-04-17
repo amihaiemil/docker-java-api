@@ -43,7 +43,7 @@ import org.apache.http.client.HttpClient;
  * 
  * This implementation manages an internal pool of 10 http connections. Users
  * who wish to alter this behaviour may provide their own {@link HttpClient}
- * via {@link #LocalUnixDocker(HttpClient, String)}.
+ * via the specific constructor.
  *
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$

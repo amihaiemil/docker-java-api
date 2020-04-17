@@ -157,8 +157,7 @@ public interface Container extends JsonObject {
      * Waits on this container.
      * @param state The state to wait for. One of "not-running"
      * (the default if null), "next-exit", or "removed"
-     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ContainerWait">
-     * Wait Container</a>.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ContainerWait">Wait Container</a>.
      * @throws IOException If something goes wrong.
      *  the expected one (200).
      * @return The exit code of the container
