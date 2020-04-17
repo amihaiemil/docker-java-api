@@ -101,6 +101,51 @@ public final class ListedNetworksTestCase {
     }
 
     /**
+     * {@link ListedNetworks} can filter networks
+     * filters.
+     */
+    @Test
+    public void filterTest() {
+        final Map<String, Iterable<String>> filters = new HashMap<>();
+        filters.put(
+            "scope",
+            Arrays.asList(
+                "local"
+            )
+        );
+        MatcherAssert.assertThat(
+            "Could not filter networks",
+            new ListedNetworks(
+                //@checkstyle LineLength (50 lines)
+                new AssertRequest(
+                    new Response(
+                        HttpStatus.SC_OK,
+                        "[{\"Id\": \"id1\", \"scope\":\"local\"}, {\"Id\":\"cde2\"}]"
+                    ),
+                    new Condition(
+                        // @checkstyle LineLength (11 lines)
+                        "iterate() query parameters must include the filters provided",
+                        req -> {
+                            final List<NameValuePair> params = new UncheckedUriBuilder(
+                                req.getRequestLine().getUri()
+                            ).getQueryParams();
+                            // @checkstyle BooleanExpressionComplexity (5 lines)
+                            return params.size() == 1
+                                && "filters".equals(params.get(0).getName())
+                                && params.get(0).getValue().contains("scope")
+                                && params.get(0).getValue().contains("local");
+                        }
+                    )
+                ),
+                URI.create("http://localhost/networks/id1"),
+                DOCKER
+            ).filter(filters).iterator().next().getString("Id"),
+            new IsEqual<>("id1")
+        );
+
+    }
+
+    /**
      * {@link ListedNetworks} can iterate over them without
      * filters.
      */
