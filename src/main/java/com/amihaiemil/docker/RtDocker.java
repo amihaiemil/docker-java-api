@@ -29,12 +29,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URL;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.http.Header;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -77,9 +74,6 @@ abstract class RtDocker implements Docker {
     public final boolean ping() throws IOException {
         final HttpGet ping = new HttpGet(this.baseUri.toString() + "/_ping");
         final HttpResponse response = this.client.execute(ping);
-        for(final Header header : response.getAllHeaders()) {
-            System.out.println(header.getName()+": " +header.getValue());
-        }
         ping.releaseConnection();
         return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
     }
@@ -90,6 +84,8 @@ abstract class RtDocker implements Docker {
      * content after all the handlers have been executed, which results in
      * a blockage, since the underlying InputStream is potentially infinite.
      *
+     * @checkstyle CommentsIndentation (100 lines)
+     * @checkstyle Indentation (100 lines)
      * @return Stream of Events.
      * @throws IOException If any I/O problem occurs.
      * @throws UnexpectedResponseException If the response status is not 200.
@@ -109,18 +105,21 @@ abstract class RtDocker implements Docker {
                 Json.createObjectBuilder().build()
             );
         } else {
-            final InputStream is = response.getEntity().getContent();
+            final InputStream content = response.getEntity().getContent();
             final Stream<JsonObject> stream = Stream.generate(
                 () -> {
+                    JsonObject read = null;
                     try {
                         final byte[] tmp = new byte[4096];
-                        while ((is.read(tmp) != -1)) {
+                        while (content.read(tmp) != -1) {
                             try {
                                 final JsonReader reader = Json.createReader(
                                     new ByteArrayInputStream(tmp)
                                 );
-                                return reader.readObject();
-                            } catch (final Exception rx) {
+                                read = reader.readObject();
+                                break;
+                            //@checkstyle IllegalCatch (1 line)
+                            } catch (final Exception exception) {
                                 //Couldn't parse byte[] to Json,
                                 //try to read more bytes.
                             }
@@ -130,7 +129,7 @@ abstract class RtDocker implements Docker {
                             "IOException when reading streamed JsonObjects!"
                         );
                     }
-                    return null;
+                    return read;
                 }
             ).onClose(
                 () -> {
@@ -139,8 +138,8 @@ abstract class RtDocker implements Docker {
                     } catch (final IOException ex) {
                         //There is a bug in Apache HTTPClient, when closing
                         //an infinite InputStream: IOException is thrown
-                        //because the client still tries to read from the
-                        // closed Stream. We should ignore this case.
+                        //because the client still tries to read the remainder
+                        // of the closed Stream. We should ignore this case.
                     }
                 }
             );

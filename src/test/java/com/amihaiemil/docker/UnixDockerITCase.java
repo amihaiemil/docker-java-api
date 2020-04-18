@@ -26,16 +26,13 @@
 package com.amihaiemil.docker;
 
 import java.io.File;
-import java.io.Reader;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.IOUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableWithSize;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.mockito.internal.matchers.GreaterOrEqual;
 
 import javax.json.JsonObject;

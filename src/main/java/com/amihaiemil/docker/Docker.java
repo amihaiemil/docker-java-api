@@ -26,7 +26,6 @@
 package com.amihaiemil.docker;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.stream.Stream;
 
 import org.apache.http.client.HttpClient;
