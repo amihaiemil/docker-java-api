@@ -25,22 +25,12 @@
  */
 package com.amihaiemil.docker;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
-import java.util.stream.Stream;
-
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 
 /**
  * Restful Docker.
@@ -78,73 +68,13 @@ abstract class RtDocker implements Docker {
         return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
     }
 
-    /**
-     * Unlike other methods, we cannot implement this one using Response
-     * Handlers, because Apache HTTP Client tries to consume the remaining
-     * content after all the handlers have been executed, which results in
-     * a blockage, since the underlying InputStream is potentially infinite.
-     *
-     * @checkstyle CommentsIndentation (100 lines)
-     * @checkstyle Indentation (100 lines)
-     * @return Stream of Events.
-     * @throws IOException If any I/O problem occurs.
-     * @throws UnexpectedResponseException If the response status is not 200.
-     */
     @Override
-    public Stream<JsonObject> events()
-        throws IOException, UnexpectedResponseException {
-        final HttpGet monitor = new HttpGet(
-            this.baseUri.toString() + "/events"
+    public Events events() {
+        return new RtEvents(
+            this.client,
+            URI.create(this.baseUri.toString() + "/events"),
+            this
         );
-        final HttpResponse response = this.client.execute(monitor);
-        final int actual = response.getStatusLine().getStatusCode();
-        if(actual != HttpStatus.SC_OK) {
-            throw new UnexpectedResponseException(
-                this.baseUri.toString() + "/events",
-                actual, HttpStatus.SC_OK,
-                Json.createObjectBuilder().build()
-            );
-        } else {
-            final InputStream content = response.getEntity().getContent();
-            final Stream<JsonObject> stream = Stream.generate(
-                () -> {
-                    JsonObject read = null;
-                    try {
-                        final byte[] tmp = new byte[4096];
-                        while (content.read(tmp) != -1) {
-                            try {
-                                final JsonReader reader = Json.createReader(
-                                    new ByteArrayInputStream(tmp)
-                                );
-                                read = reader.readObject();
-                                break;
-                            //@checkstyle IllegalCatch (1 line)
-                            } catch (final Exception exception) {
-                                //Couldn't parse byte[] to Json,
-                                //try to read more bytes.
-                            }
-                        }
-                    } catch (final IOException ex) {
-                        throw new IllegalStateException(
-                            "IOException when reading streamed JsonObjects!"
-                        );
-                    }
-                    return read;
-                }
-            ).onClose(
-                () -> {
-                    try {
-                        ((CloseableHttpResponse) response).close();
-                    } catch (final IOException ex) {
-                        //There is a bug in Apache HTTPClient, when closing
-                        //an infinite InputStream: IOException is thrown
-                        //because the client still tries to read the remainder
-                        // of the closed Stream. We should ignore this case.
-                    }
-                }
-            );
-            return stream;
-        }
     }
 
     @Override
