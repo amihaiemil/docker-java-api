@@ -28,14 +28,20 @@ package com.amihaiemil.docker;
 import java.io.File;
 import java.io.Reader;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.util.EntityUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableWithSize;
 import org.junit.Test;
 import org.junit.Ignore;
 import org.mockito.internal.matchers.GreaterOrEqual;
+
+import javax.json.JsonObject;
 
 /**
  * Integration tests for LocalUnixDocker.
@@ -56,24 +62,19 @@ public final class LocalDockerITCase {
         );
         MatcherAssert.assertThat(docker.ping(), Matchers.is(Boolean.TRUE));
     }
+
     /**
-     * Docker can follow the events stream. Ignored for now,
-     * doesn't work yet.
+     * Docker can return its events Stream.
      * @throws Exception If something goes wrong.
      */
     @Test
-    //@Ignore
-    public void followsEvents() throws Exception {
-        final Reader reader =  new LocalDocker(
+    public void returnsEvents() throws Exception {
+        final Stream<JsonObject> events = new LocalDocker(
             new File("/var/run/docker.sock")
         ).events();
-        final String events = IOUtils.toString(reader);
-        System.out.println(events);
-        MatcherAssert.assertThat(
-            events.trim(),
-            Matchers.notNullValue()
-        );
+        MatcherAssert.assertThat(events, Matchers.notNullValue());
     }
+
     /**
      * LocalUnixDocker can list {@link Volumes}.
      * @throws Exception If something goes wrong.

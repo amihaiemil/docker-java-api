@@ -25,13 +25,25 @@
  */
 package com.amihaiemil.docker;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 
 /**
  * Restful Docker.
@@ -65,24 +77,75 @@ abstract class RtDocker implements Docker {
     public final boolean ping() throws IOException {
         final HttpGet ping = new HttpGet(this.baseUri.toString() + "/_ping");
         final HttpResponse response = this.client.execute(ping);
+        for(final Header header : response.getAllHeaders()) {
+            System.out.println(header.getName()+": " +header.getValue());
+        }
         ping.releaseConnection();
         return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
     }
 
+    /**
+     * Unlike other methods, we cannot implement this one using Response
+     * Handlers, because Apache HTTP Client tries to consume the remaining
+     * content after all the handlers have been executed, which results in
+     * a blockage, since the underlying InputStream is potentially infinite.
+     *
+     * @return Stream of Events.
+     * @throws IOException If any I/O problem occurs.
+     * @throws UnexpectedResponseException If the response status is not 200.
+     */
     @Override
-    public Reader events() throws IOException, UnexpectedResponseException {
+    public Stream<JsonObject> events()
+        throws IOException, UnexpectedResponseException {
         final HttpGet monitor = new HttpGet(
             this.baseUri.toString() + "/events"
         );
-        return this.client.execute(
-            monitor,
-            new ReadStream(
-                new MatchStatus(
-                    monitor.getURI(),
-                    HttpStatus.SC_OK
-                )
-            )
-        );
+        final HttpResponse response = this.client.execute(monitor);
+        final int actual = response.getStatusLine().getStatusCode();
+        if(actual != HttpStatus.SC_OK) {
+            throw new UnexpectedResponseException(
+                this.baseUri.toString() + "/events",
+                actual, HttpStatus.SC_OK,
+                Json.createObjectBuilder().build()
+            );
+        } else {
+            final InputStream is = response.getEntity().getContent();
+            final Stream<JsonObject> stream = Stream.generate(
+                () -> {
+                    try {
+                        final byte[] tmp = new byte[4096];
+                        while ((is.read(tmp) != -1)) {
+                            try {
+                                final JsonReader reader = Json.createReader(
+                                    new ByteArrayInputStream(tmp)
+                                );
+                                return reader.readObject();
+                            } catch (final Exception rx) {
+                                //Couldn't parse byte[] to Json,
+                                //try to read more bytes.
+                            }
+                        }
+                    } catch (final IOException ex) {
+                        throw new IllegalStateException(
+                            "IOException when reading streamed JsonObjects!"
+                        );
+                    }
+                    return null;
+                }
+            ).onClose(
+                () -> {
+                    try {
+                        ((CloseableHttpResponse) response).close();
+                    } catch (final IOException ex) {
+                        //There is a bug in Apache HTTPClient, when closing
+                        //an infinite InputStream: IOException is thrown
+                        //because the client still tries to read from the
+                        // closed Stream. We should ignore this case.
+                    }
+                }
+            );
+            return stream;
+        }
     }
 
     @Override

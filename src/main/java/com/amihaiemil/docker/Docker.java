@@ -27,8 +27,11 @@ package com.amihaiemil.docker;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.stream.Stream;
 
 import org.apache.http.client.HttpClient;
+
+import javax.json.JsonObject;
 
 /**
  * Docker API entry point.
@@ -46,13 +49,24 @@ public interface Docker {
     boolean ping() throws IOException;
 
     /**
-     * Follow the events on the server in real time.
-     * @return The events {@link Reader}.
+     * Read events from the server in real time. Pay attention:<br><br>
+     * The Stream is <b>infinite</b>, which means you have to specify a
+     * <b>limit</b> before calling a terminal operation on it. Otherwise,
+     * your terminal operation will run until the Server closes the connection.
+     * Example:
+     * <pre>
+     *   final Docker docker = ...;
+     *   final List&lt;JsonObject&gt; firstTen = docker.events()
+     *       .limit(10).collect(Collectors.toList());
+     *   //It will wait for and return the first 10 real-time events
+     *   //from the server.
+     * </pre>
+     * @return The events as a {@link Stream}.
      * @throws IOException If an I/O error occurs.
      * @throws UnexpectedResponseException If the API responds with an
      *  unexpected status.
      */
-    Reader events()
+    Stream<JsonObject> events()
         throws IOException, UnexpectedResponseException;
 
     /**
