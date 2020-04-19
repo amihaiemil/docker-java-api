@@ -53,19 +53,7 @@ public final class LocalDockerITCase {
         );
         MatcherAssert.assertThat(docker.ping(), Matchers.is(Boolean.TRUE));
     }
-
-    /**
-     * Docker can return its Events.
-     * @throws Exception If something goes wrong.
-     */
-    @Test
-    public void returnsEvents() throws Exception {
-        final Events events = new LocalDocker(
-            new File("/var/run/docker.sock")
-        ).events();
-        MatcherAssert.assertThat(events, Matchers.notNullValue());
-    }
-
+    
     /**
      * LocalUnixDocker can list {@link Volumes}.
      * @throws Exception If something goes wrong.
