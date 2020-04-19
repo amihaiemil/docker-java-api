@@ -27,15 +27,12 @@ package com.amihaiemil.docker;
 
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.stream.Stream;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableWithSize;
 import org.junit.Test;
 import org.mockito.internal.matchers.GreaterOrEqual;
-
-import javax.json.JsonObject;
 
 /**
  * Integration tests for LocalUnixDocker.
@@ -56,19 +53,7 @@ public final class LocalDockerITCase {
         );
         MatcherAssert.assertThat(docker.ping(), Matchers.is(Boolean.TRUE));
     }
-
-    /**
-     * Docker can return its events Stream.
-     * @throws Exception If something goes wrong.
-     */
-    @Test
-    public void returnsEvents() throws Exception {
-        final Stream<JsonObject> events = new LocalDocker(
-            new File("/var/run/docker.sock")
-        ).events();
-        MatcherAssert.assertThat(events, Matchers.notNullValue());
-    }
-
+    
     /**
      * LocalUnixDocker can list {@link Volumes}.
      * @throws Exception If something goes wrong.
