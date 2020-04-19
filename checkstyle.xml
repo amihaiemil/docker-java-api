@@ -72,11 +72,11 @@
     <!--
     Windows line endings are not allowed.
     -->
-    <module name="RegexpMultiline">
+    <!--<module name="RegexpMultiline">
         <property name="format" value="\r\n$"/>
         <property name="message"
                   value="Lines in file should end with Unix-like end of line"/>
-    </module>
+    </module>-->
 
     <!--
     JavaDoc regexp checks
