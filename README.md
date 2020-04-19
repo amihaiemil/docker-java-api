@@ -34,7 +34,7 @@ The library comes as a maven dependency:
 
 If you are not using Maven, you can also download the <a href="https://oss.sonatype.org/service/local/repositories/releases/content/com/amihaiemil/web/docker-java-api/0.0.12/docker-java-api-0.0.12-jar-with-dependencies.jar">fat</a> jar.
 
-### Usage Example
+### Usage Example And Wiki
 
 Here is all you need to do in order to pull an Image and run a Container into the local Docker engine:
 
@@ -54,6 +54,8 @@ for(final Image image : images){
 final Image helloWorld = images.pull("hello-world", "latest");
 final Container started = helloWorld.run();
 ```
+
+More info in the [Wiki](https://github.com/amihaiemil/docker-java-api/wiki).
 
 ### Contributing 
 
