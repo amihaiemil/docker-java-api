@@ -34,6 +34,27 @@ The library comes as a maven dependency:
 
 If you are not using Maven, you can also download the <a href="https://oss.sonatype.org/service/local/repositories/releases/content/com/amihaiemil/web/docker-java-api/0.0.12/docker-java-api-0.0.12-jar-with-dependencies.jar">fat</a> jar.
 
+### Usage
+
+Here is all you need to do in order to pull an Image and run a Container from/into the local Docker engine:
+
+```java
+final Container started = new UnixDocker(new File("/var/run/docker.sock"))
+    .images()
+    .pull("hello-world", "latest")
+    .container();
+```
+or, the same code snippet, less fluent:
+```java
+final Docker docker = new UnixDocker(new File("/var/run/docker.sock"));
+final Images images = docker.images();
+for(final Image image : images){
+//iterate over the existing images
+}
+final Image helloWorld = images.pull("hello-world", "latest");
+final Container started = helloWorld.container();
+```
+
 ### Contributing 
 
 If you would like to contribute, just open an issue or a PR.
