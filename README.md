@@ -42,7 +42,7 @@ Here is all you need to do in order to pull an Image and run a Container into th
 final Container started = new UnixDocker(new File("/var/run/docker.sock"))
     .images()
     .pull("hello-world", "latest")
-    .container();
+    .run();
 ```
 or, the same code snippet, less fluent:
 ```java
@@ -52,7 +52,7 @@ for(final Image image : images){
 //iterate over the existing images
 }
 final Image helloWorld = images.pull("hello-world", "latest");
-final Container started = helloWorld.container();
+final Container started = helloWorld.run();
 ```
 
 ### Contributing 
