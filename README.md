@@ -36,7 +36,7 @@ If you are not using Maven, you can also download the <a href="https://oss.sonat
 
 ### Usage
 
-Here is all you need to do in order to pull an Image and run a Container from/into the local Docker engine:
+Here is all you need to do in order to pull an Image and run a Container into the local Docker engine:
 
 ```java
 final Container started = new UnixDocker(new File("/var/run/docker.sock"))
