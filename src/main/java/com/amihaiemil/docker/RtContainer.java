@@ -32,6 +32,8 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicHeader;
 
 /**
  * Restful Container.
@@ -251,6 +253,27 @@ final class RtContainer extends JsonResource implements Container {
             return json.getInt("StatusCode");
         } finally {
             waiter.releaseConnection();
+        }
+    }
+
+    @Override
+    public Exec exec(final JsonObject config) throws IOException {
+        final URI uri = new UncheckedUriBuilder(
+            this.baseUri.toString() + "/exec")
+            .build();
+        final HttpPost post = new HttpPost(uri);
+        try {
+            post.setEntity(new StringEntity(config.toString()));
+            post.setHeader(new BasicHeader("Content-Type", "application/json"));
+            final JsonObject json = this.client.execute(
+                post,
+                new ReadJsonObject(
+                    new MatchStatus(post.getURI(), HttpStatus.SC_CREATED)
+                )
+            );
+            return this.docker.execs().get(json.getString("Id"));
+        } finally {
+            post.releaseConnection();
         }
     }
 }

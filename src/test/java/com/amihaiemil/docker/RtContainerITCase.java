@@ -206,4 +206,37 @@ public final class RtContainerITCase {
                 .getBoolean("Paused");
     }
 
+
+    /**
+     * {@link RtContainer} Can create Exec of Docker container it represents.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void execContainer() throws Exception {
+        final Container container = new UnixDocker(
+                new File("/var/run/docker.sock")
+        ).containers().create("TestStart", this.containerJsonObject());
+        container.start();
+        MatcherAssert.assertThat(
+                this.runningState(container),
+                new IsEqual<>(true)
+        );
+        final JsonObject json = Json.createObjectBuilder()
+                .add("Cmd", Json.createArrayBuilder().add("date").build())
+                .add("Tty", true)
+                .add("AttachStdout", true)
+                .build();
+        Exec exec = container.exec(json);
+        MatcherAssert.assertThat(
+                container.inspect().getJsonArray("ExecIDs").size(),
+                new IsEqual<>(1)
+        );
+        MatcherAssert.assertThat(
+                container.inspect().getJsonArray("ExecIDs").getString(0),
+                new IsEqual<>(exec.inspect().getString("ID"))
+        );
+        container.stop();
+        container.remove();
+    }
+
 }

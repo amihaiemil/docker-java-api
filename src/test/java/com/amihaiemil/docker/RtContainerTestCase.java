@@ -36,8 +36,10 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import javax.json.Json;
 import javax.json.JsonObject;
+import java.io.IOException;
 import java.net.URI;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for RtContainer.
@@ -705,5 +707,93 @@ public final class RtContainerTestCase {
             URI.create("http://localhost:80/1.30/containers/123"),
             Mockito.mock(Docker.class)
         ).waitOn(null);
+    }
+
+    /**
+     * Can create Exec.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void createTest() throws Exception {
+        final JsonObject json = Json.createObjectBuilder()
+            .add("Cmd", Json.createArrayBuilder().add("date").build())
+            .add("Tty", "true")
+            .add("AttachStdin", "true")
+            .build();
+
+        RtContainer rtContainer = new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_CREATED,
+                    Json.createObjectBuilder()
+                        .add("Id", "01e1564097")
+                        .build().toString()
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> req.getRequestLine().getMethod().equals("POST")
+                ),
+                new Condition(
+                    "Resource path must be /123/exec",
+                    req -> req.getRequestLine().getUri().endsWith("/123/exec")
+                )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
+        );
+        when(rtContainer.docker().execs()).thenReturn(
+            new RtExecs(
+                new AssertRequest(
+                    new Response(
+                        HttpStatus.SC_OK,
+                        "{\"Id\": \"exec123\"}"
+                    ),
+                    new Condition(
+                        "must send a GET request",
+                        req -> "GET".equals(req.getRequestLine().getMethod())
+                    ),
+                    new Condition(
+                        "resource URL should end with '/exec123/json'",
+                        req -> req.getRequestLine()
+                            .getUri().endsWith("/exec123/json")
+                    )
+                ),
+                URI.create("http://localhost/exec"),
+                Mockito.mock(Docker.class)
+            )
+        );
+        rtContainer.exec(json);
+    }
+
+    /**
+     * Must fail if docker responds with error code 500.
+     * @throws IOException due to code 500
+     */
+    @Test(expected = UnexpectedResponseException.class)
+    public void execWithServerError() throws IOException {
+        final JsonObject json = Json.createObjectBuilder()
+            .add("Tty", "true")
+            .add("AttachStdin", "true")
+            .build();
+
+        new RtContainer(
+            Json.createObjectBuilder().add("Id", "123").build(),
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_INTERNAL_SERVER_ERROR
+                ),
+                new Condition(
+                    "Method should be a POST",
+                    req -> req.getRequestLine().getMethod().equals("POST")
+                ),
+                new Condition(
+                    "Resource path must be /123/exec",
+                    req -> req.getRequestLine().getUri().endsWith("/123/exec")
+            )
+            ),
+            URI.create("http://localhost:80/1.30/containers/123"),
+            Mockito.mock(Docker.class)
+        ).exec(json);
     }
 }

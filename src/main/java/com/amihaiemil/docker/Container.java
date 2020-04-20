@@ -164,4 +164,13 @@ public interface Container extends JsonObject {
      */
     int waitOn(String state) throws IOException;
 
+    /**
+     * Create a Exec.
+     * @param config Exec configuration.
+     * @see <a href="https://docs.docker.com/engine/api/v1.40/#operation/ContainerExec">Create Exec</a>
+     * @return Exec created.
+     * @throws IOException If something goes wrong.
+     */
+    Exec exec(final JsonObject config) throws IOException;
+
 }
