@@ -39,14 +39,26 @@ import java.net.URI;
  * @since 0.0.11
  */
 final class RtVersion extends JsonResource implements Version {
+
+    /**
+     * Docker to which this Version belongs.
+     */
+    private final Docker docker;
+
     /**
      * Ctor.
      * @param client The http client.
      * @param uri The URI for this version.
+     * @param dkr Parent Docker.
      * @throws IOException If an I/O error occurs.
      */
-    RtVersion(final HttpClient client, final URI uri) throws IOException {
+    RtVersion(
+        final HttpClient client,
+        final URI uri,
+        final Docker dkr
+    ) throws IOException {
         super(fetch(client, uri));
+        this.docker = dkr;
     }
 
     /**
@@ -133,5 +145,10 @@ final class RtVersion extends JsonResource implements Version {
     @Override
     public boolean experimental() {
         return this.getBoolean("Experimental");
+    }
+
+    @Override
+    public Docker docker() {
+        return this.docker;
     }
 }

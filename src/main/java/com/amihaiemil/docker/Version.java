@@ -49,4 +49,10 @@ public interface Version extends JsonObject {
      * @return Whether experimental docker features are enabled
      */
     boolean experimental();
+
+    /**
+     * The Docker engine to which this Version belongs.
+     * @return Docker.
+     */
+    Docker docker();
 }

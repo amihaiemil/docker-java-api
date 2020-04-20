@@ -49,7 +49,7 @@ abstract class RtDocker implements Docker {
      * Base URI.
      */
     private final URI baseUri;
-    
+
     /**
      * Ctor.
      * @param client Given HTTP Client.
@@ -59,7 +59,7 @@ abstract class RtDocker implements Docker {
         this.client = client;
         this.baseUri = baseUri;
     }
-    
+
     @Override
     public final boolean ping() throws IOException {
         final HttpGet ping = new HttpGet(this.baseUri.toString() + "/_ping");
@@ -126,7 +126,7 @@ abstract class RtDocker implements Docker {
     public final Swarm swarm() {
         return new RtSwarm(
             this.client,
-            URI.create(this.baseUri.toString().concat("/swarm")), 
+            URI.create(this.baseUri.toString().concat("/swarm")),
             this
         );
     }
@@ -157,7 +157,8 @@ abstract class RtDocker implements Docker {
         final String versionUri = this.baseUri.toString() + "/version";
         return new RtVersion(
             this.client,
-            URI.create(versionUri)
+            URI.create(versionUri),
+            this
         );
     }
 
