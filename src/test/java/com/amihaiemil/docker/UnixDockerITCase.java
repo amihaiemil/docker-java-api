@@ -63,6 +63,43 @@ public final class UnixDockerITCase {
     }
 
     /**
+     * UnixDocker can return Info about Docker.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void returnsInfo() throws Exception {
+        final Docker docker = new UnixDocker(
+            new File("/var/run/docker.sock")
+        );
+        final Info info = docker.info();
+        MatcherAssert.assertThat(info, Matchers.notNullValue());
+        MatcherAssert.assertThat(info.docker(), Matchers.is(docker));
+        MatcherAssert.assertThat(
+            info.getString("OSType"),
+            Matchers.equalTo("linux")
+        );
+    }
+
+    /**
+     * UnixDocker can return the Version of Docker.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void returnsVersion() throws Exception {
+        final Docker docker = new UnixDocker(
+            new File("/var/run/docker.sock")
+        );
+        final Version version = docker.version();
+        MatcherAssert.assertThat(version, Matchers.notNullValue());
+        MatcherAssert.assertThat(version.docker(), Matchers.is(docker));
+        MatcherAssert.assertThat(
+            version.platformName(),
+            Matchers.equalTo("Docker Engine - Community")
+        );
+    }
+
+
+    /**
      * Docker can return its Events unfiltered.
      * @throws Exception If something goes wrong.
      */

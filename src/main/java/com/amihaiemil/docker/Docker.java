@@ -98,11 +98,18 @@ public interface Docker {
     Plugins plugins();
 
     /**
-     * Entry point for Version API.
+     * Version of this Docker engine.
      * @return Version.
      * @throws IOException If an I/O error occurs.
      */
     Version version() throws IOException;
+
+    /**
+     * Detailed information about this Docker engine, in JSON.
+     * @return Info.
+     * @throws IOException If an I/O problem occurs.
+     */
+    Info info() throws IOException;
 
     /**
      * The underlying, immutable, Apache HttpClient.<br><br>
