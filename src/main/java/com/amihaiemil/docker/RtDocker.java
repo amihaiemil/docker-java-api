@@ -162,6 +162,24 @@ abstract class RtDocker implements Docker {
     }
 
     @Override
+    public Info info() throws IOException {
+        final HttpGet info = new HttpGet(this.baseUri.toString() + "/info");
+        try {
+            return new RtInfo(
+                this.client.execute(
+                    info,
+                    new ReadJsonObject(
+                        new MatchStatus(info.getURI(), HttpStatus.SC_OK)
+                    )
+                ),
+                this
+            );
+        } finally {
+            info.releaseConnection();
+        }
+    }
+
+    @Override
     public HttpClient httpClient() {
         return this.client;
     }

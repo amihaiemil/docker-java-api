@@ -26,12 +26,15 @@
 package com.amihaiemil.docker;
 
 import com.amihaiemil.docker.mock.AssertRequest;
+import com.amihaiemil.docker.mock.Condition;
 import com.amihaiemil.docker.mock.Response;
 import java.io.File;
 import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+
+import javax.json.Json;
 
 /**
  * Unit tests for LocalUnixDocker.
@@ -190,5 +193,39 @@ public final class UnixDockerTestCase {
         new UnixDocker(
             new File("/var/run/docker.sock")
         ).plugins();
+    }
+
+    /**
+     * RtDocker can return info about itself.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void returnsInfo() throws Exception {
+        final Docker docker = new UnixDocker(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_OK,
+                    "{\"info\": \"running\"}"
+                ),
+                new Condition(
+                    "info() must send a GET request",
+                    req -> "GET".equals(req.getRequestLine().getMethod())
+                ),
+                new Condition(
+                    "info() resource URL must be unix://localhost:80/1.40/info",
+                    req -> req.getRequestLine()
+                       .getUri().equals("unix://localhost:80/1.40/info")
+                )
+            ),
+            "1.40"
+        );
+        MatcherAssert.assertThat(
+            docker.info(),
+            Matchers.equalTo(
+                Json.createObjectBuilder()
+                    .add("info", "running")
+                    .build()
+            )
+        );
     }
 }
