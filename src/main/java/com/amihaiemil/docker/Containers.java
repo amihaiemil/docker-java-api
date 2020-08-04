@@ -74,7 +74,7 @@ public interface Containers extends Iterable<Container> {
      * @throws IOException If something goes wrong.
      */
     Container create(final JsonObject container) throws IOException;
-    
+
     /**
      * Return all Containers, not only the running ones.
      * @return Iterator over all the containers.
@@ -95,10 +95,17 @@ public interface Containers extends Iterable<Container> {
      * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ContainerList">Docker API Docs</a>
      */
     Containers filter(Map<String, Iterable<String>> filters);
-    
+
     /**
      * Return the Docker engine where these Containers came from.
      * @return Docker.
      */
     Docker docker();
+
+    /**
+     * Get this container.<br><br>
+     * @param containerId of the Container
+     * @return this container.
+     */
+    Container get(final String containerId);
 }

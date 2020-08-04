@@ -25,11 +25,15 @@
  */
 package com.amihaiemil.docker;
 
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 
 import javax.json.JsonObject;
 import java.io.IOException;
 import java.net.URI;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicHeader;
 
 /**
  * Exec. A batch of commands that are running inside a Container.
@@ -70,6 +74,40 @@ final class RtExec implements Exec {
     public JsonObject inspect()
         throws IOException, UnexpectedResponseException {
         return new Inspection(this.client, this.baseUri.toString() + "/json");
+    }
+
+    /**
+     * Return low-level information about this exec instance.
+     *
+     * @param containerId
+     * @return ExecInstance object.
+     * @throws IOException                 If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *                                     the expected one (200 OK).
+     */
+    @Override
+    public ExecInstance create(final String containerId, final JsonObject exec) throws IOException, UnexpectedResponseException {
+        final URI uri = new UncheckedUriBuilder(
+            this.baseUri.toString().concat("/containers/" + containerId).concat("/exec")
+        ).build();
+        final HttpPost post = new HttpPost(uri);
+        try {
+            post.setEntity(new StringEntity(exec.toString()));
+            post.setHeader(new BasicHeader("Content-Type", "application/json"));
+            final JsonObject json = this.client.execute(
+                post,
+                new ReadJsonObject(
+                    new MatchStatus(post.getURI(), HttpStatus.SC_CREATED)
+                )
+            );
+            return new RtExecInstance(this.client,
+                URI.create(
+                    this.baseUri.toString() + "/exec/" + json.getString("Id")
+                ),
+                this.docker);
+        } finally {
+            post.releaseConnection();
+        }
     }
 
 }

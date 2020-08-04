@@ -92,7 +92,7 @@ final class ListedContainers extends RtContainers {
         final FilteredUriBuilder uri = new FilteredUriBuilder(
             uriBuilder,
             this.filters);
-        
+
         return new ResourcesIterator<>(
             super.client(),
             new HttpGet(uri.build()),
@@ -159,4 +159,6 @@ final class ListedContainers extends RtContainers {
             this.withSize
         );
     }
+
+
 }

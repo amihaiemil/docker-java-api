@@ -57,7 +57,7 @@ abstract class RtContainers implements Containers {
      * Docker API.
      */
     private final Docker docker;
-    
+
     /**
      * Ctor.
      * @param client Given HTTP Client.
@@ -136,7 +136,7 @@ abstract class RtContainers implements Containers {
             post.releaseConnection();
         }
     }
-    
+
     @Override
     public Docker docker() {
         return this.docker;
@@ -157,5 +157,23 @@ abstract class RtContainers implements Containers {
      */
     URI baseUri() {
         return this.baseUri;
+    }
+
+    /**
+     * Get this container.<br><br>
+     *
+     * @param containerId of the Container
+     * @return this container.
+     */
+    @Override
+    public Container get(String containerId) {
+        return new RtContainer(
+            Json.createObjectBuilder().build(),
+            this.client,
+            URI.create(
+                this.baseUri.toString() + "/" + containerId
+            ),
+            this.docker
+        );
     }
 }

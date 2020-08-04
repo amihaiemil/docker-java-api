@@ -46,4 +46,16 @@ public interface Exec {
      */
     JsonObject inspect() throws IOException, UnexpectedResponseException;
 
+    /**
+     * Return low-level information about this exec instance.
+     * @param containerId
+     * @param exec param of object
+     * @return ExecInstance object.
+     * @see <a href="https://docs.docker.com/engine/api/v1.35/#operation/ImageInspect">Inspect Image</a>
+     * @throws IOException If something goes wrong.
+     * @throws UnexpectedResponseException If the status response is not
+     *  the expected one (200 OK).
+     */
+    ExecInstance create(final String containerId, final JsonObject exec) throws IOException, UnexpectedResponseException;
+
 }
