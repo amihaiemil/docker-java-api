@@ -48,7 +48,7 @@ import org.mockito.Mockito;
  * @checkstyle MethodName (500 lines)
  */
 public final class RtContainersTestCase {
-    
+
     /**
      * RtContainers can return its parent Docker.
      */
@@ -69,7 +69,7 @@ public final class RtContainersTestCase {
             Matchers.is(parent)
         );
     }
-    
+
     /**
      * Must return the same number of containers as there are elements in the
      * json array returned by the service.
@@ -106,7 +106,7 @@ public final class RtContainersTestCase {
             Matchers.is(2)
         );
     }
-    
+
     /**
      * Must return the same number of containers as there are elements in the
      * json array returned by the service.
@@ -141,7 +141,7 @@ public final class RtContainersTestCase {
             Matchers.is(2)
         );
     }
-    
+
     /**
      * The iterator works when there are no containers.
      * @throws Exception If an error occurs.
@@ -162,7 +162,7 @@ public final class RtContainersTestCase {
             Matchers.is(0)
         );
     }
-    
+
     /**
      * Must throw {@link UnexpectedResponseException} if response code is 500.
      * @throws Exception The UnexpectedException.
@@ -177,7 +177,7 @@ public final class RtContainersTestCase {
             Mockito.mock(Docker.class)
         ).iterator();
     }
-    
+
     /**
      * Must throw {@link UnexpectedResponseException} if response code is 400.
      * @throws Exception The UnexpectedException.
@@ -192,7 +192,7 @@ public final class RtContainersTestCase {
             Mockito.mock(Docker.class)
         ).iterator();
     }
-    
+
     /**
      * The request should be well-formed.
      * @throws Exception If something goes wrong.
@@ -280,7 +280,7 @@ public final class RtContainersTestCase {
                 )
             ),
             URI.create("http://localhost/test"),
-            Mockito.mock(Docker.class)    
+            Mockito.mock(Docker.class)
         ).create("some_image");
     }
 
@@ -356,7 +356,7 @@ public final class RtContainersTestCase {
                 )
             ),
             URI.create("http://localhost/test"),
-            Mockito.mock(Docker.class)    
+            Mockito.mock(Docker.class)
         ).create("some_name", "some_image");
     }
 
@@ -394,7 +394,7 @@ public final class RtContainersTestCase {
                 )
             ),
             URI.create("http://localhost/test"),
-            Mockito.mock(Docker.class)    
+            Mockito.mock(Docker.class)
         ).create(json);
     }
 
@@ -456,7 +456,7 @@ public final class RtContainersTestCase {
                 )
             ),
             URI.create("http://localhost/docker"),
-            Mockito.mock(Docker.class)    
+            Mockito.mock(Docker.class)
         ).create("Adrian Toomes", "some/image");
     }
 
@@ -499,12 +499,48 @@ public final class RtContainersTestCase {
                     )
                 ),
                 URI.create("http://localhost/test"),
-                Mockito.mock(Docker.class)    
+                Mockito.mock(Docker.class)
             ).create(
                 Json.createObjectBuilder()
                     .add("Image", "ubuntu").build()
             ).getString("Id"),
             Matchers.is("df2419f4")
         );
+    }
+
+    /**
+     * RtContainers.get() returns an RtContainer with the container id.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void getContainerWithIdStartsWithNotFound() throws Exception {
+        new ListedContainers(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NO_CONTENT,
+                    "{ \"Id\": \"df2419f4\", \"Warnings\": [ ] }"
+                )
+            ),
+            URI.create("http://localhost/test"),
+            Mockito.mock(Docker.class)
+        ).get("df2419f4").start();
+    }
+
+    /**
+     * RtContainers.get() returns an RtContainer with the container id.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void getContainerWithIdStopWithNotFound() throws Exception {
+        new ListedContainers(
+            new AssertRequest(
+                new Response(
+                    HttpStatus.SC_NO_CONTENT,
+                    "{ \"Id\": \"df2419f4\", \"Warnings\": [ ] }"
+                )
+            ),
+            URI.create("http://localhost/test"),
+            Mockito.mock(Docker.class)
+        ).get("df2419f4").stop();
     }
 }
