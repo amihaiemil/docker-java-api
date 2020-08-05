@@ -162,11 +162,11 @@ abstract class RtContainers implements Containers {
     /**
      * Get this container.<br><br>
      *
-     * @param containerId of the Container
-     * @return this container object.
+     * @param containerId Id of the Container
+     * @return This container object.
      */
     @Override
-    public Container get(String containerId) {
+    public Container get(final String containerId) {
         return new RtContainer(
             Json.createObjectBuilder().build(),
             this.client,
