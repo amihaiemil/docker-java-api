@@ -168,7 +168,9 @@ abstract class RtContainers implements Containers {
     @Override
     public Container get(final String containerId) {
         return new RtContainer(
-            Json.createObjectBuilder().build(),
+            Json.createObjectBuilder()
+                .add("Id", containerId)
+                .build(),
             this.client,
             URI.create(
                 this.baseUri.toString() + "/" + containerId

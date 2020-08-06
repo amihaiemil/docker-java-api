@@ -513,34 +513,19 @@ public final class RtContainersTestCase {
      * @throws Exception If something goes wrong.
      */
     @Test
-    public void getContainerWithIdStartsWithNotFound() throws Exception {
-        new ListedContainers(
-            new AssertRequest(
-                new Response(
-                    HttpStatus.SC_NO_CONTENT,
-                    "{ \"Id\": \"df2419f4\", \"Warnings\": [ ] }"
-                )
-            ),
-            URI.create("http://localhost/test"),
-            Mockito.mock(Docker.class)
-        ).get("df2419f4").start();
-    }
-
-    /**
-     * RtContainers.get() returns an RtContainer with the container id.
-     * @throws Exception If something goes wrong.
-     */
-    @Test
-    public void getContainerWithIdStopWithNotFound() throws Exception {
-        new ListedContainers(
-            new AssertRequest(
-                new Response(
-                    HttpStatus.SC_NO_CONTENT,
-                    "{ \"Id\": \"df2419f4\", \"Warnings\": [ ] }"
-                )
-            ),
-            URI.create("http://localhost/test"),
-            Mockito.mock(Docker.class)
-        ).get("df2419f4").stop();
+    public void getContainerWithId() throws Exception {
+        MatcherAssert.assertThat(
+            new ListedContainers(
+                new AssertRequest(
+                    new Response(
+                        HttpStatus.SC_OK,
+                        "{ \"Id\": \"df2419f4\", \"Warnings\": [ ] }"
+                    )
+                ),
+                URI.create("http://localhost/test"),
+                Mockito.mock(Docker.class)
+            ).get("df2419f4").getString("Id"),
+            Matchers.is("df2419f4")
+        );
     }
 }
